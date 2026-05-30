@@ -94,15 +94,41 @@ const cifras = [
           </Card>
         </div>
 
-        <div class="flex justify-center mt-10">
-          <div class="flex items-center gap-3 text-sm text-muted-foreground">
+        <!-- Pasos finales -->
+        <div class="flex justify-center mt-10 gap-4">
+          <div class="flex items-center gap-3 px-5 py-3 rounded-lg border bg-card text-sm">
+            <div class="w-8 h-8 rounded-md bg-green-500/10 text-green-500 flex items-center justify-center">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <span class="text-muted-foreground">Confirmacion humana</span>
+          </div>
+          <div class="hidden md:flex items-center text-muted-foreground">
             <i class="fa-solid fa-arrow-right"></i>
-            <span>Confirmacion humana</span>
-            <i class="fa-solid fa-arrow-right"></i>
-            <span>Exportacion Excel para SAP</span>
-            <i class="fa-solid fa-file-export text-foreground"></i>
+          </div>
+          <div class="flex items-center gap-3 px-5 py-3 rounded-lg border bg-card text-sm">
+            <div class="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+              <i class="fa-solid fa-file-export"></i>
+            </div>
+            <span class="text-muted-foreground">Exportacion Excel para SAP</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <Separator />
+
+    <!-- Chatbot -->
+    <div class="py-20 px-6">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="bg-primary/10 text-primary w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i class="fa-solid fa-robot text-2xl"></i>
+        </div>
+        <h2 class="text-3xl font-bold tracking-tight mb-3">Todo desde un chatbot</h2>
+        <p class="text-muted-foreground max-w-xl mx-auto">
+          El usuario interactua con un asistente conversacional que orquesta
+          validacion, descripcion y categorizacion de forma transparente —
+          sin formularios, sin navegacion compleja.
+        </p>
       </div>
     </div>
   </section>
