@@ -1,0 +1,12 @@
+.env
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.venv/
+dbdata/
+.ipynb_checkpoints/
+sample_data/
+.virtual_documents/
+lab/notebooks/
+.claude
