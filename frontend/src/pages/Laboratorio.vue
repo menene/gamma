@@ -4,6 +4,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
+const labUrl = window.location.hostname === 'localhost'
+  ? 'http://localhost:8888'
+  : 'https://notebook.cookielab.cc'
+
 const notebooks = [
   {
     file: '01_eda.ipynb',
@@ -34,7 +38,7 @@ const notebooks = [
     <div class="max-w-5xl mx-auto">
       <div class="flex items-center justify-between mb-2">
         <h1 class="text-3xl font-bold tracking-tight">Laboratorio</h1>
-        <Button as="a" href="http://localhost:8888" target="_blank" rel="noopener">
+        <Button as="a" :href="labUrl" target="_blank" rel="noopener">
           <i class="fa-solid fa-book mr-2"></i>
           Abrir Jupyter Lab
         </Button>
