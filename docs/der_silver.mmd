@@ -1,0 +1,86 @@
+---
+title: SILVER — Datos operacionales y de referencia
+---
+erDiagram
+
+    materials {
+        TEXT id PK
+        BOOLEAN deletion_flag
+        TEXT material_type_id FK
+        TEXT article_group
+        TEXT unit_of_measure
+        TEXT manufacturer_info
+        TEXT standard_name
+        TEXT short_text "gin index pg_trgm"
+        TIMESTAMPTZ updated_at
+    }
+
+    classes {
+        TEXT id PK
+        TEXT name
+        TEXT article_group
+        TEXT sector
+        TEXT material_type_id FK
+        TEXT unspsc_id FK
+    }
+
+    unspsc {
+        TEXT id PK
+        TEXT description
+    }
+
+    material_types {
+        TEXT id PK
+        TEXT description
+    }
+
+    conversations {
+        UUID id PK
+        TEXT title
+        JSONB messages
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    requests {
+        BIGSERIAL id PK
+        UUID conversation_id FK
+        TEXT name
+        TEXT long_text
+        JSONB specifications
+        TEXT short_text
+        TEXT material_type_id FK
+        TEXT article_group
+        TEXT category
+        NUMERIC confidence
+        JSONB alternatives
+        JSONB duplicates
+        BOOLEAN auto_resolved
+        BOOLEAN corrected
+        TEXT status "proposal | confirmed | exported | discarded"
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ confirmed_at
+        TIMESTAMPTZ exported_at
+        NUMERIC processing_time_s
+    }
+
+    dataset_train {
+        TEXT short_text
+        TEXT material_type_id FK
+        TEXT article_group
+    }
+
+    dataset_test {
+        TEXT short_text
+        TEXT material_type_id FK
+        TEXT article_group
+    }
+
+    %% Relaciones
+    material_types ||--o{ materials : "material_type_id"
+    material_types ||--o{ classes : "material_type_id"
+    material_types ||--o{ requests : "material_type_id"
+    material_types ||--o{ dataset_train : "material_type_id"
+    material_types ||--o{ dataset_test : "material_type_id"
+    unspsc ||--o{ classes : "unspsc_id"
+    conversations ||--o{ requests : "conversation_id"

@@ -1,0 +1,35 @@
+---
+title: GOLD — Vistas y parametros para Power BI
+---
+erDiagram
+
+    parameters {
+        TEXT id PK
+        NUMERIC value
+    }
+
+    kpi_processing_time {
+        TIMESTAMPTZ week
+        BIGINT materials
+        NUMERIC avg_time_s
+        NUMERIC auto_rate
+    }
+
+    kpi_quality {
+        TIMESTAMPTZ week
+        NUMERIC accuracy
+        NUMERIC avg_confidence
+    }
+
+    kpi_savings {
+        TIMESTAMPTZ week
+        BIGINT materials
+        NUMERIC hours_saved
+        NUMERIC savings_q
+    }
+
+    materials_by_type {
+        TEXT material_type_id
+        TEXT type_description
+        BIGINT total_materials
+    }

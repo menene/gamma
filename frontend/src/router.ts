@@ -7,6 +7,7 @@ const router = createRouter({
     { path: '/arquitectura', component: () => import('@/pages/Arquitectura.vue') },
     { path: '/laboratorio', component: () => import('@/pages/Laboratorio.vue') },
     { path: '/api', component: () => import('@/pages/Api.vue') },
+    { path: '/etl', component: () => import('@/pages/Etl.vue') },
     { path: '/docs', component: () => import('@/pages/Docs.vue') },
     { path: '/chat', component: () => import('@/pages/Chat.vue') },
   ],

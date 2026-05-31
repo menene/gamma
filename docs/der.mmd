@@ -1,0 +1,25 @@
+---
+title: BRONZE — Logs del sistema
+---
+erDiagram
+
+    ingestion_logs {
+        BIGSERIAL id PK
+        TEXT file_name
+        TEXT file_path
+        INTEGER row_count
+        TEXT status "success | partial | failed"
+        TEXT error_message
+        TIMESTAMPTZ ingested_at
+    }
+
+    prediction_logs {
+        BIGSERIAL id PK
+        BIGINT request_id FK
+        TEXT type "duplicates | description | categorization"
+        JSONB input
+        JSONB output
+        NUMERIC confidence
+        JSONB user_decision
+        TIMESTAMPTZ logged_at
+    }
