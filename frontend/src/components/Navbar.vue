@@ -6,7 +6,7 @@ const links = [
   { label: 'Arquitectura', to: '/arquitectura', icon: 'fa-solid fa-cubes' },
   { label: 'Laboratorio', to: '/laboratorio', icon: 'fa-solid fa-flask' },
   { label: 'ETL', to: '/etl', icon: 'fa-solid fa-file-import' },
-  { label: 'API', to: '/api', icon: 'fa-solid fa-plug' },
+  { label: 'API', to: '/swagger', icon: 'fa-solid fa-plug' },
   { label: 'Docs', to: '/docs', icon: 'fa-solid fa-book' },
 ]
 </script>
