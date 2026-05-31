@@ -2,6 +2,146 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import MermaidDiagram from '@/components/MermaidDiagram.vue'
+
+const derBronze = `erDiagram
+    ingestion_logs {
+        BIGSERIAL id PK
+        TEXT file_name
+        TEXT file_path
+        INTEGER row_count
+        TEXT status
+        TEXT error_message
+        TIMESTAMPTZ ingested_at
+    }
+
+    prediction_logs {
+        BIGSERIAL id PK
+        BIGINT request_id FK
+        TEXT type
+        JSONB input
+        JSONB output
+        NUMERIC confidence
+        JSONB user_decision
+        TIMESTAMPTZ logged_at
+    }
+`
+
+const derSilver = `erDiagram
+    materials {
+        TEXT id PK
+        BOOLEAN deletion_flag
+        TEXT material_type_id FK
+        TEXT article_group
+        TEXT unit_of_measure
+        TEXT manufacturer_info
+        TEXT standard_name
+        TEXT short_text
+        TIMESTAMPTZ updated_at
+    }
+
+    classes {
+        TEXT id PK
+        TEXT name
+        TEXT article_group
+        TEXT sector
+        TEXT material_type_id FK
+        TEXT unspsc_id FK
+    }
+
+    unspsc {
+        TEXT id PK
+        TEXT description
+    }
+
+    material_types {
+        TEXT id PK
+        TEXT description
+    }
+
+    conversations {
+        UUID id PK
+        TEXT title
+        JSONB messages
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    requests {
+        BIGSERIAL id PK
+        UUID conversation_id FK
+        TEXT name
+        TEXT long_text
+        JSONB specifications
+        TEXT short_text
+        TEXT material_type_id FK
+        TEXT article_group
+        TEXT category
+        NUMERIC confidence
+        JSONB alternatives
+        JSONB duplicates
+        BOOLEAN auto_resolved
+        BOOLEAN corrected
+        TEXT status
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ confirmed_at
+        TIMESTAMPTZ exported_at
+        NUMERIC processing_time_s
+    }
+
+    dataset_train {
+        TEXT short_text
+        TEXT material_type_id FK
+        TEXT article_group
+    }
+
+    dataset_test {
+        TEXT short_text
+        TEXT material_type_id FK
+        TEXT article_group
+    }
+
+    material_types ||--o{ materials : "material_type_id"
+    material_types ||--o{ classes : "material_type_id"
+    material_types ||--o{ requests : "material_type_id"
+    material_types ||--o{ dataset_train : "material_type_id"
+    material_types ||--o{ dataset_test : "material_type_id"
+    unspsc ||--o{ classes : "unspsc_id"
+    conversations ||--o{ requests : "conversation_id"
+`
+
+const derGold = `erDiagram
+    parameters {
+        TEXT id PK
+        NUMERIC value
+    }
+
+    kpi_processing_time {
+        TIMESTAMPTZ week
+        BIGINT materials
+        NUMERIC avg_time_s
+        NUMERIC auto_rate
+    }
+
+    kpi_quality {
+        TIMESTAMPTZ week
+        NUMERIC accuracy
+        NUMERIC avg_confidence
+    }
+
+    kpi_savings {
+        TIMESTAMPTZ week
+        BIGINT materials
+        NUMERIC hours_saved
+        NUMERIC savings_q
+    }
+
+    materials_by_type {
+        TEXT material_type_id
+        TEXT type_description
+        BIGINT total_materials
+    }
+`
 </script>
 
 <template>
@@ -29,23 +169,24 @@ import { Separator } from '@/components/ui/separator'
               <div>
                 <div class="flex items-center gap-2 mb-2">
                   <Badge class="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 hover:bg-amber-100">Bronze</Badge>
-                  <span class="text-foreground font-medium">Datos crudos y trazabilidad</span>
+                  <span class="text-foreground font-medium">Logs y trazabilidad</span>
                 </div>
                 <p class="mb-2">
-                  Bronze almacena los datos en su forma original, sin transformacion. Cumple dos funciones: servir como
-                  punto de ingesta para las importaciones periodicas de SAP y registrar la actividad del sistema.
+                  Bronze registra la actividad del sistema sin almacenar datos crudos — los archivos XLSX de SAP
+                  se conservan en disco y se reprocesan si es necesario. Esta capa cumple dos funciones:
                 </p>
                 <p class="mb-2">
-                  Los archivos CSV exportados de SAP (maestro de materiales y categorias) se cargan de forma incremental
-                  en esta capa, conservando un timestamp de ingesta que permite rastrear cuando se incorporo cada registro.
-                  Esto habilita la reconstruccion de silver en caso de que sea necesario reprocesar datos.
+                  <strong class="text-foreground">Logs de ingesta:</strong> cada vez que se importa un archivo de SAP,
+                  se registra el nombre, ruta, cantidad de filas procesadas y estado de la operacion. Esto permite
+                  trazabilidad sin duplicar datos en la base.
                 </p>
-                <p>
-                  Tambien residen aqui los logs de prediccion: cada vez que el sistema ejecuta una clasificacion o deteccion
-                  de duplicados, se registra la salida del modelo, el nivel de confianza y la decision final del usuario.
-                  Esta informacion es el insumo para los KPIs de calidad en gold y para evaluar el rendimiento del modelo
-                  a lo largo del tiempo.
+                <p class="mb-4">
+                  <strong class="text-foreground">Logs de prediccion:</strong> cada vez que el sistema ejecuta uno de
+                  los tres servicios (duplicados, descripcion, categorizacion), se registra la entrada, salida del modelo,
+                  confianza y la decision final del usuario. Esta informacion alimenta los KPIs de gold y permite evaluar
+                  el modelo a lo largo del tiempo.
                 </p>
+                <MermaidDiagram :chart="derBronze" />
               </div>
 
               <Separator />
@@ -66,11 +207,12 @@ import { Separator } from '@/components/ui/separator'
                   nivel de confianza y si el usuario corrigio la propuesta del sistema — datos que alimentan directamente
                   las vistas de gold.
                 </p>
-                <p>
+                <p class="mb-4">
                   Tambien contiene los datasets de entrenamiento y prueba para el modelo de categorizacion, derivados del
                   maestro normalizado. Esto permite que el laboratorio (Jupyter) acceda directamente a datos listos para
                   experimentacion sin necesidad de procesamiento adicional.
                 </p>
+                <MermaidDiagram :chart="derSilver" />
               </div>
 
               <Separator />
@@ -85,11 +227,12 @@ import { Separator } from '@/components/ui/separator'
                   esta capa — las vistas leen de silver al momento de ser consultadas. Esto garantiza que los indicadores
                   siempre reflejen el estado actual sin necesidad de procesos de sincronizacion.
                 </p>
-                <p>
+                <p class="mb-4">
                   Los KPIs cubren tres dimensiones: tiempos de procesamiento (promedio por semana, tasa de auto-resolucion),
                   calidad del modelo (exactitud de la categorizacion, confianza promedio) y monetizacion (horas-hombre
                   ahorradas y su equivalente en quetzales). Power BI se conecta directamente a este esquema.
                 </p>
+                <MermaidDiagram :chart="derGold" />
               </div>
 
               <Separator />
@@ -103,9 +246,9 @@ import { Separator } from '@/components/ui/separator'
                     la necesidad de promover datos entre esquemas operacionales.
                   </li>
                   <li>
-                    <strong>Bronze como capa de ingesta y logs:</strong> los CSV de SAP se almacenan en su forma
-                    original para habilitar importacion incremental y reconstruccion de silver. Los logs de prediccion
-                    pertenecen a bronze porque son datos crudos del sistema, no datos de trabajo.
+                    <strong>Bronze como capa de logs:</strong> los archivos XLSX se conservan en disco, no en la
+                    base de datos. Bronze solo registra metadatos de ingesta y logs de prediccion — datos crudos
+                    del sistema, no datos de trabajo.
                   </li>
                   <li>
                     <strong>Gold como vistas puras:</strong> al no materializar datos en gold, se evita la

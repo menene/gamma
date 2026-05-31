@@ -29,12 +29,17 @@ services:
 
   lab:
     build: ./lab
+    user: root
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN}
+      NB_UID: 1000
+      NB_GID: 1000
+      GRANT_SUDO: "yes"
     volumes:
       - ./lab/notebooks:/home/jovyan/work
+      - ./lab/data:/home/jovyan/work/data
     ports:
       - "8888:8888"
-    environment:
-      JUPYTER_TOKEN: ""
 
   frontend:
     build: ./frontend
