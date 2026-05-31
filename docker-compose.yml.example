@@ -42,7 +42,10 @@ services:
       - "8888:8888"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        MODE: ${FRONTEND_MODE:-development}
     depends_on:
       - api
       - lab
