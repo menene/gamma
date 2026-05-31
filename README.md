@@ -393,9 +393,9 @@ volumes:
 ## 11. Variables de entorno (`.env.example`)
 
 ```
-DB_USER=sapmat
+DB_USER=gamma
 DB_PASSWORD=cambia_esto
-DB_NAME=sapmat
+DB_NAME=gamma
 DB_HOST=db
 DB_PORT=5432
 
