@@ -45,7 +45,7 @@ services:
     build:
       context: ./frontend
       args:
-        MODE: ${FRONTEND_MODE:-development}
+        FRONTEND_MODE: ${FRONTEND_MODE:-development}
     depends_on:
       - api
       - lab

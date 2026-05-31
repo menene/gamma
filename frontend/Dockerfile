@@ -1,4 +1,4 @@
-ARG MODE=production
+ARG FRONTEND_MODE=production
 
 FROM node:20-alpine AS base
 WORKDIR /app
@@ -20,5 +20,6 @@ FROM base AS development
 EXPOSE 80
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "80"]
 
-# --- Final stage selected by MODE ---
-FROM ${MODE}
+# --- Final stage selected by FRONTEND_MODE ---
+ARG FRONTEND_MODE
+FROM ${FRONTEND_MODE}
