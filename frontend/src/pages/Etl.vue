@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { API_BASE } from '@/config'
 
-const API = 'http://localhost:8000/api/etl'
+const API = `${API_BASE}/api/etl`
 
 interface IngestionLog {
   id: number
