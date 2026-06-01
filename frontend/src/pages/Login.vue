@@ -88,6 +88,7 @@ async function handleSubmit() {
           </Button>
         </form>
 
+        <!-- Registro deshabilitado
         <div class="text-center">
           <button
             type="button"
@@ -97,6 +98,7 @@ async function handleSubmit() {
             {{ isRegister ? 'Ya tengo cuenta' : 'Crear cuenta nueva' }}
           </button>
         </div>
+        -->
       </CardContent>
     </Card>
   </div>

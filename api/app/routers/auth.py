@@ -48,8 +48,9 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     return {"token": token, "user": {"id": row.id, "email": row.email, "name": row.name}}
 
 
-@router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def register(body: RegisterRequest, db: Session = Depends(get_db)):
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Registro deshabilitado")
     existing = db.execute(
         text("SELECT id FROM public.users WHERE email = :email"),
         {"email": body.email},
