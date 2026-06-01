@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import architectureImg from '@/assets/architecture.png'
+import ArchitectureDiagram from '@/components/ArchitectureDiagram.vue'
 
 import dockerLogo from '@/assets/logos/docker.svg'
 import postgresqlLogo from '@/assets/logos/postgresql.svg'
@@ -18,42 +18,56 @@ import shadcnLogo from '@/assets/logos/shadcn.svg'
 import powerbiLogo from '@/assets/logos/powerbi.svg'
 import sqlalchemyLogo from '@/assets/logos/sqlalchemy.svg'
 import pydanticLogo from '@/assets/logos/pydantic.svg'
+import nginxLogo from '@/assets/logos/nginx.svg'
+import jwtLogo from '@/assets/logos/jwt.svg'
+import viteLogo from '@/assets/logos/vite.svg'
+import plankaLogo from '@/assets/logos/planka.svg'
 
 const servicios = [
   {
-    nombre: 'Chatbot / Frontend',
+    nombre: 'Chatbot',
     badge: 'Entrada',
-    desc: 'Punto de entrada del usuario. Captura el nombre del material, descripcion larga y especificaciones. Envia la solicitud al API REST.',
+    desc: 'Interfaz conversacional donde el usuario describe el material. El LLM normaliza la descripcion, busca duplicados y guia al usuario hasta la confirmacion.',
+  },
+  {
+    nombre: 'Autenticacion',
+    badge: 'Seguridad',
+    desc: 'Login con JWT y bcrypt. Todas las rutas del API (excepto health) requieren token. El frontend gestiona la sesion y protege las paginas.',
   },
   {
     nombre: 'API REST (FastAPI)',
     badge: 'Backend',
-    desc: 'Orquesta todo el flujo. Recibe la solicitud y ejecuta en paralelo los tres servicios de procesamiento. Escribe directamente en silver y registra logs en bronze.',
+    desc: 'Orquesta todo el flujo. Recibe la solicitud, coordina normalizacion, duplicados y categorizacion. Escribe en silver y registra logs en bronze.',
+  },
+  {
+    nombre: 'Normalizacion (LLM)',
+    badge: 'Servicio',
+    desc: 'Google Gemini normaliza la descripcion al formato SAP. Aplica reglas de abreviaturas, separadores y palabras clave. Presenta duplicados conversacionalmente.',
   },
   {
     nombre: 'Duplicados',
     badge: 'Servicio',
-    desc: 'Consulta el maestro normalizado en silver usando la extension pg_trgm de PostgreSQL. Calcula similitud difusa entre la descripcion ingresada y los materiales existentes.',
+    desc: 'Consulta el maestro en silver usando pg_trgm de PostgreSQL. Calcula similitud difusa y presenta candidatos al usuario para decidir.',
   },
   {
     nombre: 'Categorizacion',
     badge: 'Servicio',
-    desc: 'Modelo de clasificacion que predice la categoria del material. Devuelve la categoria, confianza y top-K alternativas. Si supera el umbral, se marca como auto-resuelto.',
-  },
-  {
-    nombre: 'Descripcion',
-    badge: 'Servicio',
-    desc: 'Genera el texto breve estandarizado usando un LLM externo. Aplica el formato SAP: palabra clave, abreviaturas, separadores con punto y coma.',
+    desc: 'Modelo ML que predice la clase del material. Devuelve categoria, confianza y top-K alternativas.',
   },
   {
     nombre: 'Confirmacion humana',
     badge: 'Validacion',
-    desc: 'El usuario revisa la propuesta del sistema. Puede aceptar, editar o descartar. Las correcciones alimentan los KPIs de calidad en gold.',
+    desc: 'Dentro del chatbot, el usuario revisa la propuesta. Puede aceptar, explicar diferencias con duplicados, o descartar. Las decisiones alimentan los KPIs en gold.',
+  },
+  {
+    nombre: 'ETL',
+    badge: 'Ingesta',
+    desc: 'Importador de archivos Excel para cargar maestros de materiales, clases y UNSPSC. Usa UPSERT para actualizaciones idempotentes.',
   },
   {
     nombre: 'Exportador',
     badge: 'Salida',
-    desc: 'Genera archivos Excel (.xlsx) con las solicitudes confirmadas, formateados para carga masiva en SAP.',
+    desc: 'Desde el frontend se consultan registros confirmados en la base de datos y se exportan como .xlsx para carga masiva en SAP.',
   },
 ]
 
@@ -61,13 +75,13 @@ const stack = [
   {
     layer: 'Orquestacion',
     tech: 'Docker + Docker Compose',
-    desc: 'Todos los servicios en una red interna',
-    logos: [dockerLogo],
+    desc: 'Todos los servicios en una red interna con Nginx como reverse proxy',
+    logos: [dockerLogo, nginxLogo],
   },
   {
     layer: 'Base de datos',
     tech: 'PostgreSQL 16',
-    desc: 'Extension pg_trgm para similitud difusa',
+    desc: 'Arquitectura medallon, pg_trgm para similitud difusa',
     logos: [postgresqlLogo],
   },
   {
@@ -77,39 +91,51 @@ const stack = [
     logos: [pythonLogo, fastapiLogo, sqlalchemyLogo, pydanticLogo],
   },
   {
-    layer: 'Modelo',
-    tech: 'Integrado en API',
-    desc: 'Endpoint /api/model/predict',
-    logos: [pythonLogo, fastapiLogo],
+    layer: 'Autenticacion',
+    tech: 'JWT + bcrypt',
+    desc: 'Login con tokens, rutas protegidas, sesiones seguras',
+    logos: [jwtLogo, pythonLogo],
   },
   {
     layer: 'LLM',
-    tech: 'API externa',
-    desc: 'Gemini o equivalente para descripcion',
+    tech: 'Google Gemini',
+    desc: 'Normalizacion de descripciones y deteccion conversacional de duplicados',
     logos: [geminiLogo],
   },
   {
-    layer: 'Exportacion',
+    layer: 'Modelo',
+    tech: 'Integrado en API',
+    desc: 'Endpoint /api/model/predict para categorizacion',
+    logos: [pythonLogo, fastapiLogo],
+  },
+  {
+    layer: 'ETL',
     tech: 'pandas + openpyxl',
-    desc: 'Generacion de Excel para SAP',
+    desc: 'Importacion de maestros Excel con UPSERT y logs de ingesta',
     logos: [pandasLogo, excelLogo],
   },
   {
     layer: 'Laboratorio',
     tech: 'Jupyter Lab',
-    desc: 'Experimentacion con datasets',
+    desc: 'Experimentacion con datasets, protegido con token',
     logos: [jupyterLogo, pythonLogo],
   },
   {
     layer: 'Frontend',
-    tech: 'Vue 3 + Tailwind + shadcn',
-    desc: 'Portal documental',
-    logos: [vueLogo, tailwindLogo, shadcnLogo],
+    tech: 'Vue 3 + Vite + Tailwind + shadcn',
+    desc: 'SPA con chatbot, ETL, docs y Swagger integrado',
+    logos: [vueLogo, viteLogo, tailwindLogo, shadcnLogo],
+  },
+  {
+    layer: 'Gestion',
+    tech: 'Planka',
+    desc: 'Tablero Kanban para gestion de tareas del equipo',
+    logos: [plankaLogo],
   },
   {
     layer: 'Analitica',
     tech: 'Power BI',
-    desc: 'Conectado al esquema gold',
+    desc: 'Conectado al esquema gold para dashboards',
     logos: [powerbiLogo],
   },
 ]
@@ -145,12 +171,8 @@ const medallon = [
 
       <!-- Diagrama -->
       <Card class="mb-12">
-        <CardContent class="pt-6 flex justify-center">
-          <img
-            :src="architectureImg"
-            alt="Diagrama de arquitectura GAMMA"
-            class="max-w-full h-auto rounded-md"
-          />
+        <CardContent class="pt-6">
+          <ArchitectureDiagram />
         </CardContent>
       </Card>
 

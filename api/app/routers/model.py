@@ -1,9 +1,11 @@
 import random
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-router = APIRouter(prefix="/api/model", tags=["Modelo"])
+from app.auth import get_current_user
+
+router = APIRouter(prefix="/api/model", tags=["Modelo"], dependencies=[Depends(get_current_user)])
 
 CATEGORIAS = ["RODAMIENTOS", "TRANSMISION", "ELECTRICO", "HIDRAULICO", "NEUMATICO"]
 

@@ -58,5 +58,41 @@ services:
       - ./frontend/vite.config.ts:/app/vite.config.ts
       - ./frontend/nginx.conf:/app/nginx.conf
 
+  planka:
+    image: ghcr.io/plankanban/planka:latest
+    depends_on:
+      planka-db:
+        condition: service_healthy
+    environment:
+      BASE_URL: ${PLANKA_URL:-http://localhost:3000}
+      SECRET_KEY: ${PLANKA_SECRET}
+      DEFAULT_ADMIN_EMAIL: ${PLANKA_ADMIN_EMAIL}
+      DEFAULT_ADMIN_PASSWORD: ${PLANKA_ADMIN_PASSWORD}
+      DEFAULT_ADMIN_NAME: Admin
+      DEFAULT_ADMIN_USERNAME: admin
+      DATABASE_URL: postgresql://planka:planka@planka-db:5432/planka
+    ports:
+      - "3000:1337"
+    volumes:
+      - planka-avatars:/app/public/user-avatars
+      - planka-attachments:/app/private/attachments
+
+  planka-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: planka
+      POSTGRES_USER: planka
+      POSTGRES_PASSWORD: planka
+    volumes:
+      - planka-dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U planka -d planka"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   dbdata:
+  planka-dbdata:
+  planka-avatars:
+  planka-attachments:

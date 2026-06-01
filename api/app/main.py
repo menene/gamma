@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import chat, etl, duplicates, model
+from app.routers import auth, chat, etl, duplicates, model
 
 app = FastAPI(
     title="GAMMA API",
@@ -11,6 +11,7 @@ app = FastAPI(
     redoc_url="/redoc",
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
     openapi_tags=[
+        {"name": "Autenticacion", "description": "Login, registro y sesion"},
         {"name": "Sistema", "description": "Health check y estado general"},
         {"name": "Chat", "description": "Conversaciones del asistente GAMMA"},
         {"name": "ETL", "description": "Carga de datos desde archivos Excel"},
@@ -27,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(chat.router)
 app.include_router(etl.router)
 app.include_router(duplicates.router)

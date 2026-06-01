@@ -1,7 +1,7 @@
 const isLocal = window.location.hostname === 'localhost'
 
 export const API_BASE = isLocal
-  ? 'http://localhost:8000'
+  ? 'http://localhost:8001'
   : ''
 
 export const LAB_URL = isLocal

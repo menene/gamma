@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { API_BASE } from '@/config'
+import { authFetch } from '@/composables/useAuth'
 
 const API = `${API_BASE}/api/etl`
 
@@ -59,14 +60,14 @@ let nextQueueId = 0
 
 async function fetchLogs() {
   try {
-    const res = await fetch(`${API}/logs`)
+    const res = await authFetch(`${API}/logs`)
     if (res.ok) logs.value = await res.json()
   } catch { /* ignore */ }
 }
 
 async function fetchCounts() {
   try {
-    const res = await fetch(`${API}/counts`)
+    const res = await authFetch(`${API}/counts`)
     if (res.ok) counts.value = await res.json()
   } catch { /* ignore */ }
 }
@@ -84,7 +85,7 @@ async function processQueue(key: SectionKey) {
     form.append('file', item.file)
 
     try {
-      const res = await fetch(`${API}/upload/${key}`, { method: 'POST', body: form })
+      const res = await authFetch(`${API}/upload/${key}`, { method: 'POST', body: form })
       if (res.ok) {
         const data = await res.json()
         item.status = 'success'

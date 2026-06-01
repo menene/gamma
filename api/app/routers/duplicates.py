@@ -1,7 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-router = APIRouter(prefix="/api", tags=["Duplicados"])
+from app.auth import get_current_user
+
+router = APIRouter(prefix="/api", tags=["Duplicados"], dependencies=[Depends(get_current_user)])
 
 
 class ValidateRequest(BaseModel):

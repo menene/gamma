@@ -5,6 +5,7 @@ from uuid import UUID
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException
+from app.auth import get_current_user
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -14,7 +15,7 @@ from app.services.llm import build_system_prompt, chat_completion, get_model_nam
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/chat", tags=["Chat"])
+router = APIRouter(prefix="/api/chat", tags=["Chat"], dependencies=[Depends(get_current_user)])
 
 
 class ConversationCreate(BaseModel):

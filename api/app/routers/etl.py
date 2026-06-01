@@ -2,6 +2,7 @@ import io
 import time
 
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from app.auth import get_current_user
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -10,7 +11,7 @@ import pandas as pd
 
 from app.db import get_db
 
-router = APIRouter(prefix="/api/etl", tags=["ETL"])
+router = APIRouter(prefix="/api/etl", tags=["ETL"], dependencies=[Depends(get_current_user)])
 
 
 class IngestionResult(BaseModel):
