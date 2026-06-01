@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/composables/useAuth'
+import { PLANKA_URL } from '@/config'
 
 const router = useRouter()
 const { user, isAuthenticated, logout } = useAuth()
@@ -46,6 +47,15 @@ function handleLogout() {
         </RouterLink>
 
         <template v-if="isAuthenticated">
+          <a
+            :href="PLANKA_URL"
+            target="_blank"
+            rel="noopener"
+            class="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted flex items-center gap-2"
+          >
+            <i class="fa-solid fa-table-columns text-xs"></i>
+            Planka
+          </a>
           <Button as-child class="ml-2 px-3 py-2 h-auto">
             <a href="/chat" rel="noopener" class="flex items-center gap-2 text-sm">
               <i class="fa-solid fa-robot"></i>

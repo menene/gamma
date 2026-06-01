@@ -7,3 +7,7 @@ export const API_BASE = isLocal
 export const LAB_URL = isLocal
   ? 'http://localhost:8888'
   : 'https://notebooks.cookielab.cc'
+
+export const PLANKA_URL = isLocal
+  ? 'http://localhost:3000'
+  : 'https://planka.cookielab.cc'
