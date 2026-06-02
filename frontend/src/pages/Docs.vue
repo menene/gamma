@@ -35,7 +35,7 @@ const derSilver = `erDiagram
         TEXT article_group
         TEXT unit_of_measure
         TEXT manufacturer_info
-        TEXT standard_name
+        TEXT class_id FK
         TEXT short_text
         TIMESTAMPTZ updated_at
     }
@@ -106,6 +106,7 @@ const derSilver = `erDiagram
     material_types ||--o{ requests : "material_type_id"
     material_types ||--o{ dataset_train : "material_type_id"
     material_types ||--o{ dataset_test : "material_type_id"
+    classes ||--o{ materials : "class_id"
     unspsc ||--o{ classes : "unspsc_id"
     conversations ||--o{ requests : "conversation_id"
 `

@@ -41,7 +41,7 @@ MATERIAL_COLS = {
     "Grupo de artículos": "article_group",
     "Unidad medida base": "unit_of_measure",
     "Info fabr./insp.": "manufacturer_info",
-    "Denom.estándar": "standard_name",
+    "Denom.estándar": "class_id",
     "Texto breve de material": "short_text",
 }
 
@@ -66,6 +66,13 @@ def _to_str(val) -> str | None:
         return None
     if isinstance(val, float) and val == int(val):
         return str(int(val))
+    return str(val).strip()
+
+
+def _to_raw_str(val) -> str | None:
+    """Convert to string preserving leading zeros (no int coercion)."""
+    if val is None or pd.isna(val):
+        return None
     return str(val).strip()
 
 
@@ -112,9 +119,13 @@ def upload_materials(file: UploadFile = File(...), db: Session = Depends(get_db)
             raise HTTPException(400, f"Columnas faltantes: {missing}")
 
         keep = [c for c in ["id", "material_type_id", "article_group", "unit_of_measure",
-                            "manufacturer_info", "standard_name", "short_text"] if c in df.columns]
+                            "manufacturer_info", "class_id", "short_text"] if c in df.columns]
         df = df[keep].copy()
         df["id"] = df["id"].apply(_to_str)
+        if "manufacturer_info" in df.columns:
+            df["manufacturer_info"] = df["manufacturer_info"].apply(_to_raw_str)
+        if "class_id" in df.columns:
+            df["class_id"] = df["class_id"].apply(_to_raw_str)
         df["deletion_flag"] = False
         df = df.dropna(subset=["id", "short_text"])
 
@@ -129,7 +140,7 @@ def upload_materials(file: UploadFile = File(...), db: Session = Depends(get_db)
                      "article_group = EXCLUDED.article_group, "
                      "unit_of_measure = EXCLUDED.unit_of_measure, "
                      "manufacturer_info = EXCLUDED.manufacturer_info, "
-                     "standard_name = EXCLUDED.standard_name, "
+                     "class_id = EXCLUDED.class_id, "
                      "short_text = EXCLUDED.short_text, "
                      "deletion_flag = EXCLUDED.deletion_flag, "
                      "updated_at = now()"),
@@ -176,7 +187,7 @@ def upload_classes(file: UploadFile = File(...), db: Session = Depends(get_db)):
         keep = [c for c in ["code", "name", "article_group", "sector", "material_type_id", "unspsc_id"]
                 if c in df.columns]
         df = df[keep].copy()
-        df["code"] = df["code"].apply(_to_str)
+        df["code"] = df["code"].apply(_to_raw_str)
 
         for col in ["article_group", "sector", "material_type_id", "unspsc_id"]:
             if col in df.columns:

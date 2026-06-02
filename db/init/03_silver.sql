@@ -2,22 +2,6 @@
 -- SILVER: datos operacionales y de referencia
 -- ============================================================
 
--- Maestro normalizado (base para fuzzy search de duplicados)
-CREATE TABLE silver.materials (
-    id                  TEXT PRIMARY KEY,
-    deletion_flag       BOOLEAN NOT NULL DEFAULT false,
-    material_type_id    TEXT NOT NULL,
-    article_group       TEXT,
-    unit_of_measure     TEXT,
-    manufacturer_info   TEXT,
-    standard_name       TEXT,
-    short_text          TEXT NOT NULL,
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX idx_materials_short_text_trgm ON silver.materials
-    USING gin (short_text gin_trgm_ops);
-
 -- Catálogo de clases/denominaciones
 CREATE TABLE silver.classes (
     id                  BIGSERIAL PRIMARY KEY,
@@ -28,6 +12,22 @@ CREATE TABLE silver.classes (
     material_type_id    TEXT,
     unspsc_id           TEXT
 );
+
+-- Maestro normalizado (base para fuzzy search de duplicados)
+CREATE TABLE silver.materials (
+    id                  TEXT PRIMARY KEY,
+    deletion_flag       BOOLEAN NOT NULL DEFAULT false,
+    material_type_id    TEXT NOT NULL,
+    article_group       TEXT,
+    unit_of_measure     TEXT,
+    manufacturer_info   TEXT,
+    class_id            TEXT REFERENCES silver.classes(code),
+    short_text          TEXT NOT NULL,
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_materials_short_text_trgm ON silver.materials
+    USING gin (short_text gin_trgm_ops);
 
 -- Clasificador UNSPSC de Naciones Unidas
 CREATE TABLE silver.unspsc (
