@@ -24,7 +24,12 @@ export function authHeaders(): Record<string, string> {
 export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
   const headers = new Headers(options.headers)
   if (token.value) headers.set('Authorization', `Bearer ${token.value}`)
-  return fetch(url, { ...options, headers })
+  const res = await fetch(url, { ...options, headers })
+  if (res.status === 401 || res.status === 403) {
+    logout()
+    window.location.href = '/login'
+  }
+  return res
 }
 
 export async function login(email: string, password: string): Promise<{ ok: boolean; error?: string }> {
@@ -49,23 +54,18 @@ export async function login(email: string, password: string): Promise<{ ok: bool
   }
 }
 
-export async function register(email: string, name: string, password: string): Promise<{ ok: boolean; error?: string }> {
+export async function register(email: string, name: string, password: string): Promise<{ ok: boolean; error?: string; message?: string }> {
   try {
     const res = await fetch(`${API_BASE}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, name, password }),
     })
+    const data = await res.json().catch(() => ({ detail: 'Error de conexion' }))
     if (!res.ok) {
-      const data = await res.json().catch(() => ({ detail: 'Error de conexion' }))
       return { ok: false, error: data.detail }
     }
-    const data = await res.json()
-    token.value = data.token
-    user.value = data.user
-    localStorage.setItem('gamma_token', data.token)
-    localStorage.setItem('gamma_user', JSON.stringify(data.user))
-    return { ok: true }
+    return { ok: true, message: data.message }
   } catch {
     return { ok: false, error: 'Error de conexion con el servidor' }
   }

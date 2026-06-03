@@ -28,35 +28,43 @@ const derBronze = `erDiagram
 `
 
 const derSilver = `erDiagram
-    materials {
-        TEXT id PK
-        BOOLEAN deletion_flag
-        TEXT material_type_id FK
-        TEXT article_group
-        TEXT unit_of_measure
-        TEXT manufacturer_info
-        TEXT class_id FK
-        TEXT short_text
-        TIMESTAMPTZ updated_at
-    }
-
-    classes {
-        TEXT id PK
-        TEXT name
-        TEXT article_group
-        TEXT sector
-        TEXT material_type_id FK
-        TEXT unspsc_id FK
+    material_types {
+        BIGSERIAL id PK
+        TEXT code UK
+        TEXT description
     }
 
     unspsc {
-        TEXT id PK
+        BIGSERIAL id PK
+        TEXT code UK
         TEXT description
     }
 
-    material_types {
-        TEXT id PK
+    classes {
+        BIGSERIAL id PK
+        TEXT code UK
+        TEXT name
+        BIGINT material_type_id FK
+        BIGINT unspsc_id FK
+        TEXT article_group
+        TEXT sector
+    }
+
+    units_of_measure {
+        BIGSERIAL id PK
+        TEXT code UK
         TEXT description
+    }
+
+    materials {
+        BIGSERIAL id PK
+        TEXT code UK
+        BIGINT class_id FK
+        BIGINT unit_of_measure_id FK
+        TEXT short_text
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+        BOOLEAN deletion_flag
     }
 
     conversations {
@@ -70,11 +78,11 @@ const derSilver = `erDiagram
     requests {
         BIGSERIAL id PK
         UUID conversation_id FK
+        BIGINT material_type_id FK
         TEXT name
         TEXT long_text
         JSONB specifications
         TEXT short_text
-        TEXT material_type_id FK
         TEXT article_group
         TEXT category
         NUMERIC confidence
@@ -91,23 +99,23 @@ const derSilver = `erDiagram
 
     dataset_train {
         TEXT short_text
-        TEXT material_type_id FK
+        BIGINT material_type_id FK
         TEXT article_group
     }
 
     dataset_test {
         TEXT short_text
-        TEXT material_type_id FK
+        BIGINT material_type_id FK
         TEXT article_group
     }
 
-    material_types ||--o{ materials : "material_type_id"
     material_types ||--o{ classes : "material_type_id"
     material_types ||--o{ requests : "material_type_id"
     material_types ||--o{ dataset_train : "material_type_id"
     material_types ||--o{ dataset_test : "material_type_id"
-    classes ||--o{ materials : "class_id"
     unspsc ||--o{ classes : "unspsc_id"
+    classes ||--o{ materials : "class_id"
+    units_of_measure ||--o{ materials : "unit_of_measure_id"
     conversations ||--o{ requests : "conversation_id"
 `
 
@@ -392,6 +400,218 @@ const derGold = `erDiagram
                   del proceso manual (parametro configurable), se calcula el ahorro en horas y su equivalente monetario.
                   Esto permite justificar la inversion en la herramienta con datos concretos.
                 </p>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <!-- Modelo de clasificacion -->
+        <AccordionItem value="modelo">
+          <AccordionTrigger class="text-lg font-semibold">Modelo de clasificacion</AccordionTrigger>
+          <AccordionContent>
+            <div class="space-y-6 text-sm text-muted-foreground">
+              <p>
+                El sistema predice la <strong class="text-foreground">clase de material</strong> (denominacion estandar)
+                a partir del <code>short_text</code> de SAP. El modelo fue entrenado con <strong class="text-foreground">39,571 materiales</strong>
+                distribuidos en <strong class="text-foreground">1,234 clases</strong>, extraidos de 13 archivos Excel de distintos
+                tipos de material (ZCON, ZQUI, ZRPI, ZSUM, etc.).
+              </p>
+
+              <Separator />
+
+              <div>
+                <h4 class="text-foreground font-medium mb-2">Pipeline</h4>
+                <ol class="list-decimal list-inside space-y-1">
+                  <li><strong class="text-foreground">Preprocesamiento:</strong> uppercase, eliminar acentos, reemplazar delimitadores (<code>;:,/</code>) por espacios, conservar solo alfanumericos.</li>
+                  <li><strong class="text-foreground">Vectorizacion TF-IDF:</strong> convierte el texto limpio en un vector sparse de 50,000 dimensiones usando character n-grams (2-5 caracteres).</li>
+                  <li><strong class="text-foreground">Clasificacion:</strong> un modelo LinearSVC calibrado mapea el vector a una de las 1,234 clases y devuelve probabilidades de confianza.</li>
+                </ol>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h4 class="text-foreground font-medium mb-3">Modelos evaluados</h4>
+                <div class="space-y-4">
+
+                  <div class="p-4 rounded-md border bg-card">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="text-foreground font-medium">1. Logistic Regression + Character TF-IDF</span>
+                    </div>
+                    <p class="mb-2">
+                      Regresion logistica multinomial (<code>solver='saga'</code>, <code>C=5.0</code>) sobre vectores TF-IDF
+                      de character n-grams (2-5, 50k features). Modela la probabilidad de cada clase como una funcion softmax
+                      sobre combinaciones lineales de los features. Produce probabilidades calibradas de forma nativa y es
+                      interpretable, pero la convergencia fue extremadamente lenta — <strong class="text-foreground">1,071 segundos</strong>
+                      (17 minutos) con 50k character features.
+                    </p>
+                  </div>
+
+                  <div class="p-4 rounded-md border bg-card">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="text-foreground font-medium">2. Logistic Regression + Word TF-IDF</span>
+                    </div>
+                    <p class="mb-2">
+                      Misma regresion logistica pero tokenizando por <strong class="text-foreground">palabras completas</strong>
+                      (unigramas y bigramas, 30k features). Captura terminos exactos como "CABLE ELECTRICO", pero pierde la
+                      capacidad de reconocer subpalabras. Esto lo hace vulnerable a las abreviaciones y typos comunes en textos
+                      SAP. Rapido de entrenar (29s) y con buenas probabilidades nativas.
+                    </p>
+                  </div>
+
+                  <div class="p-4 rounded-md border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="text-foreground font-medium">3. LinearSVC + Character TF-IDF</span>
+                      <Badge class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-100">Ganador</Badge>
+                    </div>
+                    <p class="mb-2">
+                      Support Vector Machine lineal (<code>LinearSVC</code>, <code>C=1.0</code>) envuelto en
+                      <code>CalibratedClassifierCV</code> para obtener probabilidades. Encuentra hiperplanos que maximizan
+                      el margen de separacion entre clases en un espacio de 50k dimensiones de character n-grams. A diferencia
+                      de la regresion logistica que optimiza log-likelihood, SVM optimiza directamente el margen de decision,
+                      lo que suele generalizar mejor.
+                    </p>
+                    <p class="mb-2">
+                      El uso de <strong class="text-foreground">character n-grams</strong> (2-5 caracteres) es clave para textos SAP:
+                      captura subpalabras ("TORNI", "ORNIL" de "TORNILLO"), es robusto a abreviaciones ("ELECTR" matchea tanto
+                      "ELECTRICO" como "ELECTRONICO"), tolerante a typos, y <code>char_wb</code> respeta limites de palabra
+                      evitando n-grams espurios.
+                    </p>
+                    <p>
+                      Mejor accuracy y F1 de todos los modelos con un tiempo de entrenamiento razonable (63s). Las probabilidades
+                      son aproximadas (calibradas post-hoc via Platt scaling), no nativas.
+                    </p>
+                  </div>
+
+                  <div class="p-4 rounded-md border bg-card">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="text-foreground font-medium">4. Random Forest + Word TF-IDF</span>
+                    </div>
+                    <p class="mb-2">
+                      Ensemble de 300 arboles de decision, cada uno entrenado sobre un subconjunto aleatorio de datos y features.
+                      La prediccion es el voto mayoritario. Cada arbol aprende reglas como "si TF-IDF de TORNILLO &gt; 0.3 y
+                      TF-IDF de HEXAGONAL &gt; 0.1, entonces clase X". Robusto a overfitting y no requiere calibracion para
+                      probabilidades. Buen F1 macro pero no captura patrones sub-palabra y es mas lento en inferencia (300 arboles).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h4 class="text-foreground font-medium mb-3">Comparacion de metricas</h4>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-xs">
+                    <thead>
+                      <tr class="border-b">
+                        <th class="text-left py-2 pr-3 text-foreground">Modelo</th>
+                        <th class="text-right py-2 px-2 text-foreground">Accuracy</th>
+                        <th class="text-right py-2 px-2 text-foreground">F1 Macro</th>
+                        <th class="text-right py-2 px-2 text-foreground">F1 Weighted</th>
+                        <th class="text-right py-2 px-2 text-foreground">Precision</th>
+                        <th class="text-right py-2 px-2 text-foreground">Recall</th>
+                        <th class="text-right py-2 px-2 text-foreground">Top-3 Acc</th>
+                        <th class="text-right py-2 pl-2 text-foreground">Tiempo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b">
+                        <td class="py-2 pr-3">LogReg + CharTFIDF</td>
+                        <td class="text-right py-2 px-2">0.8293</td>
+                        <td class="text-right py-2 px-2">0.6713</td>
+                        <td class="text-right py-2 px-2">0.8126</td>
+                        <td class="text-right py-2 px-2">0.8158</td>
+                        <td class="text-right py-2 px-2">0.8293</td>
+                        <td class="text-right py-2 px-2">0.9359</td>
+                        <td class="text-right py-2 pl-2">1071.2s</td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-2 pr-3">LogReg + WordTFIDF</td>
+                        <td class="text-right py-2 px-2">0.8291</td>
+                        <td class="text-right py-2 px-2">0.6949</td>
+                        <td class="text-right py-2 px-2">0.8178</td>
+                        <td class="text-right py-2 px-2">0.8265</td>
+                        <td class="text-right py-2 px-2">0.8291</td>
+                        <td class="text-right py-2 px-2">0.9275</td>
+                        <td class="text-right py-2 pl-2">29.1s</td>
+                      </tr>
+                      <tr class="border-b bg-green-50 dark:bg-green-950 font-medium text-foreground">
+                        <td class="py-2 pr-3">LinearSVC + CharTFIDF</td>
+                        <td class="text-right py-2 px-2">0.8491</td>
+                        <td class="text-right py-2 px-2">0.7523</td>
+                        <td class="text-right py-2 px-2">0.8380</td>
+                        <td class="text-right py-2 px-2">0.8419</td>
+                        <td class="text-right py-2 px-2">0.8491</td>
+                        <td class="text-right py-2 px-2">0.9404</td>
+                        <td class="text-right py-2 pl-2">62.9s</td>
+                      </tr>
+                      <tr>
+                        <td class="py-2 pr-3">RandomForest + WordTFIDF</td>
+                        <td class="text-right py-2 px-2">0.8334</td>
+                        <td class="text-right py-2 px-2">0.7360</td>
+                        <td class="text-right py-2 px-2">0.8254</td>
+                        <td class="text-right py-2 px-2">0.8354</td>
+                        <td class="text-right py-2 px-2">0.8334</td>
+                        <td class="text-right py-2 px-2">0.9263</td>
+                        <td class="text-right py-2 pl-2">46.7s</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h4 class="text-foreground font-medium mb-2">Por que LinearSVC + CharTFIDF</h4>
+                <ul class="space-y-2 list-disc list-inside">
+                  <li>
+                    <strong class="text-foreground">Mejor en todas las metricas:</strong> Accuracy (84.9%), F1 Weighted (83.8%),
+                    F1 Macro (75.2%) y Top-3 Accuracy (94.0%) — superior en cada dimension.
+                  </li>
+                  <li>
+                    <strong class="text-foreground">F1 Macro significativamente mayor:</strong> 0.7523 vs 0.6713-0.7360 del resto.
+                    Mejor rendimiento en clases minoritarias, critico con 1,234 clases desbalanceadas.
+                  </li>
+                  <li>
+                    <strong class="text-foreground">Top-3 Accuracy del 94%:</strong> en el 94% de los casos, la clase correcta
+                    esta entre las 3 primeras predicciones. Permite flujos donde el usuario selecciona de una lista corta.
+                  </li>
+                  <li>
+                    <strong class="text-foreground">Tiempo razonable:</strong> 63 segundos de entrenamiento vs 17 minutos de
+                    LogReg+Char.
+                  </li>
+                  <li>
+                    <strong class="text-foreground">Character n-grams:</strong> la ventaja sobre modelos word-level confirma que
+                    los textos SAP se benefician de analisis sub-palabra por sus abreviaciones y formatos inconsistentes.
+                  </li>
+                </ul>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h4 class="text-foreground font-medium mb-2">Analisis de confianza</h4>
+                <p class="mb-2">
+                  El modelo permite definir un <strong class="text-foreground">umbral de confianza</strong> para separar predicciones
+                  automaticas de las que requieren revision humana. Con umbral de 0.8, la accuracy sube a ~95% pero la cobertura
+                  baja a ~60% de materiales. Esto habilita un flujo de <strong class="text-foreground">auto-aprobacion</strong> para
+                  predicciones de alta confianza y <strong class="text-foreground">revision humana</strong> para las inciertas.
+                </p>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h4 class="text-foreground font-medium mb-2">Errores comunes</h4>
+                <p class="mb-2">Los errores del modelo reflejan ambiguedades reales en la clasificacion SAP:</p>
+                <ul class="space-y-1 list-disc list-inside">
+                  <li><strong class="text-foreground">Clases casi identicas:</strong> CONTACTOR:ELECT. vs CONTACTO:ELECT.</li>
+                  <li><strong class="text-foreground">Subclase vs clase general:</strong> PINTURA:SPRAY vs PINTURA</li>
+                  <li><strong class="text-foreground">Sinonimos:</strong> GRIFO predicho como LLAVE</li>
+                  <li><strong class="text-foreground">Textos ambiguos:</strong> "JUEGO BRIDAS" (REPUESTO o BRIDA?)</li>
+                </ul>
               </div>
             </div>
           </AccordionContent>

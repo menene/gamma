@@ -1,5 +1,4 @@
 import os
-from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
@@ -12,7 +11,6 @@ from app.db import get_db
 
 JWT_SECRET = os.environ.get("JWT_SECRET", "change-me")
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", "24"))
 
 security = HTTPBearer()
 
@@ -29,16 +27,13 @@ def create_token(user_id: int, email: str) -> str:
     payload = {
         "sub": user_id,
         "email": email,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
 def decode_token(token: str) -> dict:
     try:
-        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expirado")
+        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM], options={"verify_exp": False})
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido")
 

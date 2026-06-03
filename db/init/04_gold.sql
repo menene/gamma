@@ -52,10 +52,11 @@ GROUP BY 1, p.manual_time, p.rate;
 -- Vista: resumen del maestro por tipo de material
 CREATE OR REPLACE VIEW gold.materials_by_type AS
 SELECT
-    m.material_type_id,
+    t.code              AS material_type_code,
     t.description       AS type_description,
     count(*)            AS total_materials
 FROM silver.materials m
-LEFT JOIN silver.material_types t ON t.id = m.material_type_id
-GROUP BY m.material_type_id, t.description
+LEFT JOIN silver.classes c ON c.id = m.class_id
+LEFT JOIN silver.material_types t ON t.id = c.material_type_id
+GROUP BY t.code, t.description
 ORDER BY total_materials DESC;

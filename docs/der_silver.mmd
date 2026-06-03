@@ -3,35 +3,43 @@ title: SILVER — Datos operacionales y de referencia
 ---
 erDiagram
 
-    materials {
-        TEXT id PK
-        BOOLEAN deletion_flag
-        TEXT material_type_id FK
-        TEXT article_group
-        TEXT unit_of_measure
-        TEXT manufacturer_info
-        TEXT class_id FK
-        TEXT short_text "gin index pg_trgm"
-        TIMESTAMPTZ updated_at
-    }
-
-    classes {
-        TEXT id PK
-        TEXT name
-        TEXT article_group
-        TEXT sector
-        TEXT material_type_id FK
-        TEXT unspsc_id FK
+    material_types {
+        BIGSERIAL id PK
+        TEXT code UK
+        TEXT description
     }
 
     unspsc {
-        TEXT id PK
+        BIGSERIAL id PK
+        TEXT code UK
         TEXT description
     }
 
-    material_types {
-        TEXT id PK
+    classes {
+        BIGSERIAL id PK
+        TEXT code UK
+        TEXT name
+        BIGINT material_type_id FK
+        BIGINT unspsc_id FK
+        TEXT article_group
+        TEXT sector
+    }
+
+    units_of_measure {
+        BIGSERIAL id PK
+        TEXT code UK
         TEXT description
+    }
+
+    materials {
+        BIGSERIAL id PK
+        TEXT code UK
+        BIGINT class_id FK
+        BIGINT unit_of_measure_id FK
+        TEXT short_text "gin index pg_trgm"
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+        BOOLEAN deletion_flag
     }
 
     conversations {
@@ -45,11 +53,11 @@ erDiagram
     requests {
         BIGSERIAL id PK
         UUID conversation_id FK
+        BIGINT material_type_id FK
         TEXT name
         TEXT long_text
         JSONB specifications
         TEXT short_text
-        TEXT material_type_id FK
         TEXT article_group
         TEXT category
         NUMERIC confidence
@@ -66,22 +74,22 @@ erDiagram
 
     dataset_train {
         TEXT short_text
-        TEXT material_type_id FK
+        BIGINT material_type_id FK
         TEXT article_group
     }
 
     dataset_test {
         TEXT short_text
-        TEXT material_type_id FK
+        BIGINT material_type_id FK
         TEXT article_group
     }
 
     %% Relaciones
-    material_types ||--o{ materials : "material_type_id"
     material_types ||--o{ classes : "material_type_id"
     material_types ||--o{ requests : "material_type_id"
     material_types ||--o{ dataset_train : "material_type_id"
     material_types ||--o{ dataset_test : "material_type_id"
-    classes ||--o{ materials : "class_id"
     unspsc ||--o{ classes : "unspsc_id"
+    classes ||--o{ materials : "class_id"
+    units_of_measure ||--o{ materials : "unit_of_measure_id"
     conversations ||--o{ requests : "conversation_id"

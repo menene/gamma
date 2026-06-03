@@ -25,6 +25,10 @@ class AuthResponse(BaseModel):
     user: dict
 
 
+class MessageResponse(BaseModel):
+    message: str
+
+
 class UserResponse(BaseModel):
     id: int
     email: str
@@ -48,9 +52,8 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     return {"token": token, "user": {"id": row.id, "email": row.email, "name": row.name}}
 
 
-@router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 def register(body: RegisterRequest, db: Session = Depends(get_db)):
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Registro deshabilitado")
     existing = db.execute(
         text("SELECT id FROM public.users WHERE email = :email"),
         {"email": body.email},
@@ -61,17 +64,15 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
 
     result = db.execute(
         text("""
-            INSERT INTO public.users (email, name, password_hash)
-            VALUES (:email, :name, :password_hash)
+            INSERT INTO public.users (email, name, password_hash, is_active)
+            VALUES (:email, :name, :password_hash, false)
             RETURNING id
         """),
         {"email": body.email, "name": body.name, "password_hash": hash_password(body.password)},
     )
     db.commit()
-    user_id = result.fetchone().id
 
-    token = create_token(user_id, body.email)
-    return {"token": token, "user": {"id": user_id, "email": body.email, "name": body.name}}
+    return {"message": "Cuenta creada. Un administrador debe activar tu cuenta antes de poder iniciar sesion."}
 
 
 @router.get("/me", response_model=UserResponse)

@@ -163,14 +163,14 @@ onMounted(() => {
 
 const sections = [
   {
-    key: 'materials' as const,
-    title: 'Maestro de Materiales',
-    icon: 'fa-solid fa-cubes',
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10',
-    description: 'Carga los archivos del maestro SAP exportados por tipo de material (ZCON, DIEN, ZEQU, etc.). Podes subir varios a la vez.',
-    table: 'silver.materials' as const,
-    columns: ['Material', 'Tipo material', 'Grupo de articulos', 'Unidad medida base', 'Info fabr./insp.', 'Denom.estandar', 'Texto breve de material'],
+    key: 'unspsc' as const,
+    title: 'UNSPSC (Naciones Unidas)',
+    icon: 'fa-solid fa-globe',
+    color: 'text-green-500',
+    bgColor: 'bg-green-500/10',
+    description: 'Clasificador UNSPSC con segmentos, familias, clases y productos. Debe cargarse primero.',
+    table: 'silver.unspsc' as const,
+    columns: ['Codigo Producto', 'Nombre Producto'],
   },
   {
     key: 'classes' as const,
@@ -178,19 +178,19 @@ const sections = [
     icon: 'fa-solid fa-tags',
     color: 'text-amber-500',
     bgColor: 'bg-amber-500/10',
-    description: 'Catalogo de clases de material con denominaciones y grupos de articulos.',
+    description: 'Catalogo de clases de material. Requiere UNSPSC cargado.',
     table: 'silver.classes' as const,
     columns: ['Codigo', 'Denominacion', 'Grupo de Articulos', 'Sector', 'Tipo de Material', 'UNSPSC'],
   },
   {
-    key: 'unspsc' as const,
-    title: 'UNSPSC (Naciones Unidas)',
-    icon: 'fa-solid fa-globe',
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
-    description: 'Clasificador UNSPSC con segmentos, familias, clases y productos.',
-    table: 'silver.unspsc' as const,
-    columns: ['Codigo Producto', 'Nombre Producto'],
+    key: 'materials' as const,
+    title: 'Maestro de Materiales',
+    icon: 'fa-solid fa-cubes',
+    color: 'text-blue-500',
+    bgColor: 'bg-blue-500/10',
+    description: 'Carga los archivos del maestro SAP. Requiere clases cargadas.',
+    table: 'silver.materials' as const,
+    columns: ['Material', 'Unidad medida base', 'Denom.estandar', 'Texto breve de material'],
   },
 ]
 </script>
@@ -294,7 +294,7 @@ const sections = [
               @click="clearCompleted(s.key)"
             >
               <i class="fa-solid fa-broom text-[10px]"></i>
-              Limpiar
+              Limpiar cola
             </Button>
           </div>
 

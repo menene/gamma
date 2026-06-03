@@ -97,7 +97,7 @@ Reglas estrictas:
 
 
 def build_system_prompt(material_types: list[dict]) -> str:
-    types_str = "\n".join(f"- {t['id']}: {t['description']}" for t in material_types)
+    types_str = "\n".join(f"- {t['code']}: {t['description']}" for t in material_types)
     return SYSTEM_PROMPT.format(material_types=types_str)
 
 
