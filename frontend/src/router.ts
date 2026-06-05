@@ -7,13 +7,10 @@ const router = createRouter({
     { path: '/login', component: () => import('@/pages/Login.vue'), meta: { public: true } },
     { path: '/', component: () => import('@/pages/Presentacion.vue'), meta: { public: true } },
     { path: '/arquitectura', component: () => import('@/pages/Arquitectura.vue'), meta: { public: true } },
-    { path: '/laboratorio', component: () => import('@/pages/Laboratorio.vue') },
-    { path: '/swagger', component: () => import('@/pages/Api.vue') },
-    { path: '/etl', component: () => import('@/pages/Etl.vue') },
-    { path: '/docs', component: () => import('@/pages/Docs.vue') },
+    { path: '/datos', component: () => import('@/pages/Datos.vue') },
+    { path: '/referencia', component: () => import('@/pages/Referencia.vue') },
+    { path: '/lab', component: () => import('@/pages/Lab.vue') },
     { path: '/chat', component: () => import('@/pages/Chat.vue') },
-    { path: '/export', component: () => import('@/pages/Export.vue') },
-    { path: '/logs', component: () => import('@/pages/Logs.vue') },
   ],
 })
 

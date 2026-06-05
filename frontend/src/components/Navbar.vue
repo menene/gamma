@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/composables/useAuth'
-import { PLANKA_URL } from '@/config'
 
 const router = useRouter()
 const { user, isAuthenticated, logout } = useAuth()
@@ -14,12 +13,9 @@ const publicLinks = [
 ]
 
 const protectedLinks = [
-  { label: 'Laboratorio', to: '/laboratorio', icon: 'fa-solid fa-flask' },
-  { label: 'ETL', to: '/etl', icon: 'fa-solid fa-file-import' },
-  { label: 'API', to: '/swagger', icon: 'fa-solid fa-plug' },
-  { label: 'Export', to: '/export', icon: 'fa-solid fa-file-excel' },
-  { label: 'Docs', to: '/docs', icon: 'fa-solid fa-book' },
-  { label: 'Logs', to: '/logs', icon: 'fa-solid fa-list-check' },
+  { label: 'Datos', to: '/datos', icon: 'fa-solid fa-database' },
+  { label: 'Referencia', to: '/referencia', icon: 'fa-solid fa-book' },
+  { label: 'Lab', to: '/lab', icon: 'fa-solid fa-flask' },
 ]
 
 const links = computed(() =>
@@ -49,15 +45,6 @@ function handleLogout() {
         </RouterLink>
 
         <template v-if="isAuthenticated">
-          <a
-            :href="PLANKA_URL"
-            target="_blank"
-            rel="noopener"
-            class="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted flex items-center gap-2"
-          >
-            <i class="fa-solid fa-table-columns text-xs"></i>
-            Planka
-          </a>
           <Button as-child class="ml-2 px-3 py-2 h-auto">
             <a href="/chat" rel="noopener" class="flex items-center gap-2 text-sm">
               <i class="fa-solid fa-robot"></i>
