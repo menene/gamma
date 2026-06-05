@@ -17,7 +17,9 @@ const protectedLinks = [
   { label: 'Laboratorio', to: '/laboratorio', icon: 'fa-solid fa-flask' },
   { label: 'ETL', to: '/etl', icon: 'fa-solid fa-file-import' },
   { label: 'API', to: '/swagger', icon: 'fa-solid fa-plug' },
+  { label: 'Export', to: '/export', icon: 'fa-solid fa-file-excel' },
   { label: 'Docs', to: '/docs', icon: 'fa-solid fa-book' },
+  { label: 'Logs', to: '/logs', icon: 'fa-solid fa-list-check' },
 ]
 
 const links = computed(() =>

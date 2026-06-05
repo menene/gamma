@@ -494,6 +494,60 @@ const derGold = `erDiagram
                       probabilidades. Buen F1 macro pero no captura patrones sub-palabra y es mas lento en inferencia (300 arboles).
                     </p>
                   </div>
+
+                  <Separator />
+                  <p class="text-xs text-muted-foreground italic">Los siguientes 3 modelos fueron evaluados en una segunda ronda de experimentacion (notebook 03) contra el baseline ganador.</p>
+
+                  <div class="p-4 rounded-md border bg-card">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="text-foreground font-medium">5. XGBoost + Character TF-IDF</span>
+                    </div>
+                    <p class="mb-2">
+                      Gradient boosting (<code>XGBClassifier</code>, 500 arboles, <code>max_depth=6</code>, <code>lr=0.1</code>)
+                      sobre los mismos vectores CharTFIDF de 50k features. XGBoost construye arboles secuencialmente, donde cada
+                      arbol nuevo corrige los errores del anterior. Usa <code>multi:softprob</code> para clasificacion multiclase
+                      y produce probabilidades nativas. A pesar de ser el metodo dominante en datos tabulares, no supero al LinearSVC
+                      en este problema — los vectores TF-IDF sparse de alta dimensionalidad favorecen a modelos lineales.
+                      Extremadamente lento: <strong class="text-foreground">11,025 segundos</strong> (~3 horas) por la combinacion
+                      de 500 arboles x 1,234 clases.
+                    </p>
+                  </div>
+
+                  <div class="p-4 rounded-md border bg-card">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="text-foreground font-medium">6. fastText</span>
+                    </div>
+                    <p class="mb-2">
+                      Modelo de Facebook Research que aprende embeddings de subpalabras de forma nativa — no necesita TF-IDF externo.
+                      Cada palabra se descompone en character n-grams (2-5) y el embedding final es la suma de sus componentes.
+                      Configurado con <code>epoch=50</code>, <code>lr=0.5</code>, <code>dim=100</code>, <code>wordNgrams=2</code>
+                      y loss <code>softmax</code>. Extremadamente rapido de entrenar (<strong class="text-foreground">43 segundos</strong>),
+                      lo que lo hace ideal para iteracion rapida. Rendimiento competitivo (accuracy 80.8%) pero por debajo del
+                      LinearSVC, probablemente porque los embeddings de 100 dimensiones comprimen demasiado la informacion que
+                      el espacio sparse de 50k dimensiones preserva.
+                    </p>
+                  </div>
+
+                  <div class="p-4 rounded-md border bg-card">
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class="text-foreground font-medium">7. Transformer fine-tuned (Multilingual-MiniLM)</span>
+                      <Badge class="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 hover:bg-red-100">Fallido</Badge>
+                    </div>
+                    <p class="mb-2">
+                      Transformer pre-entrenado de Microsoft (<code>Multilingual-MiniLM-L12-H384</code>, 118M parametros, 12 capas,
+                      384 dimensiones hidden) fine-tuneado con 5 epochs, <code>batch_size=64</code>, <code>lr=2e-5</code> y
+                      <code>max_len=64</code> tokens. A pesar de ser el modelo mas sofisticado, obtuvo un
+                      <strong class="text-foreground">accuracy de solo 3.95%</strong> — esencialmente aleatorio para 1,234 clases.
+                    </p>
+                    <p class="mb-2">
+                      El fracaso se explica por la combinacion de <strong class="text-foreground">muchas clases (1,234) con pocos
+                      ejemplos por clase</strong> (mediana de 9). Fine-tunear un transformer requiere cientos de ejemplos por clase
+                      para ajustar los 118M parametros. Con solo 5 epochs y ~25 ejemplos promedio por clase en train, el modelo
+                      no logro aprender patrones discriminativos — la loss apenas bajo de 6.9 a 5.96 y el train accuracy nunca
+                      supero 3.6%. Los textos SAP cortos (5-8 tokens promedio) tambien subaprovechan la capacidad del transformer
+                      de modelar dependencias contextuales largas.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -546,7 +600,7 @@ const derGold = `erDiagram
                         <td class="text-right py-2 px-2">0.9404</td>
                         <td class="text-right py-2 pl-2">62.9s</td>
                       </tr>
-                      <tr>
+                      <tr class="border-b">
                         <td class="py-2 pr-3">RandomForest + WordTFIDF</td>
                         <td class="text-right py-2 px-2">0.8334</td>
                         <td class="text-right py-2 px-2">0.7360</td>
@@ -555,6 +609,36 @@ const derGold = `erDiagram
                         <td class="text-right py-2 px-2">0.8334</td>
                         <td class="text-right py-2 px-2">0.9263</td>
                         <td class="text-right py-2 pl-2">46.7s</td>
+                      </tr>
+                      <tr class="border-b border-t-2 border-t-muted">
+                        <td class="py-2 pr-3">XGBoost + CharTFIDF</td>
+                        <td class="text-right py-2 px-2">0.8145</td>
+                        <td class="text-right py-2 px-2">0.6821</td>
+                        <td class="text-right py-2 px-2">0.8063</td>
+                        <td class="text-right py-2 px-2">0.8136</td>
+                        <td class="text-right py-2 px-2">0.8145</td>
+                        <td class="text-right py-2 px-2">0.9200</td>
+                        <td class="text-right py-2 pl-2">11025.2s</td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-2 pr-3">fastText</td>
+                        <td class="text-right py-2 px-2">0.8077</td>
+                        <td class="text-right py-2 px-2">0.6897</td>
+                        <td class="text-right py-2 px-2">0.8001</td>
+                        <td class="text-right py-2 px-2">0.8071</td>
+                        <td class="text-right py-2 px-2">0.8075</td>
+                        <td class="text-right py-2 px-2">0.9075</td>
+                        <td class="text-right py-2 pl-2">43.0s</td>
+                      </tr>
+                      <tr>
+                        <td class="py-2 pr-3 text-muted-foreground/60">Transformer (MiniLM)</td>
+                        <td class="text-right py-2 px-2 text-red-500">0.0395</td>
+                        <td class="text-right py-2 px-2 text-red-500">0.0003</td>
+                        <td class="text-right py-2 px-2 text-red-500">0.0050</td>
+                        <td class="text-right py-2 px-2 text-red-500">0.0032</td>
+                        <td class="text-right py-2 px-2 text-red-500">0.0395</td>
+                        <td class="text-right py-2 px-2 text-red-500">0.0714</td>
+                        <td class="text-right py-2 pl-2">1460.0s</td>
                       </tr>
                     </tbody>
                   </table>
@@ -565,10 +649,14 @@ const derGold = `erDiagram
 
               <div>
                 <h4 class="text-foreground font-medium mb-2">Por que LinearSVC + CharTFIDF</h4>
+                <p class="mb-3">
+                  Tras evaluar <strong class="text-foreground">7 modelos en 2 rondas de experimentacion</strong>, LinearSVC + CharTFIDF
+                  se confirma como el mejor modelo para este problema.
+                </p>
                 <ul class="space-y-2 list-disc list-inside">
                   <li>
                     <strong class="text-foreground">Mejor en todas las metricas:</strong> Accuracy (84.9%), F1 Weighted (83.8%),
-                    F1 Macro (75.2%) y Top-3 Accuracy (94.0%) — superior en cada dimension.
+                    F1 Macro (75.2%) y Top-3 Accuracy (94.0%) — superior en cada dimension frente a los 6 modelos restantes.
                   </li>
                   <li>
                     <strong class="text-foreground">F1 Macro significativamente mayor:</strong> 0.7523 vs 0.6713-0.7360 del resto.
@@ -579,12 +667,20 @@ const derGold = `erDiagram
                     esta entre las 3 primeras predicciones. Permite flujos donde el usuario selecciona de una lista corta.
                   </li>
                   <li>
-                    <strong class="text-foreground">Tiempo razonable:</strong> 63 segundos de entrenamiento vs 17 minutos de
-                    LogReg+Char.
+                    <strong class="text-foreground">Tiempo razonable:</strong> 63 segundos de entrenamiento. XGBoost tardo 3 horas
+                    con peores resultados; el transformer tardo 24 minutos y fallo completamente.
                   </li>
                   <li>
-                    <strong class="text-foreground">Character n-grams:</strong> la ventaja sobre modelos word-level confirma que
-                    los textos SAP se benefician de analisis sub-palabra por sus abreviaciones y formatos inconsistentes.
+                    <strong class="text-foreground">Character n-grams:</strong> la ventaja sobre modelos word-level y embeddings
+                    (fastText, transformer) confirma que los textos SAP se benefician de analisis sub-palabra en un espacio sparse
+                    de alta dimensionalidad. Los modelos que comprimen la representacion (fastText 100d, MiniLM 384d) pierden
+                    informacion discriminativa.
+                  </li>
+                  <li>
+                    <strong class="text-foreground">Modelos complejos no ayudan:</strong> ni gradient boosting (XGBoost), ni
+                    subword embeddings (fastText), ni transformers pre-entrenados superaron a un SVM lineal. Esto sugiere que
+                    el problema es fundamentalmente lineal en el espacio de character n-grams — la complejidad adicional no
+                    aporta y en el caso del transformer, perjudica por overfitting con pocos ejemplos por clase.
                   </li>
                 </ul>
               </div>
@@ -592,26 +688,217 @@ const derGold = `erDiagram
               <Separator />
 
               <div>
-                <h4 class="text-foreground font-medium mb-2">Analisis de confianza</h4>
-                <p class="mb-2">
-                  El modelo permite definir un <strong class="text-foreground">umbral de confianza</strong> para separar predicciones
-                  automaticas de las que requieren revision humana. Con umbral de 0.8, la accuracy sube a ~95% pero la cobertura
-                  baja a ~60% de materiales. Esto habilita un flujo de <strong class="text-foreground">auto-aprobacion</strong> para
-                  predicciones de alta confianza y <strong class="text-foreground">revision humana</strong> para las inciertas.
+                <h4 class="text-foreground font-medium mb-3">Matriz de confusion (Top 20 clases)</h4>
+                <p class="mb-3">
+                  Evaluada sobre el conjunto de prueba (7,915 materiales). El modelo comete
+                  <strong class="text-foreground">1,194 errores (15.09%)</strong> en total. A continuacion
+                  el desglose por clase para las 20 mas frecuentes.
+                </p>
+
+                <div>
+                  <h5 class="text-foreground font-medium text-xs mb-2">Clases con buen rendimiento (F1 &gt; 0.90)</h5>
+                  <p class="mb-3">
+                    14 de las 20 clases principales superan F1 de 0.90. Son clases con vocabulario distintivo donde el
+                    texto casi siempre contiene el nombre de la clase.
+                  </p>
+                  <div class="overflow-x-auto mb-4">
+                    <table class="w-full text-xs">
+                      <thead>
+                        <tr class="border-b">
+                          <th class="text-left py-2 pr-3 text-foreground">Clase</th>
+                          <th class="text-right py-2 px-2 text-foreground">Precision</th>
+                          <th class="text-right py-2 px-2 text-foreground">Recall</th>
+                          <th class="text-right py-2 px-2 text-foreground">F1</th>
+                          <th class="text-right py-2 pl-2 text-foreground">Soporte</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="border-b"><td class="py-1.5 pr-3">CAMISA</td><td class="text-right px-2">1.00</td><td class="text-right px-2">0.99</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">1.00</td><td class="text-right pl-2">105</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">TEE:TUBERIA</td><td class="text-right px-2">1.00</td><td class="text-right px-2">1.00</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">1.00</td><td class="text-right pl-2">59</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">CODO:TUBERIAS</td><td class="text-right px-2">0.99</td><td class="text-right px-2">1.00</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.99</td><td class="text-right pl-2">94</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">ESLINGA</td><td class="text-right px-2">1.00</td><td class="text-right px-2">0.95</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.98</td><td class="text-right pl-2">63</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">MANGUERA</td><td class="text-right px-2">1.00</td><td class="text-right px-2">0.96</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.98</td><td class="text-right pl-2">55</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">TORNILLO</td><td class="text-right px-2">0.95</td><td class="text-right px-2">0.98</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.97</td><td class="text-right pl-2">130</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">TUBO</td><td class="text-right px-2">0.97</td><td class="text-right px-2">0.96</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.97</td><td class="text-right pl-2">77</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">INSUMOS:OFICINA</td><td class="text-right px-2">1.00</td><td class="text-right px-2">0.90</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.95</td><td class="text-right pl-2">87</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">CUBO</td><td class="text-right px-2">0.95</td><td class="text-right px-2">0.94</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.94</td><td class="text-right pl-2">62</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">SENSOR</td><td class="text-right px-2">0.96</td><td class="text-right px-2">0.92</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.94</td><td class="text-right pl-2">59</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">CABLE</td><td class="text-right px-2">0.99</td><td class="text-right px-2">0.87</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.93</td><td class="text-right pl-2">118</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">CONECTOR</td><td class="text-right px-2">0.98</td><td class="text-right px-2">0.89</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.93</td><td class="text-right pl-2">72</td></tr>
+                        <tr class="border-b"><td class="py-1.5 pr-3">RODAMIENTO</td><td class="text-right px-2">0.98</td><td class="text-right px-2">0.88</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.93</td><td class="text-right pl-2">52</td></tr>
+                        <tr><td class="py-1.5 pr-3">LLAVE</td><td class="text-right px-2">0.97</td><td class="text-right px-2">0.88</td><td class="text-right px-2 text-green-600 dark:text-green-400 font-medium">0.92</td><td class="text-right pl-2">96</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div>
+                  <h5 class="text-foreground font-medium text-xs mb-2">Clases problematicas (F1 &lt; 0.70)</h5>
+                  <div class="overflow-x-auto mb-3">
+                    <table class="w-full text-xs">
+                      <thead>
+                        <tr class="border-b">
+                          <th class="text-left py-2 pr-3 text-foreground">Clase</th>
+                          <th class="text-right py-2 px-2 text-foreground">Precision</th>
+                          <th class="text-right py-2 px-2 text-foreground">Recall</th>
+                          <th class="text-right py-2 px-2 text-foreground">F1</th>
+                          <th class="text-right py-2 px-2 text-foreground">Soporte</th>
+                          <th class="text-left py-2 pl-3 text-foreground">Causa</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="border-b">
+                          <td class="py-1.5 pr-3">BUJE:ELECTRICO</td>
+                          <td class="text-right px-2 text-red-600 dark:text-red-400 font-medium">0.25</td>
+                          <td class="text-right px-2 text-red-600 dark:text-red-400 font-medium">0.02</td>
+                          <td class="text-right px-2 text-red-600 dark:text-red-400 font-medium">0.04</td>
+                          <td class="text-right px-2">51</td>
+                          <td class="pl-3">Recall casi nulo — solo 1 de 51 muestras predicha correctamente. Confundida con TORNILLO.</td>
+                        </tr>
+                        <tr class="border-b">
+                          <td class="py-1.5 pr-3">REPUESTO</td>
+                          <td class="text-right px-2">0.74</td>
+                          <td class="text-right px-2 text-red-600 dark:text-red-400 font-medium">0.40</td>
+                          <td class="text-right px-2 text-red-600 dark:text-red-400 font-medium">0.52</td>
+                          <td class="text-right px-2">131</td>
+                          <td class="pl-3">Clase generica (repuesto). El texto describe <em>que</em> es la pieza, asi que el modelo predice la clase especifica en vez de la generica.</td>
+                        </tr>
+                        <tr>
+                          <td class="py-1.5 pr-3">HERRAMIENTA</td>
+                          <td class="text-right px-2">0.82</td>
+                          <td class="text-right px-2 text-red-600 dark:text-red-400 font-medium">0.47</td>
+                          <td class="text-right px-2 text-red-600 dark:text-red-400 font-medium">0.60</td>
+                          <td class="text-right px-2">59</td>
+                          <td class="pl-3">Mismo problema — "LLAVE ALLEN 5MM" parece mas LLAVE que HERRAMIENTA.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h4 class="text-foreground font-medium mb-3">Top 10 confusiones mas frecuentes</h4>
+                <p class="mb-3">
+                  La mayoria de errores ocurren entre clases que son esencialmente
+                  <strong class="text-foreground">el mismo concepto con nombres distintos</strong> — un problema de
+                  calidad de datos en el catalogo de clases, no del modelo.
+                </p>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-xs">
+                    <thead>
+                      <tr class="border-b">
+                        <th class="text-left py-2 pr-3 text-foreground">Clase real</th>
+                        <th class="text-left py-2 px-2 text-foreground">Prediccion</th>
+                        <th class="text-right py-2 px-2 text-foreground">Errores</th>
+                        <th class="text-left py-2 pl-3 text-foreground">Tipo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">CONTACTOR:ELECT.</td>
+                        <td class="px-2">CONTACTO:ELECT.</td>
+                        <td class="text-right px-2">7</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">nombre similar</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">TUBO:NO METALICO</td>
+                        <td class="px-2">TUBO</td>
+                        <td class="text-right px-2">6</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">subclase vs general</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">FUENTE:ALIMENTACION</td>
+                        <td class="px-2">FUENTE ALIMENTACION</td>
+                        <td class="text-right px-2">6</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">formato distinto</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">CARGADOR DE BATERIAS</td>
+                        <td class="px-2">CARGADOR:BATERIAS</td>
+                        <td class="text-right px-2">6</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">formato distinto</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">FUSIBLE</td>
+                        <td class="px-2">FUSIBLE</td>
+                        <td class="text-right px-2">5</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">clases duplicadas</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">INTERRUPTOR</td>
+                        <td class="px-2">INTERRUPTOR:AUTOMATICO</td>
+                        <td class="text-right px-2">5</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">subclase vs general</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">REPUESTO</td>
+                        <td class="px-2">INTERRUPTOR:AUTOMATICO</td>
+                        <td class="text-right px-2">4</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">clase generica</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">FUENTE ALIMENTACION</td>
+                        <td class="px-2">FUENTE:ALIMENTACION</td>
+                        <td class="text-right px-2">4</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">formato distinto</Badge></td>
+                      </tr>
+                      <tr class="border-b">
+                        <td class="py-1.5 pr-3">TRANSFORMADOR</td>
+                        <td class="px-2">TRANSFORMADOR:CORRIENTE</td>
+                        <td class="text-right px-2">4</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">subclase vs general</Badge></td>
+                      </tr>
+                      <tr>
+                        <td class="py-1.5 pr-3">BUJE:ELECTRICO</td>
+                        <td class="px-2">TORNILLO</td>
+                        <td class="text-right px-2">4</td>
+                        <td class="pl-3"><Badge variant="outline" class="text-[10px]">confusion real</Badge></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="mt-3">
+                  Solo 1 de las 10 confusiones principales es una <strong class="text-foreground">confusion real</strong>
+                  del modelo. Las otras 9 son problemas de naming en el catalogo de clases (duplicados, formatos distintos,
+                  subclases). Unificar estas clases duplicadas mejoraria la accuracy sin tocar el modelo.
                 </p>
               </div>
 
               <Separator />
 
               <div>
-                <h4 class="text-foreground font-medium mb-2">Errores comunes</h4>
-                <p class="mb-2">Los errores del modelo reflejan ambiguedades reales en la clasificacion SAP:</p>
-                <ul class="space-y-1 list-disc list-inside">
-                  <li><strong class="text-foreground">Clases casi identicas:</strong> CONTACTOR:ELECT. vs CONTACTO:ELECT.</li>
-                  <li><strong class="text-foreground">Subclase vs clase general:</strong> PINTURA:SPRAY vs PINTURA</li>
-                  <li><strong class="text-foreground">Sinonimos:</strong> GRIFO predicho como LLAVE</li>
-                  <li><strong class="text-foreground">Textos ambiguos:</strong> "JUEGO BRIDAS" (REPUESTO o BRIDA?)</li>
-                </ul>
+                <h4 class="text-foreground font-medium mb-3">Analisis de confianza</h4>
+                <p class="mb-3">
+                  El modelo sabe cuando esta inseguro. Filtrando por umbral de confianza se puede aumentar la accuracy
+                  a cambio de cubrir menos materiales automaticamente.
+                </p>
+                <div class="overflow-x-auto mb-3">
+                  <table class="w-full text-xs">
+                    <thead>
+                      <tr class="border-b">
+                        <th class="text-left py-2 pr-3 text-foreground">Umbral</th>
+                        <th class="text-right py-2 px-2 text-foreground">Accuracy</th>
+                        <th class="text-right py-2 px-2 text-foreground">Cobertura</th>
+                        <th class="text-right py-2 pl-2 text-foreground">Materiales</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b"><td class="py-1.5 pr-3">0.50</td><td class="text-right px-2">92.80%</td><td class="text-right px-2">78.81%</td><td class="text-right pl-2">6,238</td></tr>
+                      <tr class="border-b"><td class="py-1.5 pr-3">0.60</td><td class="text-right px-2">94.84%</td><td class="text-right px-2">70.50%</td><td class="text-right pl-2">5,580</td></tr>
+                      <tr class="border-b"><td class="py-1.5 pr-3">0.70</td><td class="text-right px-2">96.74%</td><td class="text-right px-2">60.52%</td><td class="text-right pl-2">4,790</td></tr>
+                      <tr><td class="py-1.5 pr-3">0.80</td><td class="text-right px-2">98.62%</td><td class="text-right px-2">42.25%</td><td class="text-right pl-2">3,344</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  Esto habilita un flujo de <strong class="text-foreground">auto-aprobacion</strong>: predicciones por
+                  encima del umbral se aceptan automaticamente, las demas pasan a
+                  <strong class="text-foreground">revision humana</strong>. El umbral es un parametro configurable en
+                  <code>gold.parameters</code>.
+                </p>
               </div>
             </div>
           </AccordionContent>

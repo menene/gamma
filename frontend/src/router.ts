@@ -12,6 +12,8 @@ const router = createRouter({
     { path: '/etl', component: () => import('@/pages/Etl.vue') },
     { path: '/docs', component: () => import('@/pages/Docs.vue') },
     { path: '/chat', component: () => import('@/pages/Chat.vue') },
+    { path: '/export', component: () => import('@/pages/Export.vue') },
+    { path: '/logs', component: () => import('@/pages/Logs.vue') },
   ],
 })
 

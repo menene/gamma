@@ -13,10 +13,12 @@ const email = ref('')
 const name = ref('')
 const password = ref('')
 const error = ref('')
+const success = ref('')
 const loading = ref(false)
 
 async function handleSubmit() {
   error.value = ''
+  success.value = ''
   loading.value = true
 
   const result = isRegister.value
@@ -26,7 +28,15 @@ async function handleSubmit() {
   loading.value = false
 
   if (result.ok) {
-    router.push('/')
+    if (isRegister.value) {
+      success.value = result.message || 'Cuenta creada. Un administrador debe activar tu cuenta.'
+      isRegister.value = false
+      email.value = ''
+      name.value = ''
+      password.value = ''
+    } else {
+      router.push('/')
+    }
   } else {
     error.value = result.error || 'Error desconocido'
   }
@@ -78,6 +88,11 @@ async function handleSubmit() {
             />
           </div>
 
+          <div v-if="success" class="text-sm text-green-600 bg-green-500/10 border border-green-500/20 rounded-md px-3 py-2">
+            <i class="fa-solid fa-circle-check mr-1"></i>
+            {{ success }}
+          </div>
+
           <div v-if="error" class="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
             {{ error }}
           </div>
@@ -88,7 +103,6 @@ async function handleSubmit() {
           </Button>
         </form>
 
-        <!-- Registro deshabilitado
         <div class="text-center">
           <button
             type="button"
@@ -98,7 +112,6 @@ async function handleSubmit() {
             {{ isRegister ? 'Ya tengo cuenta' : 'Crear cuenta nueva' }}
           </button>
         </div>
-        -->
       </CardContent>
     </Card>
   </div>

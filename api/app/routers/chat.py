@@ -1,3 +1,4 @@
+import json as _json
 import logging
 import os
 import time
@@ -12,6 +13,7 @@ from sqlalchemy import text
 
 from app.db import get_db
 from app.services.llm import build_system_prompt, chat_completion, get_model_name
+from app.routers.model import preprocess_text, _get_artifact
 
 logger = logging.getLogger(__name__)
 
@@ -93,8 +95,7 @@ def update_conversation(conv_id: UUID, body: ConversationUpdate, db: Session = D
         params["title"] = body.title
     if body.messages is not None:
         sets.append("messages = CAST(:messages AS jsonb)")
-        import json
-        params["messages"] = json.dumps(body.messages)
+        params["messages"] = _json.dumps(body.messages)
 
     query = f"UPDATE silver.conversations SET {', '.join(sets)} WHERE id = :id RETURNING id, title, messages, created_at, updated_at"
     row = db.execute(text(query), params).fetchone()
@@ -118,12 +119,7 @@ def delete_conversation(conv_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Conversation not found")
 
 
-# --- Process message (LLM + duplicates) ---
-
-class ProcessRequest(BaseModel):
-    conversation_id: str
-    message: str
-
+# --- Shared schemas & helpers ---
 
 class DuplicateMatch(BaseModel):
     material_id: str
@@ -131,38 +127,18 @@ class DuplicateMatch(BaseModel):
     similarity: float
 
 
-class ProcessResponse(BaseModel):
-    action: str  # "question" | "proposal" | "existing_match"
-    message: str | None = None
-    short_text: str | None = None
-    material_type_id: str | None = None
-    material_id: str | None = None
-    confidence: float | None = None
-    duplicates: list[DuplicateMatch] = []
-    elapsed_s: float = 0
+class ModelPrediction(BaseModel):
+    categoria: str
+    confianza: float
+    top_k: list[list]
 
 
 def _get_material_types(db: Session) -> list[dict]:
-    rows = db.execute(text("SELECT id, description FROM silver.material_types ORDER BY id")).fetchall()
-    return [{"id": r[0], "description": r[1]} for r in rows]
-
-
-def _search_duplicates(db: Session, short_text: str, threshold: float, limit: int = 10) -> list[DuplicateMatch]:
-    rows = db.execute(
-        text("""
-            SELECT id, short_text, similarity(short_text, :query) AS sim
-            FROM silver.materials
-            WHERE similarity(short_text, :query) > :threshold
-            ORDER BY sim DESC
-            LIMIT :limit
-        """),
-        {"query": short_text, "threshold": threshold, "limit": limit},
-    ).fetchall()
-    return [DuplicateMatch(material_id=r[0], short_text=r[1], similarity=round(float(r[2]), 3)) for r in rows]
+    rows = db.execute(text("SELECT code, description FROM silver.material_types ORDER BY code")).fetchall()
+    return [{"code": r[0], "description": r[1]} for r in rows]
 
 
 def _build_conversation_history(messages: list[dict]) -> list[dict]:
-    """Extract text messages for LLM context (skip processing/proposal/confirmed UI types)."""
     history = []
     for m in messages:
         if m.get("role") in ("user", "assistant") and m.get("content"):
@@ -176,7 +152,6 @@ def _log_llm(db: Session, conv_id: str, model: str, user_message: str,
              history_len: int, response_raw: str | None, response_parsed: dict | None,
              action: str | None, elapsed_s: float, error: str | None = None,
              tokens_in: int | None = None, tokens_out: int | None = None):
-    import json
     db.execute(
         text("""
             INSERT INTO bronze.llm_logs
@@ -194,7 +169,7 @@ def _log_llm(db: Session, conv_id: str, model: str, user_message: str,
             "user_message": user_message,
             "history_len": history_len,
             "response_raw": response_raw,
-            "response_parsed": json.dumps(response_parsed) if response_parsed else None,
+            "response_parsed": _json.dumps(response_parsed) if response_parsed else None,
             "action": action,
             "tokens_in": tokens_in,
             "tokens_out": tokens_out,
@@ -204,22 +179,43 @@ def _log_llm(db: Session, conv_id: str, model: str, user_message: str,
     )
 
 
-def _format_duplicates_for_llm(duplicates: list[DuplicateMatch]) -> str:
-    """Format duplicate matches as a system message for the LLM."""
-    lines = ["[SISTEMA] Se encontraron los siguientes materiales similares en el maestro:"]
-    for i, d in enumerate(duplicates, 1):
-        lines.append(f"  {i}. ID: {d.material_id} | {d.short_text} (similitud: {d.similarity:.0%})")
-    lines.append("")
-    lines.append("Presenta estos duplicados al usuario de forma conversacional. "
-                 "Preguntale si alguno le sirve o si su material es diferente.")
-    return "\n".join(lines)
+def _update_request_timestamp(db: Session, request_id: int | None, column: str, elapsed_col: str | None = None, elapsed_s: float | None = None):
+    """Set a timestamp column (and optional elapsed) on a request."""
+    if not request_id:
+        return
+    sets = [f"{column} = now()"]
+    params: dict = {"id": request_id}
+    if elapsed_col and elapsed_s is not None:
+        sets.append(f"{elapsed_col} = :elapsed")
+        params["elapsed"] = elapsed_s
+    db.execute(
+        text(f"UPDATE silver.requests SET {', '.join(sets)} WHERE id = :id"),
+        params,
+    )
 
 
-@router.post("/process", response_model=ProcessResponse)
-def process_message(body: ProcessRequest, db: Session = Depends(get_db)):
+# --- Step 1: LLM (description & normalization) ---
+
+class LLMRequest(BaseModel):
+    conversation_id: str
+    message: str
+    request_id: int | None = None
+
+
+class LLMResponse(BaseModel):
+    action: str  # "question" | "proposal" | "existing_match"
+    message: str | None = None
+    short_text: str | None = None
+    long_text: str | None = None
+    material_type_id: str | None = None
+    material_id: str | None = None
+    elapsed_s: float = 0
+
+
+@router.post("/llm", response_model=LLMResponse)
+def step_llm(body: LLMRequest, db: Session = Depends(get_db)):
     t0 = time.time()
 
-    # Load conversation messages for history
     row = db.execute(
         text("SELECT messages FROM silver.conversations WHERE id = :id"),
         {"id": body.conversation_id},
@@ -230,11 +226,9 @@ def process_message(body: ProcessRequest, db: Session = Depends(get_db)):
     existing_messages = row[0] if row[0] else []
     history = _build_conversation_history(existing_messages)
 
-    # Build system prompt with material types from DB
     material_types = _get_material_types(db)
     system_prompt = build_system_prompt(material_types)
 
-    # Call LLM (first pass)
     try:
         result = chat_completion(system_prompt, history, body.message)
     except Exception as e:
@@ -247,90 +241,413 @@ def process_message(body: ProcessRequest, db: Session = Depends(get_db)):
 
     llm_response = result.parsed
     action = llm_response.get("action", "question")
+    elapsed = round(time.time() - t0, 3)
 
-    # Log first LLM call
     _log_llm(db, body.conversation_id, result.model, body.message,
-             len(history), result.raw, result.parsed, action,
-             round(time.time() - t0, 3),
+             len(history), result.raw, result.parsed, action, elapsed,
              tokens_in=result.tokens_in, tokens_out=result.tokens_out)
 
-    # Handle existing_match (user confirmed a duplicate works)
-    if action == "existing_match":
-        elapsed = round(time.time() - t0, 3)
-        db.commit()
-        return ProcessResponse(
-            action="existing_match",
-            material_id=llm_response.get("material_id"),
-            message=llm_response.get("message", "Material existente confirmado."),
-            elapsed_s=elapsed,
-        )
+    # Record LLM completion on the request if we have one
+    _update_request_timestamp(db, body.request_id, "llm_completed_at", "llm_elapsed_s", elapsed)
 
-    # Handle proposal — check for duplicates first
-    if action == "proposal":
-        short_text = llm_response.get("short_text", "")
-        material_type_id = llm_response.get("material_type_id")
-        confidence = llm_response.get("confidence", 0)
-
-        dup_threshold = float(os.environ.get("DUPLICADO_UMBRAL", "0.45"))
-        duplicates = _search_duplicates(db, short_text, dup_threshold)
-
-        if duplicates:
-            # Duplicates found — ask LLM to present them conversationally
-            dup_context = _format_duplicates_for_llm(duplicates)
-
-            # Add the proposal as model response, then the duplicate context as user input
-            extended_history = history + [
-                {"role": "user", "content": body.message},
-                {"role": "assistant", "content": result.raw},
-            ]
-
-            try:
-                dup_result = chat_completion(system_prompt, extended_history, dup_context)
-            except Exception as e:
-                logger.error("LLM duplicate call failed: %s", e)
-                # Fall through to return proposal with duplicates anyway
-                elapsed = round(time.time() - t0, 3)
-                db.commit()
-                return ProcessResponse(
-                    action="proposal", short_text=short_text,
-                    material_type_id=material_type_id, confidence=confidence,
-                    duplicates=duplicates, elapsed_s=elapsed,
-                )
-
-            # Log second LLM call
-            _log_llm(db, body.conversation_id, dup_result.model, dup_context,
-                     len(extended_history), dup_result.raw, dup_result.parsed,
-                     "duplicates_review", round(time.time() - t0, 3),
-                     tokens_in=dup_result.tokens_in, tokens_out=dup_result.tokens_out)
-
-            dup_message = dup_result.parsed.get("message", "")
-            elapsed = round(time.time() - t0, 3)
-            db.commit()
-
-            return ProcessResponse(
-                action="duplicates_review",
-                message=dup_message,
-                short_text=short_text,
-                material_type_id=material_type_id,
-                confidence=confidence,
-                duplicates=duplicates,
-                elapsed_s=elapsed,
-            )
-
-        # No duplicates — return proposal directly
-        elapsed = round(time.time() - t0, 3)
-        db.commit()
-        return ProcessResponse(
-            action="proposal", short_text=short_text,
-            material_type_id=material_type_id, confidence=confidence,
-            duplicates=[], elapsed_s=elapsed,
-        )
-
-    # Default: question
-    elapsed = round(time.time() - t0, 3)
     db.commit()
-    return ProcessResponse(
-        action="question",
-        message=llm_response.get("message", ""),
+
+    return LLMResponse(
+        action=action,
+        message=llm_response.get("message"),
+        short_text=llm_response.get("short_text"),
+        long_text=llm_response.get("long_text"),
+        material_type_id=llm_response.get("material_type_id"),
+        material_id=llm_response.get("material_id"),
         elapsed_s=elapsed,
     )
+
+
+# --- Step 2: Duplicate search ---
+
+class DuplicatesRequest(BaseModel):
+    conversation_id: str
+    short_text: str
+    request_id: int | None = None
+    user_message: str | None = None
+    llm_raw: str | None = None
+
+
+class DuplicatesResponse(BaseModel):
+    has_duplicates: bool
+    duplicates: list[DuplicateMatch] = []
+    message: str | None = None
+    elapsed_s: float = 0
+
+
+def _format_duplicates_for_llm(duplicates: list[DuplicateMatch]) -> str:
+    lines = ["[SISTEMA] Se encontraron los siguientes materiales similares en el maestro:"]
+    for i, d in enumerate(duplicates, 1):
+        lines.append(f"  {i}. ID: {d.material_id} | {d.short_text} (similitud: {d.similarity:.0%})")
+    lines.append("")
+    lines.append("Presenta estos duplicados al usuario de forma clara y estructurada. "
+                 "Preguntale si alguno le sirve o si su material es diferente.")
+    return "\n".join(lines)
+
+
+@router.post("/duplicates", response_model=DuplicatesResponse)
+def step_duplicates(body: DuplicatesRequest, db: Session = Depends(get_db)):
+    t0 = time.time()
+
+    dup_threshold = float(os.environ.get("DUPLICADO_UMBRAL", "0.45"))
+    rows = db.execute(
+        text("""
+            SELECT code, short_text, similarity(short_text, :query) AS sim
+            FROM silver.materials
+            WHERE similarity(short_text, :query) > :threshold
+            ORDER BY sim DESC
+            LIMIT 10
+        """),
+        {"query": body.short_text, "threshold": dup_threshold},
+    ).fetchall()
+    duplicates = [DuplicateMatch(material_id=r[0], short_text=r[1], similarity=round(float(r[2]), 3)) for r in rows]
+
+    if not duplicates:
+        elapsed = round(time.time() - t0, 3)
+        _update_request_timestamp(db, body.request_id, "duplicates_completed_at", "duplicates_elapsed_s", elapsed)
+        db.commit()
+        return DuplicatesResponse(has_duplicates=False, elapsed_s=elapsed)
+
+    # Duplicates found — call LLM to present them
+    dup_context = _format_duplicates_for_llm(duplicates)
+    dup_message = None
+
+    # Load conversation for context
+    conv_row = db.execute(
+        text("SELECT messages FROM silver.conversations WHERE id = :id"),
+        {"id": body.conversation_id},
+    ).fetchone()
+    existing_messages = (conv_row[0] if conv_row and conv_row[0] else [])
+    history = _build_conversation_history(existing_messages)
+
+    if body.user_message and body.llm_raw:
+        history += [
+            {"role": "user", "content": body.user_message},
+            {"role": "assistant", "content": body.llm_raw},
+        ]
+
+    material_types = _get_material_types(db)
+    system_prompt = build_system_prompt(material_types)
+
+    try:
+        dup_result = chat_completion(system_prompt, history, dup_context)
+        dup_message = dup_result.parsed.get("message", "")
+        _log_llm(db, body.conversation_id, dup_result.model, dup_context,
+                 len(history), dup_result.raw, dup_result.parsed,
+                 "duplicates_review", round(time.time() - t0, 3),
+                 tokens_in=dup_result.tokens_in, tokens_out=dup_result.tokens_out)
+    except Exception as e:
+        logger.error("LLM duplicate call failed: %s", e)
+
+    elapsed = round(time.time() - t0, 3)
+    _update_request_timestamp(db, body.request_id, "duplicates_completed_at", "duplicates_elapsed_s", elapsed)
+    db.commit()
+
+    return DuplicatesResponse(
+        has_duplicates=True,
+        duplicates=duplicates,
+        message=dup_message,
+        elapsed_s=elapsed,
+    )
+
+
+# --- Step 2b: Duplicate decision ---
+
+class DuplicateDecisionRequest(BaseModel):
+    conversation_id: str
+    request_id: int | None = None
+    action: str  # "accepted" | "rejected"
+    short_text: str
+    selected_material_id: str | None = None
+    duplicates: list[dict] = []
+    elapsed_s: float | None = None
+
+
+class DuplicateDecisionResponse(BaseModel):
+    ok: bool
+    action: str
+
+
+@router.post("/duplicates/decision", response_model=DuplicateDecisionResponse)
+def step_duplicate_decision(body: DuplicateDecisionRequest, db: Session = Depends(get_db)):
+    if body.action not in ("accepted", "rejected"):
+        raise HTTPException(status_code=400, detail="action must be 'accepted' or 'rejected'")
+
+    db.execute(
+        text("""
+            INSERT INTO bronze.duplicate_logs
+                (conversation_id, request_id, action, short_text, selected_material_id, duplicates, elapsed_s)
+            VALUES
+                (:conversation_id, :request_id, :action, :short_text, :selected_material_id, CAST(:duplicates AS jsonb), :elapsed_s)
+        """),
+        {
+            "conversation_id": body.conversation_id,
+            "request_id": body.request_id,
+            "action": body.action,
+            "short_text": body.short_text,
+            "selected_material_id": body.selected_material_id,
+            "duplicates": _json.dumps(body.duplicates),
+            "elapsed_s": body.elapsed_s,
+        },
+    )
+
+    # Record decision timestamp on request
+    _update_request_timestamp(db, body.request_id, "duplicates_decided_at")
+
+    if body.action == "accepted" and body.request_id and body.selected_material_id:
+        db.execute(
+            text("""
+                UPDATE silver.requests
+                SET status = 'existing_match',
+                    specifications = CAST(:specs AS jsonb),
+                    duplicates = CAST(:dups AS jsonb)
+                WHERE id = :id
+            """),
+            {
+                "id": body.request_id,
+                "specs": _json.dumps({"matched_material_id": body.selected_material_id}),
+                "dups": _json.dumps(body.duplicates),
+            },
+        )
+
+    db.commit()
+    return DuplicateDecisionResponse(ok=True, action=body.action)
+
+
+# --- Step 3: ML Model prediction ---
+
+class PredictRequest(BaseModel):
+    conversation_id: str | None = None
+    request_id: int | None = None
+    short_text: str
+
+
+class PredictResponse(BaseModel):
+    prediction: ModelPrediction | None = None
+    elapsed_s: float = 0
+
+
+@router.post("/predict", response_model=PredictResponse)
+def step_predict(body: PredictRequest, db: Session = Depends(get_db)):
+    t0 = time.time()
+
+    try:
+        artifact = _get_artifact()
+        pipeline = artifact["pipeline"]
+        le = artifact["label_encoder"]
+
+        clean = preprocess_text(body.short_text)
+        probas = pipeline.predict_proba([clean])[0]
+        top_indices = probas.argsort()[-3:][::-1]
+
+        top_codes = []
+        for idx in top_indices:
+            class_code = le.inverse_transform([idx])[0]
+            conf = round(float(probas[idx]), 4)
+            top_codes.append((class_code, conf))
+
+        # Enrich with class names
+        codes_list = [c[0] for c in top_codes]
+        placeholders = ", ".join(f":c{i}" for i in range(len(codes_list)))
+        params = {f"c{i}": code for i, code in enumerate(codes_list)}
+        name_rows = db.execute(
+            text(f"SELECT code, name FROM silver.classes WHERE code IN ({placeholders})"),
+            params,
+        ).fetchall()
+        code_to_name = {r[0]: r[1] for r in name_rows}
+
+        top_k = []
+        for class_code, conf in top_codes:
+            name = code_to_name.get(class_code, "")
+            top_k.append([class_code, conf, name])
+
+        prediction = ModelPrediction(categoria=top_k[0][0], confianza=top_k[0][1], top_k=top_k)
+        elapsed = round(time.time() - t0, 3)
+
+        # Log prediction
+        db.execute(
+            text("""
+                INSERT INTO bronze.prediction_logs (type, input, output, confidence, elapsed_s)
+                VALUES ('categorization', CAST(:input AS jsonb), CAST(:output AS jsonb), :confidence, :elapsed_s)
+            """),
+            {
+                "input": _json.dumps({"short_text": body.short_text, "clean": clean, "conversation_id": body.conversation_id}),
+                "output": _json.dumps({"categoria": prediction.categoria, "top_k": prediction.top_k}),
+                "confidence": prediction.confianza,
+                "elapsed_s": elapsed,
+            },
+        )
+
+        # Record predict completion on the request
+        _update_request_timestamp(db, body.request_id, "predict_completed_at", "predict_elapsed_s", elapsed)
+
+        db.commit()
+        return PredictResponse(prediction=prediction, elapsed_s=elapsed)
+
+    except Exception as e:
+        logger.error("Model prediction failed: %s", e)
+        elapsed = round(time.time() - t0, 3)
+        return PredictResponse(prediction=None, elapsed_s=elapsed)
+
+
+# --- Search classes (for manual selection) ---
+
+class ClassOut(BaseModel):
+    code: str
+    name: str
+
+
+@router.get("/classes", response_model=list[ClassOut])
+def search_classes(q: str = "", db: Session = Depends(get_db)):
+    if not q.strip():
+        return []
+    rows = db.execute(
+        text("""
+            SELECT code, name FROM silver.classes
+            WHERE code ILIKE :q OR name ILIKE :q
+            ORDER BY name
+            LIMIT 20
+        """),
+        {"q": f"%{q.strip()}%"},
+    ).fetchall()
+    return [ClassOut(code=r[0], name=r[1]) for r in rows]
+
+
+# --- Request lifecycle ---
+
+class CreateRequestBody(BaseModel):
+    conversation_id: str
+    short_text: str
+    long_text: str | None = None
+    material_type_id: str
+    llm_elapsed_s: float | None = None
+
+
+class UpdateRequestBody(BaseModel):
+    short_text: str | None = None
+    long_text: str | None = None
+    material_type_id: str | None = None
+    class_code: str | None = None
+    class_name: str | None = None
+    category: str | None = None
+    confidence: float | None = None
+    alternatives: list[list] | None = None
+    duplicates: list[dict] | None = None
+    status: str | None = None
+    material_id: str | None = None  # for existing_match
+
+
+class RequestOut(BaseModel):
+    request_id: int
+    status: str
+
+
+def _resolve_material_type(db: Session, code: str) -> int | None:
+    row = db.execute(
+        text("SELECT id FROM silver.material_types WHERE code = :code"),
+        {"code": code},
+    ).fetchone()
+    return row[0] if row else None
+
+
+@router.post("/requests", response_model=RequestOut, status_code=201)
+def create_request(body: CreateRequestBody, db: Session = Depends(get_db)):
+    """Create a new request as pending (called when LLM generates a proposal)."""
+    material_type_fk = _resolve_material_type(db, body.material_type_id)
+
+    row = db.execute(
+        text("""
+            INSERT INTO silver.requests
+                (conversation_id, material_type_id, name, short_text, long_text, status,
+                 llm_completed_at, llm_elapsed_s)
+            VALUES
+                (:conversation_id, :material_type_id, :name, :short_text, :long_text, 'pending',
+                 now(), :llm_elapsed_s)
+            RETURNING id, status
+        """),
+        {
+            "conversation_id": body.conversation_id,
+            "material_type_id": material_type_fk,
+            "name": body.short_text,
+            "short_text": body.short_text,
+            "long_text": body.long_text,
+            "llm_elapsed_s": body.llm_elapsed_s,
+        },
+    ).fetchone()
+    db.commit()
+    return RequestOut(request_id=row[0], status=row[1])
+
+
+@router.patch("/requests/{request_id}", response_model=RequestOut)
+def update_request(request_id: int, body: UpdateRequestBody, db: Session = Depends(get_db)):
+    """Update a request: confirm, discard, mark as existing_match, or edit fields."""
+    # Build dynamic SET clause
+    sets = []
+    params: dict = {"id": request_id}
+
+    if body.short_text is not None:
+        sets.append("short_text = :short_text")
+        sets.append("name = :short_text")
+        params["short_text"] = body.short_text
+
+    if body.long_text is not None:
+        sets.append("long_text = :long_text")
+        params["long_text"] = body.long_text
+
+    if body.material_type_id is not None:
+        mt_fk = _resolve_material_type(db, body.material_type_id)
+        sets.append("material_type_id = :material_type_id")
+        params["material_type_id"] = mt_fk
+
+    if body.class_code is not None or body.category is not None:
+        selected = body.class_code or body.category
+        sets.append("category = :category")
+        params["category"] = selected
+        # Detect correction
+        if body.class_code and body.category and body.class_code != body.category:
+            sets.append("corrected = true")
+
+    if body.confidence is not None:
+        sets.append("confidence = :confidence")
+        params["confidence"] = body.confidence
+
+    if body.alternatives is not None:
+        sets.append("alternatives = CAST(:alternatives AS jsonb)")
+        params["alternatives"] = _json.dumps(body.alternatives)
+
+    if body.duplicates is not None:
+        sets.append("duplicates = CAST(:duplicates AS jsonb)")
+        params["duplicates"] = _json.dumps(body.duplicates)
+
+    if body.status is not None:
+        sets.append("status = :status")
+        params["status"] = body.status
+        if body.status == "confirmed":
+            sets.append("confirmed_at = now()")
+            # Compute total machine processing time
+            sets.append("""
+                processing_time_s = COALESCE(llm_elapsed_s, 0)
+                    + COALESCE(duplicates_elapsed_s, 0)
+                    + COALESCE(predict_elapsed_s, 0)
+            """)
+        if body.status == "discarded":
+            sets.append("discarded_at = now()")
+        if body.status == "existing_match" and body.material_id:
+            sets.append("specifications = CAST(:specs AS jsonb)")
+            params["specs"] = _json.dumps({"matched_material_id": body.material_id})
+
+    if not sets:
+        raise HTTPException(status_code=400, detail="No fields to update")
+
+    query = f"UPDATE silver.requests SET {', '.join(sets)} WHERE id = :id RETURNING id, status"
+    row = db.execute(text(query), params).fetchone()
+    db.commit()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Request not found")
+    return RequestOut(request_id=row[0], status=row[1])

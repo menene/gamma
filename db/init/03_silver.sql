@@ -31,7 +31,7 @@ CREATE TABLE silver.unspsc (
     description         TEXT NOT NULL
 );
 
--- Catálogo de clases/denominaciones
+-- Catalogo de clases/denominaciones
 CREATE TABLE silver.classes (
     id                  BIGSERIAL PRIMARY KEY,
     code                TEXT NOT NULL UNIQUE,
@@ -75,26 +75,36 @@ CREATE TABLE silver.conversations (
 
 -- Solicitudes de alta de material
 CREATE TABLE silver.requests (
-    id                  BIGSERIAL PRIMARY KEY,
-    conversation_id     UUID REFERENCES silver.conversations(id) ON DELETE SET NULL,
-    material_type_id    BIGINT REFERENCES silver.material_types(id),
-    name                TEXT NOT NULL,
-    long_text           TEXT,
-    specifications      JSONB,
-    short_text          TEXT,
-    article_group       TEXT,
-    category            TEXT,
-    confidence          NUMERIC(5,4),
-    alternatives        JSONB,
-    duplicates          JSONB,
-    auto_resolved       BOOLEAN NOT NULL DEFAULT false,
-    corrected           BOOLEAN NOT NULL DEFAULT false,
-    status              TEXT NOT NULL DEFAULT 'proposal'
-                        CHECK (status IN ('proposal', 'confirmed', 'exported', 'discarded')),
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
-    confirmed_at        TIMESTAMPTZ,
-    exported_at         TIMESTAMPTZ,
-    processing_time_s   NUMERIC
+    id                      BIGSERIAL PRIMARY KEY,
+    conversation_id         UUID REFERENCES silver.conversations(id) ON DELETE SET NULL,
+    material_type_id        BIGINT REFERENCES silver.material_types(id),
+    name                    TEXT NOT NULL,
+    long_text               TEXT,
+    specifications          JSONB,
+    short_text              TEXT,
+    article_group           TEXT,
+    category                TEXT,
+    confidence              NUMERIC(5,4),
+    alternatives            JSONB,
+    duplicates              JSONB,
+    auto_resolved           BOOLEAN NOT NULL DEFAULT false,
+    corrected               BOOLEAN NOT NULL DEFAULT false,
+    status                  TEXT NOT NULL DEFAULT 'pending'
+                            CHECK (status IN ('pending', 'confirmed', 'exported', 'discarded', 'existing_match')),
+    -- Pipeline timestamps
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT now(),
+    llm_completed_at        TIMESTAMPTZ,
+    duplicates_completed_at TIMESTAMPTZ,
+    duplicates_decided_at   TIMESTAMPTZ,
+    predict_completed_at    TIMESTAMPTZ,
+    confirmed_at            TIMESTAMPTZ,
+    discarded_at            TIMESTAMPTZ,
+    exported_at             TIMESTAMPTZ,
+    -- Computed durations (set on confirm/discard for easy querying)
+    llm_elapsed_s           NUMERIC(8,3),
+    duplicates_elapsed_s    NUMERIC(8,3),
+    predict_elapsed_s       NUMERIC(8,3),
+    processing_time_s       NUMERIC(8,3)
 );
 
 -- Datasets para entrenamiento y prueba del modelo

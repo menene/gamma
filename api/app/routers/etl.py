@@ -30,6 +30,7 @@ class IngestionLog(BaseModel):
     row_count: int
     status: str
     error_message: str | None
+    elapsed_s: float | None
     ingested_at: str
 
 
@@ -183,18 +184,20 @@ def upload_materials(file: UploadFile = File(...), db: Session = Depends(get_db)
                 rows,
             )
 
-        _log_ingestion(db, file.filename, "silver.materials", len(rows), "success")
+        elapsed = round(time.time() - t0, 3)
+        _log_ingestion(db, file.filename, "silver.materials", len(rows), "success", elapsed_s=elapsed)
         db.commit()
 
         return IngestionResult(
             file_name=file.filename, target="silver.materials",
-            row_count=len(rows), status="success", elapsed_s=round(time.time() - t0, 2),
+            row_count=len(rows), status="success", elapsed_s=elapsed,
         )
     except HTTPException:
         raise
     except Exception as e:
         db.rollback()
-        _log_ingestion(db, file.filename or "unknown", "silver.materials", 0, "failed", str(e))
+        elapsed = round(time.time() - t0, 3)
+        _log_ingestion(db, file.filename or "unknown", "silver.materials", 0, "failed", str(e), elapsed_s=elapsed)
         db.commit()
         raise HTTPException(500, f"Error procesando archivo: {e}")
 
@@ -291,18 +294,20 @@ def upload_classes(file: UploadFile = File(...), db: Session = Depends(get_db)):
                 rows,
             )
 
-        _log_ingestion(db, file.filename, "silver.classes", len(rows), "success")
+        elapsed = round(time.time() - t0, 3)
+        _log_ingestion(db, file.filename, "silver.classes", len(rows), "success", elapsed_s=elapsed)
         db.commit()
 
         return IngestionResult(
             file_name=file.filename, target="silver.classes",
-            row_count=len(rows), status="success", elapsed_s=round(time.time() - t0, 2),
+            row_count=len(rows), status="success", elapsed_s=elapsed,
         )
     except HTTPException:
         raise
     except Exception as e:
         db.rollback()
-        _log_ingestion(db, file.filename or "unknown", "silver.classes", 0, "failed", str(e))
+        elapsed = round(time.time() - t0, 3)
+        _log_ingestion(db, file.filename or "unknown", "silver.classes", 0, "failed", str(e), elapsed_s=elapsed)
         db.commit()
         raise HTTPException(500, f"Error procesando archivo: {e}")
 
@@ -343,18 +348,20 @@ def upload_unspsc(file: UploadFile = File(...), db: Session = Depends(get_db)):
                 rows,
             )
 
-        _log_ingestion(db, file.filename, "silver.unspsc", len(rows), "success")
+        elapsed = round(time.time() - t0, 3)
+        _log_ingestion(db, file.filename, "silver.unspsc", len(rows), "success", elapsed_s=elapsed)
         db.commit()
 
         return IngestionResult(
             file_name=file.filename, target="silver.unspsc",
-            row_count=len(rows), status="success", elapsed_s=round(time.time() - t0, 2),
+            row_count=len(rows), status="success", elapsed_s=elapsed,
         )
     except HTTPException:
         raise
     except Exception as e:
         db.rollback()
-        _log_ingestion(db, file.filename or "unknown", "silver.unspsc", 0, "failed", str(e))
+        elapsed = round(time.time() - t0, 3)
+        _log_ingestion(db, file.filename or "unknown", "silver.unspsc", 0, "failed", str(e), elapsed_s=elapsed)
         db.commit()
         raise HTTPException(500, f"Error procesando archivo: {e}")
 
@@ -364,13 +371,14 @@ def upload_unspsc(file: UploadFile = File(...), db: Session = Depends(get_db)):
 @router.get("/logs", response_model=list[IngestionLog])
 def get_ingestion_logs(db: Session = Depends(get_db)):
     rows = db.execute(
-        text("SELECT id, file_name, file_path, row_count, status, error_message, ingested_at "
+        text("SELECT id, file_name, file_path, row_count, status, error_message, elapsed_s, ingested_at "
              "FROM bronze.ingestion_logs ORDER BY ingested_at DESC LIMIT 50")
     ).fetchall()
     return [
         IngestionLog(
             id=r[0], file_name=r[1], file_path=r[2], row_count=r[3],
-            status=r[4], error_message=r[5], ingested_at=str(r[6]),
+            status=r[4], error_message=r[5], elapsed_s=float(r[6]) if r[6] else None,
+            ingested_at=str(r[7]),
         )
         for r in rows
     ]
@@ -390,11 +398,11 @@ def get_table_counts(db: Session = Depends(get_db)):
 # ── Helper ───────────────────────────────────────────────────
 
 def _log_ingestion(db: Session, file_name: str, target: str, row_count: int,
-                   status: str, error_message: str | None = None):
+                   status: str, error_message: str | None = None, elapsed_s: float | None = None):
     db.execute(
         text("""
-            INSERT INTO bronze.ingestion_logs (file_name, file_path, row_count, status, error_message)
-            VALUES (:file_name, :file_path, :row_count, :status, :error_message)
+            INSERT INTO bronze.ingestion_logs (file_name, file_path, row_count, status, error_message, elapsed_s)
+            VALUES (:file_name, :file_path, :row_count, :status, :error_message, :elapsed_s)
         """),
         {
             "file_name": file_name,
@@ -402,5 +410,6 @@ def _log_ingestion(db: Session, file_name: str, target: str, row_count: int,
             "row_count": row_count,
             "status": status,
             "error_message": error_message,
+            "elapsed_s": elapsed_s,
         },
     )
