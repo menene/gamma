@@ -3,7 +3,6 @@ import { ref, onMounted, computed } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { API_BASE } from '@/config'
 import { authFetch } from '@/composables/useAuth'
@@ -69,7 +68,6 @@ function formatDate(iso: string): string {
 }
 
 const llmErrors = computed(() => llmLogs.value.filter(l => l.error))
-const llmSuccesses = computed(() => llmLogs.value.filter(l => !l.error))
 
 async function fetchAll() {
   loading.value = true

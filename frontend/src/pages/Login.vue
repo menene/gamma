@@ -29,7 +29,7 @@ async function handleSubmit() {
 
   if (result.ok) {
     if (isRegister.value) {
-      success.value = result.message || 'Cuenta creada. Un administrador debe activar tu cuenta.'
+      success.value = (result as { message?: string }).message || 'Cuenta creada. Un administrador debe activar tu cuenta.'
       isRegister.value = false
       email.value = ''
       name.value = ''

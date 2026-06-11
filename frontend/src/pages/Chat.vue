@@ -333,7 +333,7 @@ async function sendMessage() {
       if (reqRes.ok) {
         const reqData = await reqRes.json()
         requestId = reqData.request_id
-        activeRequestId.value = requestId
+        activeRequestId.value = requestId ?? null
       }
     } catch (e: any) { logAppError('chat:createRequest', e.message) }
 
