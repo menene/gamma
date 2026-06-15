@@ -816,6 +816,48 @@ onMounted(async () => {
                       ></textarea>
                     </div>
 
+                    <!-- Validacion de duplicados -->
+                    <div
+                      class="rounded-md border p-3"
+                      :class="msg.proposal.duplicates.length > 0
+                        ? 'border-amber-500/30 bg-amber-500/5'
+                        : 'border-emerald-500/30 bg-emerald-500/5'"
+                    >
+                      <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
+                        <i
+                          class="mr-1"
+                          :class="msg.proposal.duplicates.length > 0
+                            ? 'fa-solid fa-triangle-exclamation text-amber-500'
+                            : 'fa-solid fa-shield-check text-emerald-500'"
+                        ></i>
+                        Validacion de duplicados
+                      </p>
+                      <p
+                        v-if="msg.proposal.duplicates.length === 0"
+                        class="text-sm text-emerald-700 dark:text-emerald-300"
+                      >
+                        Sin coincidencias en el maestro. El material puede continuar como nuevo.
+                      </p>
+                      <template v-else>
+                        <p class="text-xs text-muted-foreground mb-2">
+                          Se revisaron {{ msg.proposal.duplicates.length }} coincidencia(s) y se descartaron como duplicados.
+                        </p>
+                        <div class="space-y-1.5">
+                          <div
+                            v-for="dup in msg.proposal.duplicates"
+                            :key="dup.material_id"
+                            class="flex items-center justify-between px-3 py-1.5 rounded-md bg-background/60 text-sm"
+                          >
+                            <div class="flex flex-col">
+                              <span class="font-mono text-xs">{{ dup.short_text }}</span>
+                              <span class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
+                            </div>
+                            <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+
                     <!-- Detalle de la clase seleccionada -->
                     <div v-if="msg.proposal.selected_class" class="rounded-md border border-violet-500/20 bg-violet-500/5 p-3">
                       <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
@@ -945,29 +987,6 @@ onMounted(async () => {
                       </div>
                     </template>
 
-                    <template v-if="msg.proposal.duplicates.length > 0">
-                      <Separator />
-
-                      <div>
-                        <p class="text-xs text-muted-foreground mb-2">
-                          <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i>
-                          Posibles duplicados encontrados
-                        </p>
-                        <div class="space-y-2">
-                          <div
-                            v-for="dup in msg.proposal.duplicates"
-                            :key="dup.material_id"
-                            class="flex items-center justify-between px-3 py-2 rounded-md bg-muted/50 text-sm"
-                          >
-                            <div class="flex flex-col">
-                              <span class="font-mono text-xs">{{ dup.short_text }}</span>
-                              <span class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
-                            </div>
-                            <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
-                          </div>
-                        </div>
-                      </div>
-                    </template>
                   </div>
 
                   <div class="px-4 py-3 border-t bg-muted/30 flex gap-2 justify-end">
@@ -1091,6 +1110,48 @@ onMounted(async () => {
                       </dl>
                     </div>
 
+                    <!-- Validacion de duplicados -->
+                    <div
+                      class="rounded-md border p-3"
+                      :class="(msg.proposal.duplicates && msg.proposal.duplicates.length > 0)
+                        ? 'border-amber-500/30 bg-amber-500/5'
+                        : 'border-emerald-500/30 bg-emerald-500/5'"
+                    >
+                      <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
+                        <i
+                          class="mr-1"
+                          :class="(msg.proposal.duplicates && msg.proposal.duplicates.length > 0)
+                            ? 'fa-solid fa-triangle-exclamation text-amber-500'
+                            : 'fa-solid fa-shield-check text-emerald-500'"
+                        ></i>
+                        Validacion de duplicados
+                      </p>
+                      <p
+                        v-if="!msg.proposal.duplicates || msg.proposal.duplicates.length === 0"
+                        class="text-sm text-emerald-700 dark:text-emerald-300"
+                      >
+                        Sin coincidencias en el maestro. El material se registro como nuevo.
+                      </p>
+                      <template v-else>
+                        <p class="text-xs text-muted-foreground mb-2">
+                          Se revisaron {{ msg.proposal.duplicates.length }} coincidencia(s) y se descartaron como duplicados.
+                        </p>
+                        <div class="space-y-1.5">
+                          <div
+                            v-for="dup in msg.proposal.duplicates"
+                            :key="dup.material_id"
+                            class="flex items-center justify-between px-3 py-1.5 rounded-md bg-background/60 text-sm"
+                          >
+                            <div class="flex flex-col">
+                              <span class="font-mono text-xs">{{ dup.short_text }}</span>
+                              <span class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
+                            </div>
+                            <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+
                     <!-- Clase seleccionada -->
                     <div v-if="msg.proposal.selected_class">
                       <Separator class="mb-3" />
@@ -1171,29 +1232,6 @@ onMounted(async () => {
                       </div>
                     </template>
 
-                    <!-- Duplicados descartados -->
-                    <template v-if="msg.proposal.duplicates && msg.proposal.duplicates.length > 0">
-                      <Separator />
-                      <div>
-                        <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
-                          <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i>
-                          Duplicados revisados
-                        </p>
-                        <div class="space-y-1.5">
-                          <div
-                            v-for="dup in msg.proposal.duplicates"
-                            :key="dup.material_id"
-                            class="flex items-center justify-between px-3 py-1.5 rounded-md bg-muted/50 text-sm"
-                          >
-                            <div class="flex flex-col">
-                              <span class="font-mono text-xs">{{ dup.short_text }}</span>
-                              <span class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
-                            </div>
-                            <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
-                          </div>
-                        </div>
-                      </div>
-                    </template>
                   </div>
                 </CardContent>
               </Card>
