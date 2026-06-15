@@ -36,6 +36,12 @@ interface ModelPrediction {
 interface SelectedClass {
   code: string
   name: string
+  article_group?: string | null
+  sector?: string | null
+  material_type_code?: string | null
+  material_type_description?: string | null
+  unspsc_code?: string | null
+  unspsc_description?: string | null
 }
 
 interface Proposal {
@@ -93,13 +99,34 @@ const awaitingAction = ref(false)
 const classSearchResults = ref<{ code: string; name: string }[]>([])
 let classSearchTimeout: ReturnType<typeof setTimeout> | null = null
 
-function selectClass(msgId: number, code: string, name: string) {
+async function enrichSelectedClass(msgId: number, code: string) {
+  const details = await fetchClassDetails(code)
+  if (!details) return
   const msg = messages.value.find(m => m.id === msgId)
-  if (msg?.proposal) {
-    msg.proposal.selected_class = { code, name }
-    classSearchOpen.value = null
-    classSearchQuery.value = ''
-    classSearchResults.value = []
+  if (msg?.proposal?.selected_class?.code === code) {
+    msg.proposal.selected_class = { ...msg.proposal.selected_class, ...details }
+  }
+}
+
+async function fetchClassDetails(code: string): Promise<Partial<SelectedClass> | null> {
+  try {
+    const res = await authFetch(`${API}/classes/${encodeURIComponent(code)}`)
+    if (res.ok) return await res.json()
+  } catch (e: any) { logAppError('chat:fetchClassDetails', e.message, { code }) }
+  return null
+}
+
+async function selectClass(msgId: number, code: string, name: string, extra?: Partial<SelectedClass>) {
+  const msg = messages.value.find(m => m.id === msgId)
+  if (!msg?.proposal) return
+  msg.proposal.selected_class = { code, name, ...(extra || {}) }
+  classSearchOpen.value = null
+  classSearchQuery.value = ''
+  classSearchResults.value = []
+  // Fetch full class details to enrich the selection
+  const details = await fetchClassDetails(code)
+  if (details && msg.proposal?.selected_class?.code === code) {
+    msg.proposal.selected_class = { ...msg.proposal.selected_class, ...details }
   }
 }
 
@@ -214,6 +241,13 @@ async function loadConversation(id: string) {
       nextId = Math.max(...messages.value.map(m => m.id), 0) + 1
       awaitingAction.value = messages.value.some(m => m.type === 'duplicates_review')
       scrollToBottom()
+      // Lazy enrich selected_class for older messages that only have {code, name}
+      for (const m of messages.value) {
+        const cls = m.proposal?.selected_class
+        if (cls?.code && !cls.material_type_code && !cls.unspsc_code && !cls.article_group && !cls.sector) {
+          enrichSelectedClass(m.id, cls.code)
+        }
+      }
     } else {
       logAppError('chat:loadConversation', `HTTP ${res.status}`, { conversationId: id })
     }
@@ -384,15 +418,21 @@ async function sendMessage() {
     }
 
     // Show final proposal
+    const initialSelected = modelPrediction
+      ? { code: modelPrediction.top_k[0][0], name: modelPrediction.top_k[0][2] || '' }
+      : undefined
     replaceProcessing(processingId, {
       id: processingId, role: 'assistant', type: 'proposal',
       llm_content: JSON.stringify(llm),
       proposal: {
         request_id: requestId, short_text: shortText, long_text: longText, material_type_id: materialTypeId,
         duplicates: [], model_prediction: modelPrediction,
-        selected_class: modelPrediction ? { code: modelPrediction.top_k[0][0], name: modelPrediction.top_k[0][2] || '' } : undefined,
+        selected_class: initialSelected,
       },
     })
+    if (initialSelected) {
+      await enrichSelectedClass(processingId, initialSelected.code)
+    }
 
   } catch (e: any) {
     replaceProcessing(processingId, { id: processingId, role: 'assistant', content: `Error de conexion: ${e.message}`, type: 'error' })
@@ -428,6 +468,7 @@ async function confirmProposal(msgId: number) {
       long_text: proposal.long_text || null,
       material_type_id: proposal.material_type_id,
       class_code: proposal.selected_class?.code || null,
+      class_name: proposal.selected_class?.name || null,
       category: proposal.model_prediction?.categoria || null,
       confidence: proposal.model_prediction?.confianza || null,
       alternatives: proposal.model_prediction?.top_k || null,
@@ -442,6 +483,7 @@ async function confirmProposal(msgId: number) {
   }
 
   msg.type = 'confirmed'
+  expandedConfirmed.value.add(msg.id)
   activeRequestId.value = null
   messages.value.push({
     id: nextId++, role: 'assistant',
@@ -554,18 +596,23 @@ async function rejectDuplicates(msgId: number) {
   } catch (e: any) { logAppError('chat:rejectDuplicates:predict', e.message) }
 
   // Show proposal with prediction
+  const initialSelected = modelPrediction
+    ? { code: modelPrediction.top_k[0][0], name: modelPrediction.top_k[0][2] || '' }
+    : undefined
   const replacement: Message = {
     id: msg.id, role: 'assistant', type: 'proposal',
     proposal: {
       ...proposal,
       model_prediction: modelPrediction,
-      selected_class: modelPrediction
-        ? { code: modelPrediction.top_k[0][0], name: modelPrediction.top_k[0][2] || '' }
-        : undefined,
+      selected_class: initialSelected,
     },
   }
   const idx = messages.value.findIndex(m => m.id === msgId)
   if (idx !== -1) messages.value[idx] = replacement
+
+  if (initialSelected) {
+    await enrichSelectedClass(msg.id, initialSelected.code)
+  }
 
   isProcessing.value = false
   scrollToBottom()
@@ -769,6 +816,47 @@ onMounted(async () => {
                       ></textarea>
                     </div>
 
+                    <!-- Detalle de la clase seleccionada -->
+                    <div v-if="msg.proposal.selected_class" class="rounded-md border border-violet-500/20 bg-violet-500/5 p-3">
+                      <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
+                        <i class="fa-solid fa-tags text-violet-500 mr-1"></i>
+                        Detalle de la clase
+                      </p>
+                      <dl class="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1.5 text-sm">
+                        <dt class="text-xs text-muted-foreground">Codigo</dt>
+                        <dd class="font-mono text-xs">{{ msg.proposal.selected_class.code }}</dd>
+
+                        <dt class="text-xs text-muted-foreground">Nombre</dt>
+                        <dd>{{ msg.proposal.selected_class.name || '—' }}</dd>
+
+                        <template v-if="msg.proposal.selected_class.article_group">
+                          <dt class="text-xs text-muted-foreground">Grupo de articulo</dt>
+                          <dd>{{ msg.proposal.selected_class.article_group }}</dd>
+                        </template>
+
+                        <template v-if="msg.proposal.selected_class.sector">
+                          <dt class="text-xs text-muted-foreground">Sector</dt>
+                          <dd>{{ msg.proposal.selected_class.sector }}</dd>
+                        </template>
+
+                        <template v-if="msg.proposal.selected_class.material_type_code">
+                          <dt class="text-xs text-muted-foreground">Tipo material (clase)</dt>
+                          <dd>
+                            <span class="font-mono text-xs">{{ msg.proposal.selected_class.material_type_code }}</span>
+                            <span v-if="msg.proposal.selected_class.material_type_description" class="text-muted-foreground"> — {{ msg.proposal.selected_class.material_type_description }}</span>
+                          </dd>
+                        </template>
+
+                        <template v-if="msg.proposal.selected_class.unspsc_code">
+                          <dt class="text-xs text-muted-foreground">UNSPSC</dt>
+                          <dd>
+                            <span class="font-mono text-xs">{{ msg.proposal.selected_class.unspsc_code }}</span>
+                            <span v-if="msg.proposal.selected_class.unspsc_description" class="text-muted-foreground"> — {{ msg.proposal.selected_class.unspsc_description }}</span>
+                          </dd>
+                        </template>
+                      </dl>
+                    </div>
+
                     <div>
                       <p class="text-xs text-muted-foreground mb-1">Tipo de material (LLM)</p>
                       <Badge class="bg-amber-500/10 text-amber-600 hover:bg-amber-500/10">{{ msg.proposal.material_type_id }}</Badge>
@@ -842,7 +930,7 @@ onMounted(async () => {
                                   v-for="cls in classSearchResults"
                                   :key="cls.code"
                                   class="flex items-center justify-between px-3 py-1.5 rounded-md text-sm cursor-pointer hover:bg-muted transition-colors"
-                                  @click="selectClass(msg.id, cls.code, cls.name)"
+                                  @click="selectClass(msg.id, cls.code, cls.name, cls)"
                                 >
                                   <div class="flex flex-col">
                                     <span class="font-mono text-xs">{{ cls.code }}</span>
@@ -976,16 +1064,85 @@ onMounted(async () => {
                     </Badge>
                   </div>
 
-                  <div v-if="expandedConfirmed.has(msg.id)" class="px-4 pb-4 space-y-3 border-t pt-3">
-                    <div v-if="msg.proposal.long_text">
-                      <p class="text-xs text-muted-foreground mb-1">Descripcion larga</p>
-                      <p class="text-sm bg-muted/50 px-3 py-2 rounded-md leading-relaxed">{{ msg.proposal.long_text }}</p>
+                  <div v-if="expandedConfirmed.has(msg.id)" class="px-4 pb-4 space-y-4 border-t pt-3">
+
+                    <!-- Producto -->
+                    <div>
+                      <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
+                        <i class="fa-solid fa-box text-primary mr-1"></i>
+                        Producto
+                      </p>
+                      <dl class="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1.5 text-sm">
+                        <dt class="text-xs text-muted-foreground">Descripcion corta</dt>
+                        <dd class="font-mono text-xs">{{ msg.proposal.short_text }} <span class="text-muted-foreground">({{ msg.proposal.short_text.length }}/40)</span></dd>
+
+                        <template v-if="msg.proposal.long_text">
+                          <dt class="text-xs text-muted-foreground">Descripcion larga</dt>
+                          <dd class="text-sm leading-relaxed">{{ msg.proposal.long_text }}</dd>
+                        </template>
+
+                        <dt class="text-xs text-muted-foreground">Tipo de material</dt>
+                        <dd><Badge class="bg-amber-500/10 text-amber-600 hover:bg-amber-500/10 text-xs">{{ msg.proposal.material_type_id }}</Badge></dd>
+
+                        <template v-if="msg.proposal.request_id">
+                          <dt class="text-xs text-muted-foreground">Solicitud</dt>
+                          <dd class="font-mono text-xs">#{{ msg.proposal.request_id }}</dd>
+                        </template>
+                      </dl>
                     </div>
+
+                    <!-- Clase seleccionada -->
+                    <div v-if="msg.proposal.selected_class">
+                      <Separator class="mb-3" />
+                      <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
+                        <i class="fa-solid fa-tags text-violet-500 mr-1"></i>
+                        Clase seleccionada
+                      </p>
+                      <dl class="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1.5 text-sm">
+                        <dt class="text-xs text-muted-foreground">Codigo</dt>
+                        <dd class="font-mono text-xs">{{ msg.proposal.selected_class.code }}</dd>
+
+                        <dt class="text-xs text-muted-foreground">Nombre</dt>
+                        <dd>{{ msg.proposal.selected_class.name }}</dd>
+
+                        <template v-if="msg.proposal.selected_class.article_group">
+                          <dt class="text-xs text-muted-foreground">Grupo de articulo</dt>
+                          <dd>{{ msg.proposal.selected_class.article_group }}</dd>
+                        </template>
+
+                        <template v-if="msg.proposal.selected_class.sector">
+                          <dt class="text-xs text-muted-foreground">Sector</dt>
+                          <dd>{{ msg.proposal.selected_class.sector }}</dd>
+                        </template>
+
+                        <template v-if="msg.proposal.selected_class.material_type_code">
+                          <dt class="text-xs text-muted-foreground">Tipo material (clase)</dt>
+                          <dd>
+                            <span class="font-mono text-xs">{{ msg.proposal.selected_class.material_type_code }}</span>
+                            <span v-if="msg.proposal.selected_class.material_type_description" class="text-muted-foreground"> — {{ msg.proposal.selected_class.material_type_description }}</span>
+                          </dd>
+                        </template>
+
+                        <template v-if="msg.proposal.selected_class.unspsc_code">
+                          <dt class="text-xs text-muted-foreground">UNSPSC</dt>
+                          <dd>
+                            <span class="font-mono text-xs">{{ msg.proposal.selected_class.unspsc_code }}</span>
+                            <span v-if="msg.proposal.selected_class.unspsc_description" class="text-muted-foreground"> — {{ msg.proposal.selected_class.unspsc_description }}</span>
+                          </dd>
+                        </template>
+                      </dl>
+                    </div>
+
+                    <!-- Clasificacion ML -->
                     <template v-if="msg.proposal.model_prediction">
+                      <Separator />
                       <div>
-                        <p class="text-xs text-muted-foreground mb-2">
+                        <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
                           <i class="fa-solid fa-brain text-violet-500 mr-1"></i>
                           Clasificacion del modelo ML
+                          <span class="font-normal normal-case ml-1 text-muted-foreground">
+                            — confianza {{ (msg.proposal.model_prediction.confianza * 100).toFixed(1) }}%
+                          </span>
                         </p>
                         <div class="space-y-1.5">
                           <div
@@ -1009,6 +1166,30 @@ onMounted(async () => {
                               </div>
                             </div>
                             <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (pred[1] * 100).toFixed(0) }}%</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+
+                    <!-- Duplicados descartados -->
+                    <template v-if="msg.proposal.duplicates && msg.proposal.duplicates.length > 0">
+                      <Separator />
+                      <div>
+                        <p class="text-xs uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
+                          <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i>
+                          Duplicados revisados
+                        </p>
+                        <div class="space-y-1.5">
+                          <div
+                            v-for="dup in msg.proposal.duplicates"
+                            :key="dup.material_id"
+                            class="flex items-center justify-between px-3 py-1.5 rounded-md bg-muted/50 text-sm"
+                          >
+                            <div class="flex flex-col">
+                              <span class="font-mono text-xs">{{ dup.short_text }}</span>
+                              <span class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
+                            </div>
+                            <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
                           </div>
                         </div>
                       </div>

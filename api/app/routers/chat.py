@@ -133,6 +133,15 @@ class ModelPrediction(BaseModel):
     top_k: list[list]
 
 
+SHORT_TEXT_MAX = 40
+
+
+def _clip_short_text(value: str | None) -> str | None:
+    if value is None:
+        return None
+    return value[:SHORT_TEXT_MAX]
+
+
 def _get_material_types(db: Session) -> list[dict]:
     rows = db.execute(text("SELECT code, description FROM silver.material_types ORDER BY code")).fetchall()
     return [{"code": r[0], "description": r[1]} for r in rows]
@@ -255,7 +264,7 @@ def step_llm(body: LLMRequest, db: Session = Depends(get_db)):
     return LLMResponse(
         action=action,
         message=llm_response.get("message"),
-        short_text=llm_response.get("short_text"),
+        short_text=_clip_short_text(llm_response.get("short_text")),
         long_text=llm_response.get("long_text"),
         material_type_id=llm_response.get("material_type_id"),
         material_id=llm_response.get("material_id"),
@@ -294,6 +303,7 @@ def _format_duplicates_for_llm(duplicates: list[DuplicateMatch]) -> str:
 def step_duplicates(body: DuplicatesRequest, db: Session = Depends(get_db)):
     t0 = time.time()
 
+    short_text = _clip_short_text(body.short_text) or ""
     dup_threshold = float(os.environ.get("DUPLICADO_UMBRAL", "0.45"))
     rows = db.execute(
         text("""
@@ -303,7 +313,7 @@ def step_duplicates(body: DuplicatesRequest, db: Session = Depends(get_db)):
             ORDER BY sim DESC
             LIMIT 10
         """),
-        {"query": body.short_text, "threshold": dup_threshold},
+        {"query": short_text, "threshold": dup_threshold},
     ).fetchall()
     duplicates = [DuplicateMatch(material_id=r[0], short_text=r[1], similarity=round(float(r[2]), 3)) for r in rows]
 
@@ -436,12 +446,14 @@ class PredictResponse(BaseModel):
 def step_predict(body: PredictRequest, db: Session = Depends(get_db)):
     t0 = time.time()
 
+    short_text = _clip_short_text(body.short_text) or ""
+
     try:
         artifact = _get_artifact()
         pipeline = artifact["pipeline"]
         le = artifact["label_encoder"]
 
-        clean = preprocess_text(body.short_text)
+        clean = preprocess_text(short_text)
         probas = pipeline.predict_proba([clean])[0]
         top_indices = probas.argsort()[-3:][::-1]
 
@@ -500,6 +512,32 @@ def step_predict(body: PredictRequest, db: Session = Depends(get_db)):
 class ClassOut(BaseModel):
     code: str
     name: str
+    article_group: str | None = None
+    sector: str | None = None
+    material_type_code: str | None = None
+    material_type_description: str | None = None
+    unspsc_code: str | None = None
+    unspsc_description: str | None = None
+
+
+_CLASS_SELECT = """
+    SELECT
+        c.code, c.name, c.article_group, c.sector,
+        mt.code AS mt_code, mt.description AS mt_desc,
+        u.code AS u_code, u.description AS u_desc
+    FROM silver.classes c
+    LEFT JOIN silver.material_types mt ON mt.id = c.material_type_id
+    LEFT JOIN silver.unspsc u ON u.id = c.unspsc_id
+"""
+
+
+def _row_to_class(r) -> ClassOut:
+    return ClassOut(
+        code=r[0], name=r[1],
+        article_group=r[2], sector=r[3],
+        material_type_code=r[4], material_type_description=r[5],
+        unspsc_code=r[6], unspsc_description=r[7],
+    )
 
 
 @router.get("/classes", response_model=list[ClassOut])
@@ -507,15 +545,21 @@ def search_classes(q: str = "", db: Session = Depends(get_db)):
     if not q.strip():
         return []
     rows = db.execute(
-        text("""
-            SELECT code, name FROM silver.classes
-            WHERE code ILIKE :q OR name ILIKE :q
-            ORDER BY name
-            LIMIT 20
-        """),
+        text(_CLASS_SELECT + " WHERE c.code ILIKE :q OR c.name ILIKE :q ORDER BY c.name LIMIT 20"),
         {"q": f"%{q.strip()}%"},
     ).fetchall()
-    return [ClassOut(code=r[0], name=r[1]) for r in rows]
+    return [_row_to_class(r) for r in rows]
+
+
+@router.get("/classes/{code}", response_model=ClassOut)
+def get_class(code: str, db: Session = Depends(get_db)):
+    row = db.execute(
+        text(_CLASS_SELECT + " WHERE c.code = :code"),
+        {"code": code},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Class not found")
+    return _row_to_class(row)
 
 
 # --- Request lifecycle ---
@@ -559,6 +603,7 @@ def _resolve_material_type(db: Session, code: str) -> int | None:
 def create_request(body: CreateRequestBody, db: Session = Depends(get_db)):
     """Create a new request as pending (called when LLM generates a proposal)."""
     material_type_fk = _resolve_material_type(db, body.material_type_id)
+    clipped = _clip_short_text(body.short_text)
 
     row = db.execute(
         text("""
@@ -573,8 +618,8 @@ def create_request(body: CreateRequestBody, db: Session = Depends(get_db)):
         {
             "conversation_id": body.conversation_id,
             "material_type_id": material_type_fk,
-            "name": body.short_text,
-            "short_text": body.short_text,
+            "name": clipped,
+            "short_text": clipped,
             "long_text": body.long_text,
             "llm_elapsed_s": body.llm_elapsed_s,
         },
@@ -593,7 +638,7 @@ def update_request(request_id: int, body: UpdateRequestBody, db: Session = Depen
     if body.short_text is not None:
         sets.append("short_text = :short_text")
         sets.append("name = :short_text")
-        params["short_text"] = body.short_text
+        params["short_text"] = _clip_short_text(body.short_text)
 
     if body.long_text is not None:
         sets.append("long_text = :long_text")
