@@ -77,6 +77,7 @@ CREATE TABLE silver.conversations (
 CREATE TABLE silver.requests (
     id                      BIGSERIAL PRIMARY KEY,
     conversation_id         UUID REFERENCES silver.conversations(id) ON DELETE SET NULL,
+    created_by              BIGINT REFERENCES public.users(id),
     material_type_id        BIGINT REFERENCES silver.material_types(id),
     name                    TEXT NOT NULL,
     long_text               TEXT,
@@ -106,6 +107,8 @@ CREATE TABLE silver.requests (
     predict_elapsed_s       NUMERIC(8,3),
     processing_time_s       NUMERIC(8,3)
 );
+
+CREATE INDEX idx_requests_created_by ON silver.requests (created_by);
 
 -- Datasets para entrenamiento y prueba del modelo
 CREATE TABLE silver.dataset_train (

@@ -600,7 +600,11 @@ def _resolve_material_type(db: Session, code: str) -> int | None:
 
 
 @router.post("/requests", response_model=RequestOut, status_code=201)
-def create_request(body: CreateRequestBody, db: Session = Depends(get_db)):
+def create_request(
+    body: CreateRequestBody,
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     """Create a new request as pending (called when LLM generates a proposal)."""
     material_type_fk = _resolve_material_type(db, body.material_type_id)
     clipped = _clip_short_text(body.short_text)
@@ -608,15 +612,16 @@ def create_request(body: CreateRequestBody, db: Session = Depends(get_db)):
     row = db.execute(
         text("""
             INSERT INTO silver.requests
-                (conversation_id, material_type_id, name, short_text, long_text, status,
+                (conversation_id, created_by, material_type_id, name, short_text, long_text, status,
                  llm_completed_at, llm_elapsed_s)
             VALUES
-                (:conversation_id, :material_type_id, :name, :short_text, :long_text, 'pending',
+                (:conversation_id, :created_by, :material_type_id, :name, :short_text, :long_text, 'pending',
                  now(), :llm_elapsed_s)
             RETURNING id, status
         """),
         {
             "conversation_id": body.conversation_id,
+            "created_by": user["id"],
             "material_type_id": material_type_fk,
             "name": clipped,
             "short_text": clipped,

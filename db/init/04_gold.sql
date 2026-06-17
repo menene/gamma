@@ -94,6 +94,53 @@ SELECT
 FROM bronze.duplicate_logs d
 GROUP BY 1;
 
+-- Vista: solicitudes enriquecidas con el usuario que las creo (para Power BI)
+CREATE OR REPLACE VIEW gold.requests_users AS
+SELECT
+    r.id                AS request_id,
+    r.created_at,
+    r.confirmed_at,
+    r.discarded_at,
+    r.exported_at,
+    r.status,
+    r.material_type_id,
+    mt.code             AS material_type_code,
+    mt.description      AS material_type_description,
+    r.name              AS material_name,
+    r.short_text,
+    r.long_text,
+    r.category          AS class_code,
+    r.confidence,
+    r.corrected,
+    r.auto_resolved,
+    r.processing_time_s,
+    r.llm_elapsed_s,
+    r.duplicates_elapsed_s,
+    r.predict_elapsed_s,
+    r.created_by        AS user_id,
+    u.email             AS user_email,
+    u.name              AS user_name
+FROM silver.requests r
+LEFT JOIN silver.material_types mt ON mt.id = r.material_type_id
+LEFT JOIN public.users u ON u.id = r.created_by;
+
+-- KPI: solicitudes por usuario por semana
+CREATE OR REPLACE VIEW gold.kpi_requests_by_user AS
+SELECT
+    date_trunc('week', r.created_at)                        AS week,
+    r.created_by                                            AS user_id,
+    u.email                                                 AS user_email,
+    u.name                                                  AS user_name,
+    count(*)                                                AS total_requests,
+    count(*) FILTER (WHERE r.status = 'confirmed')          AS confirmed,
+    count(*) FILTER (WHERE r.status = 'discarded')          AS discarded,
+    count(*) FILTER (WHERE r.status = 'existing_match')     AS existing_matches,
+    count(*) FILTER (WHERE r.corrected)                     AS corrections,
+    avg(r.processing_time_s)                                AS avg_processing_s
+FROM silver.requests r
+LEFT JOIN public.users u ON u.id = r.created_by
+GROUP BY 1, 2, 3, 4;
+
 -- Vista: resumen del maestro por tipo de material
 CREATE OR REPLACE VIEW gold.materials_by_type AS
 SELECT
