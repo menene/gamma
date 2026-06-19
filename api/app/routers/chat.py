@@ -47,9 +47,15 @@ class ConversationSummary(BaseModel):
 # --- List conversations ---
 
 @router.get("/conversations", response_model=list[ConversationSummary])
-def list_conversations(db: Session = Depends(get_db)):
+def list_conversations(db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
     rows = db.execute(
-        text("SELECT id, title, created_at, updated_at FROM silver.conversations ORDER BY updated_at DESC")
+        text("""
+            SELECT id, title, created_at, updated_at
+            FROM silver.conversations
+            WHERE created_by = :user_id
+            ORDER BY updated_at DESC
+        """),
+        {"user_id": user["id"]},
     ).fetchall()
     return [ConversationSummary(id=r[0], title=r[1], created_at=r[2], updated_at=r[3]) for r in rows]
 
@@ -57,14 +63,18 @@ def list_conversations(db: Session = Depends(get_db)):
 # --- Create conversation ---
 
 @router.post("/conversations", response_model=ConversationOut, status_code=201)
-def create_conversation(body: ConversationCreate, db: Session = Depends(get_db)):
+def create_conversation(
+    body: ConversationCreate,
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     row = db.execute(
         text("""
-            INSERT INTO silver.conversations (title)
-            VALUES (:title)
+            INSERT INTO silver.conversations (title, created_by)
+            VALUES (:title, :created_by)
             RETURNING id, title, messages, created_at, updated_at
         """),
-        {"title": body.title},
+        {"title": body.title, "created_by": user["id"]},
     ).fetchone()
     db.commit()
     return ConversationOut(id=row[0], title=row[1], messages=row[2], created_at=row[3], updated_at=row[4])
@@ -73,10 +83,18 @@ def create_conversation(body: ConversationCreate, db: Session = Depends(get_db))
 # --- Get conversation ---
 
 @router.get("/conversations/{conv_id}", response_model=ConversationOut)
-def get_conversation(conv_id: UUID, db: Session = Depends(get_db)):
+def get_conversation(
+    conv_id: UUID,
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     row = db.execute(
-        text("SELECT id, title, messages, created_at, updated_at FROM silver.conversations WHERE id = :id"),
-        {"id": str(conv_id)},
+        text("""
+            SELECT id, title, messages, created_at, updated_at
+            FROM silver.conversations
+            WHERE id = :id AND created_by = :user_id
+        """),
+        {"id": str(conv_id), "user_id": user["id"]},
     ).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -86,9 +104,14 @@ def get_conversation(conv_id: UUID, db: Session = Depends(get_db)):
 # --- Update conversation ---
 
 @router.patch("/conversations/{conv_id}", response_model=ConversationOut)
-def update_conversation(conv_id: UUID, body: ConversationUpdate, db: Session = Depends(get_db)):
+def update_conversation(
+    conv_id: UUID,
+    body: ConversationUpdate,
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     sets = ["updated_at = now()"]
-    params: dict = {"id": str(conv_id)}
+    params: dict = {"id": str(conv_id), "user_id": user["id"]}
 
     if body.title is not None:
         sets.append("title = :title")
@@ -97,7 +120,11 @@ def update_conversation(conv_id: UUID, body: ConversationUpdate, db: Session = D
         sets.append("messages = CAST(:messages AS jsonb)")
         params["messages"] = _json.dumps(body.messages)
 
-    query = f"UPDATE silver.conversations SET {', '.join(sets)} WHERE id = :id RETURNING id, title, messages, created_at, updated_at"
+    query = (
+        f"UPDATE silver.conversations SET {', '.join(sets)} "
+        "WHERE id = :id AND created_by = :user_id "
+        "RETURNING id, title, messages, created_at, updated_at"
+    )
     row = db.execute(text(query), params).fetchone()
     db.commit()
 
@@ -109,10 +136,14 @@ def update_conversation(conv_id: UUID, body: ConversationUpdate, db: Session = D
 # --- Delete conversation ---
 
 @router.delete("/conversations/{conv_id}", status_code=204)
-def delete_conversation(conv_id: UUID, db: Session = Depends(get_db)):
+def delete_conversation(
+    conv_id: UUID,
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     result = db.execute(
-        text("DELETE FROM silver.conversations WHERE id = :id"),
-        {"id": str(conv_id)},
+        text("DELETE FROM silver.conversations WHERE id = :id AND created_by = :user_id"),
+        {"id": str(conv_id), "user_id": user["id"]},
     )
     db.commit()
     if result.rowcount == 0:
@@ -222,12 +253,16 @@ class LLMResponse(BaseModel):
 
 
 @router.post("/llm", response_model=LLMResponse)
-def step_llm(body: LLMRequest, db: Session = Depends(get_db)):
+def step_llm(
+    body: LLMRequest,
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     t0 = time.time()
 
     row = db.execute(
-        text("SELECT messages FROM silver.conversations WHERE id = :id"),
-        {"id": body.conversation_id},
+        text("SELECT messages FROM silver.conversations WHERE id = :id AND created_by = :user_id"),
+        {"id": body.conversation_id, "user_id": user["id"]},
     ).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -300,7 +335,11 @@ def _format_duplicates_for_llm(duplicates: list[DuplicateMatch]) -> str:
 
 
 @router.post("/duplicates", response_model=DuplicatesResponse)
-def step_duplicates(body: DuplicatesRequest, db: Session = Depends(get_db)):
+def step_duplicates(
+    body: DuplicatesRequest,
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     t0 = time.time()
 
     short_text = _clip_short_text(body.short_text) or ""
@@ -327,10 +366,10 @@ def step_duplicates(body: DuplicatesRequest, db: Session = Depends(get_db)):
     dup_context = _format_duplicates_for_llm(duplicates)
     dup_message = None
 
-    # Load conversation for context
+    # Load conversation for context (only if owned by this user)
     conv_row = db.execute(
-        text("SELECT messages FROM silver.conversations WHERE id = :id"),
-        {"id": body.conversation_id},
+        text("SELECT messages FROM silver.conversations WHERE id = :id AND created_by = :user_id"),
+        {"id": body.conversation_id, "user_id": user["id"]},
     ).fetchone()
     existing_messages = (conv_row[0] if conv_row and conv_row[0] else [])
     history = _build_conversation_history(existing_messages)

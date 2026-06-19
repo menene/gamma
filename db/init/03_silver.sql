@@ -67,11 +67,14 @@ CREATE INDEX idx_materials_short_text_trgm ON silver.materials
 -- Conversaciones del chatbot
 CREATE TABLE silver.conversations (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_by          BIGINT REFERENCES public.users(id),
     title               TEXT NOT NULL DEFAULT 'Nueva conversacion',
     messages            JSONB NOT NULL DEFAULT '[]'::jsonb,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE INDEX idx_conversations_created_by ON silver.conversations (created_by);
 
 -- Solicitudes de alta de material
 CREATE TABLE silver.requests (
