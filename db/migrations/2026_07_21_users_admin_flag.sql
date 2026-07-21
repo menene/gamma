@@ -1,17 +1,22 @@
--- ============================================================
--- GOLD: vistas y parametros para dashboard (Power BI)
--- ============================================================
+-- Idempotent migration: add an `admin` flag to users. Admin accounts are used
+-- for testing; their data (requests, materials, duplicate decisions) is excluded
+-- from every gold reporting view so test noise stays out of the dashboards.
+ALTER TABLE public.users
+    ADD COLUMN IF NOT EXISTS admin BOOLEAN NOT NULL DEFAULT false;
 
-CREATE TABLE gold.parameters (
-    id      TEXT PRIMARY KEY,
-    value   NUMERIC
-);
+-- Recreate the gold views with the admin exclusion. A LEFT JOIN to users keeps
+-- rows with no creator (legacy / ETL-imported) via COALESCE(u.admin, false).
+-- Drop first: the running DB may have older column names, which CREATE OR
+-- REPLACE cannot change. These views are independent (no view-to-view deps).
+DROP VIEW IF EXISTS gold.kpi_processing_time;
+DROP VIEW IF EXISTS gold.kpi_quality;
+DROP VIEW IF EXISTS gold.kpi_savings;
+DROP VIEW IF EXISTS gold.kpi_step_breakdown;
+DROP VIEW IF EXISTS gold.kpi_duplicates;
+DROP VIEW IF EXISTS gold.requests_users;
+DROP VIEW IF EXISTS gold.kpi_requests_by_user;
+DROP VIEW IF EXISTS gold.materials_by_type;
 
-INSERT INTO gold.parameters (id, value) VALUES
-    ('manual_time_s', 0),
-    ('hourly_rate', 0);
-
--- KPI: tiempos de procesamiento por semana
 CREATE OR REPLACE VIEW gold.kpi_processing_time AS
 SELECT
     date_trunc('week', r.confirmed_at)      AS week,
@@ -29,7 +34,6 @@ WHERE r.confirmed_at IS NOT NULL
   AND COALESCE(u.admin, false) = false
 GROUP BY 1;
 
--- KPI: calidad del modelo por semana
 CREATE OR REPLACE VIEW gold.kpi_quality AS
 SELECT
     date_trunc('week', r.confirmed_at)      AS week,
@@ -44,7 +48,6 @@ WHERE (r.confirmed_at IS NOT NULL OR r.status = 'existing_match')
   AND COALESCE(u.admin, false) = false
 GROUP BY 1;
 
--- KPI: monetizacion (ahorro de horas-hombre)
 CREATE OR REPLACE VIEW gold.kpi_savings AS
 WITH p AS (
     SELECT
@@ -65,25 +68,20 @@ WHERE r.confirmed_at IS NOT NULL
   AND COALESCE(u.admin, false) = false
 GROUP BY 1, p.manual_time, p.rate;
 
--- KPI: tiempos por paso (detalle para optimizacion)
 CREATE OR REPLACE VIEW gold.kpi_step_breakdown AS
 SELECT
     date_trunc('week', r.created_at) AS week,
     count(*) AS total_requests,
-    -- Machine time averages
     avg(r.llm_elapsed_s) AS avg_llm_s,
     avg(r.duplicates_elapsed_s) AS avg_dup_search_s,
     avg(r.predict_elapsed_s) AS avg_predict_s,
     avg(r.processing_time_s) AS avg_machine_total_s,
-    -- User time averages
     avg(EXTRACT(EPOCH FROM (r.duplicates_decided_at - r.duplicates_completed_at)))
         FILTER (WHERE r.duplicates_decided_at IS NOT NULL) AS avg_dup_decision_s,
     avg(EXTRACT(EPOCH FROM (r.confirmed_at - r.predict_completed_at)))
         FILTER (WHERE r.confirmed_at IS NOT NULL AND r.predict_completed_at IS NOT NULL) AS avg_user_review_s,
-    -- Wall time
     avg(EXTRACT(EPOCH FROM (COALESCE(r.confirmed_at, r.discarded_at) - r.created_at)))
         FILTER (WHERE r.confirmed_at IS NOT NULL OR r.discarded_at IS NOT NULL) AS avg_wall_time_s,
-    -- Outcomes
     count(*) FILTER (WHERE r.status = 'confirmed') AS confirmed,
     count(*) FILTER (WHERE r.status = 'discarded') AS discarded,
     count(*) FILTER (WHERE r.status = 'existing_match') AS existing_matches
@@ -92,7 +90,6 @@ LEFT JOIN public.users u ON u.id = r.created_by
 WHERE COALESCE(u.admin, false) = false
 GROUP BY 1;
 
--- KPI: duplicados aceptados vs rechazados
 CREATE OR REPLACE VIEW gold.kpi_duplicates AS
 SELECT
     date_trunc('week', d.logged_at) AS week,
@@ -106,7 +103,6 @@ LEFT JOIN public.users u ON u.id = r.created_by
 WHERE COALESCE(u.admin, false) = false
 GROUP BY 1;
 
--- Vista: solicitudes enriquecidas con el usuario que las creo (para Power BI)
 CREATE OR REPLACE VIEW gold.requests_users AS
 SELECT
     r.id                AS request_id,
@@ -125,15 +121,7 @@ SELECT
     r.confidence,
     r.corrected,
     r.auto_resolved,
-    -- Nunca dejar processing_time_s en blanco: si no se calculo al confirmar
-    -- (solicitudes heredadas o 'existing_match'), reconstruirlo de los pasos.
-    -- Queda en 0 solo cuando de verdad no se midio ningun tiempo.
-    COALESCE(
-        r.processing_time_s,
-        COALESCE(r.llm_elapsed_s, 0)
-            + COALESCE(r.duplicates_elapsed_s, 0)
-            + COALESCE(r.predict_elapsed_s, 0)
-    )                   AS processing_time_s,
+    r.processing_time_s,
     r.llm_elapsed_s,
     r.duplicates_elapsed_s,
     r.predict_elapsed_s,
@@ -143,18 +131,8 @@ SELECT
 FROM silver.requests r
 LEFT JOIN silver.material_types mt ON mt.id = r.material_type_id
 LEFT JOIN public.users u ON u.id = r.created_by
-WHERE COALESCE(u.admin, false) = false
-  -- Excluir solicitudes heredadas sin ningun tiempo medido (no se pueden usar).
-  -- Basta que exista al menos un valor real (incluye 'existing_match' nuevas,
-  -- que traen llm+duplicates aunque no lleguen a predict).
-  AND (
-      r.processing_time_s IS NOT NULL
-      OR r.llm_elapsed_s IS NOT NULL
-      OR r.duplicates_elapsed_s IS NOT NULL
-      OR r.predict_elapsed_s IS NOT NULL
-  );
+WHERE COALESCE(u.admin, false) = false;
 
--- KPI: solicitudes por usuario por semana
 CREATE OR REPLACE VIEW gold.kpi_requests_by_user AS
 SELECT
     date_trunc('week', r.created_at)                        AS week,
@@ -172,7 +150,6 @@ LEFT JOIN public.users u ON u.id = r.created_by
 WHERE COALESCE(u.admin, false) = false
 GROUP BY 1, 2, 3, 4;
 
--- Vista: resumen del maestro por tipo de material
 CREATE OR REPLACE VIEW gold.materials_by_type AS
 SELECT
     t.code              AS material_type_code,

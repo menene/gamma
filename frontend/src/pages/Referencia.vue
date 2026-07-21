@@ -231,6 +231,45 @@ const derGold = `erDiagram
         NUMERIC avg_search_s
     }
 
+    kpi_requests_by_user {
+        TIMESTAMPTZ week
+        BIGINT user_id
+        TEXT user_email
+        TEXT user_name
+        BIGINT total_requests
+        BIGINT confirmed
+        BIGINT discarded
+        BIGINT existing_matches
+        BIGINT corrections
+        NUMERIC avg_processing_s
+    }
+
+    requests_users {
+        BIGINT request_id
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ confirmed_at
+        TIMESTAMPTZ discarded_at
+        TIMESTAMPTZ exported_at
+        TEXT status
+        BIGINT material_type_id
+        TEXT material_type_code
+        TEXT material_type_description
+        TEXT material_name
+        TEXT short_text
+        TEXT long_text
+        TEXT class_code
+        NUMERIC confidence
+        BOOLEAN corrected
+        BOOLEAN auto_resolved
+        NUMERIC processing_time_s
+        NUMERIC llm_elapsed_s
+        NUMERIC duplicates_elapsed_s
+        NUMERIC predict_elapsed_s
+        BIGINT user_id
+        TEXT user_email
+        TEXT user_name
+    }
+
     materials_by_type {
         TEXT material_type_code
         TEXT type_description
@@ -377,6 +416,53 @@ const derGold = `erDiagram
               <strong class="text-foreground">desglose por paso</strong> (tiempo maquina vs tiempo usuario, wall time total,
               outcomes por estado). Power BI se conecta directamente a este esquema.
             </p>
+            <p class="mb-2">
+              Todas las vistas de solicitudes, materiales y usuarios <strong class="text-foreground">excluyen las cuentas admin</strong>
+              (usadas para pruebas), de modo que los indicadores solo reflejan actividad real y no ruido de testing.
+            </p>
+
+            <h5 class="text-foreground font-medium mt-4 mb-2">Vistas disponibles</h5>
+            <p class="mb-2">
+              <strong class="text-foreground">kpi_processing_time:</strong> tiempos de procesamiento por semana sobre solicitudes
+              confirmadas. Muestra cantidad de materiales, promedio de tiempo total y por paso (LLM, duplicados, prediccion), tiempo
+              de revision del usuario, tiempo de decision de duplicados y la tasa de resolucion automatica.
+            </p>
+            <p class="mb-2">
+              <strong class="text-foreground">kpi_quality:</strong> calidad del modelo por semana. Muestra accuracy (proporcion de
+              clasificaciones no corregidas), confianza promedio, cantidad de coincidencias con material existente y cuantas
+              clasificaciones corrigio el usuario.
+            </p>
+            <p class="mb-2">
+              <strong class="text-foreground">kpi_savings:</strong> monetizacion por semana. Cruza el tiempo de procesamiento con los
+              parametros configurables para mostrar horas-hombre ahorradas y su equivalente en quetzales frente al proceso manual.
+            </p>
+            <p class="mb-2">
+              <strong class="text-foreground">kpi_step_breakdown:</strong> desglose fino por paso (por semana de creacion, todas las
+              solicitudes). Separa tiempo maquina vs tiempo de decision humana, muestra el wall time total de punta a punta y los
+              outcomes por estado (confirmadas, descartadas, coincidencias existentes).
+            </p>
+            <p class="mb-2">
+              <strong class="text-foreground">kpi_duplicates:</strong> decisiones sobre duplicados por semana. Muestra total de
+              decisiones, cuantos duplicados se aceptaron (se reuso un material existente y no se creo uno nuevo) vs cuantos se
+              rechazaron (se siguio con el alta), y el tiempo promedio de busqueda.
+            </p>
+            <p class="mb-2">
+              <strong class="text-foreground">kpi_requests_by_user:</strong> actividad semanal desglosada por usuario. Muestra el total
+              de solicitudes y su conteo por estado (confirmadas, descartadas, coincidencias existentes), correcciones y tiempo de
+              procesamiento promedio.
+            </p>
+            <p class="mb-2">
+              <strong class="text-foreground">requests_users:</strong> vista de detalle, una fila por solicitud enriquecida con el
+              tipo de material, la clase, las metricas de tiempo y el usuario que la creo. El tiempo de procesamiento se reconstruye
+              de los pasos cuando no se calculo al confirmar, y se excluyen las solicitudes heredadas que no tienen ningun tiempo
+              medido (no utilizables).
+            </p>
+            <p class="mb-4">
+              <strong class="text-foreground">materials_by_type:</strong> resumen del maestro de materiales agrupado por tipo de
+              material, ordenado de mayor a menor cantidad. Incluye los materiales importados por ETL y excluye los creados por
+              cuentas admin.
+            </p>
+
             <p class="mb-4">
               Los parametros configurables (<code>manual_time_s</code> y <code>hourly_rate</code>) definen la linea base del proceso
               manual y la tarifa horaria para calcular el ahorro monetario.

@@ -22,7 +22,7 @@ async function logAppError(source: string, message: string, details?: Record<str
 }
 
 interface Duplicate {
-  material_id: string
+  material_id: string | null  // null while the material is pending a SAP code
   short_text: string
   similarity: number
 }
@@ -105,6 +105,8 @@ async function enrichSelectedClass(msgId: number, code: string) {
   const msg = messages.value.find(m => m.id === msgId)
   if (msg?.proposal?.selected_class?.code === code) {
     msg.proposal.selected_class = { ...msg.proposal.selected_class, ...details }
+    // The class is authoritative for material type — override the LLM guess
+    if (details.material_type_code) msg.proposal.material_type_id = details.material_type_code
   }
 }
 
@@ -127,6 +129,8 @@ async function selectClass(msgId: number, code: string, name: string, extra?: Pa
   const details = await fetchClassDetails(code)
   if (details && msg.proposal?.selected_class?.code === code) {
     msg.proposal.selected_class = { ...msg.proposal.selected_class, ...details }
+    // The class is authoritative for material type — override the LLM guess
+    if (details.material_type_code) msg.proposal.material_type_id = details.material_type_code
   }
 }
 
@@ -466,7 +470,7 @@ async function confirmProposal(msgId: number) {
     const ok = await patchRequest(rid, {
       short_text: proposal.short_text,
       long_text: proposal.long_text || null,
-      material_type_id: proposal.material_type_id,
+      material_type_id: proposal.selected_class?.material_type_code || proposal.material_type_id,
       class_code: proposal.selected_class?.code || null,
       class_name: proposal.selected_class?.name || null,
       category: proposal.model_prediction?.categoria || null,
@@ -539,13 +543,14 @@ async function acceptDuplicate(msgId: number, dup: Duplicate) {
     await patchRequest(msg.proposal.request_id, { status: 'existing_match', material_id: dup.material_id })
   }
 
+  const dupLabel = dup.material_id || dup.short_text
   msg.type = 'existing_match'
-  msg.content = `Material existente seleccionado: ${dup.short_text} (${dup.material_id})`
+  msg.content = `Material existente seleccionado: ${dup.short_text}${dup.material_id ? ` (${dup.material_id})` : ''}`
   activeRequestId.value = null
 
   messages.value.push({
     id: nextId++, role: 'assistant',
-    content: `Se selecciono el material existente ${dup.material_id}. Si necesitas dar de alta otro material, seguimos.`,
+    content: `Se selecciono el material existente ${dupLabel}. Si necesitas dar de alta otro material, seguimos.`,
     type: 'text',
   })
   scrollToBottom()
@@ -844,13 +849,14 @@ onMounted(async () => {
                         </p>
                         <div class="space-y-1.5">
                           <div
-                            v-for="dup in msg.proposal.duplicates"
-                            :key="dup.material_id"
+                            v-for="(dup, di) in msg.proposal.duplicates"
+                            :key="dup.material_id ?? di"
                             class="flex items-center justify-between px-3 py-1.5 rounded-md bg-background/60 text-sm"
                           >
                             <div class="flex flex-col">
                               <span class="font-mono text-xs">{{ dup.short_text }}</span>
-                              <span class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
+                              <span v-if="dup.material_id" class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
+                              <span v-else class="text-[10px] text-muted-foreground italic">Codigo pendiente</span>
                             </div>
                             <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
                           </div>
@@ -900,8 +906,9 @@ onMounted(async () => {
                     </div>
 
                     <div>
-                      <p class="text-xs text-muted-foreground mb-1">Tipo de material (LLM)</p>
-                      <Badge class="bg-amber-500/10 text-amber-600 hover:bg-amber-500/10">{{ msg.proposal.material_type_id }}</Badge>
+                      <p class="text-xs text-muted-foreground mb-1">Tipo de material</p>
+                      <Badge class="bg-amber-500/10 text-amber-600 hover:bg-amber-500/10">{{ msg.proposal.selected_class?.material_type_code || msg.proposal.material_type_id }}</Badge>
+                      <span v-if="msg.proposal.selected_class?.material_type_description" class="text-xs text-muted-foreground ml-2">{{ msg.proposal.selected_class.material_type_description }}</span>
                     </div>
 
                     <template v-if="msg.proposal.model_prediction">
@@ -1024,14 +1031,15 @@ onMounted(async () => {
 
                     <div v-if="msg.proposal?.duplicates?.length" class="space-y-2">
                       <div
-                        v-for="dup in msg.proposal.duplicates"
-                        :key="dup.material_id"
+                        v-for="(dup, di) in msg.proposal.duplicates"
+                        :key="dup.material_id ?? di"
                         class="flex items-center justify-between px-3 py-2 rounded-md border bg-amber-500/5 border-amber-500/20 text-sm cursor-pointer hover:bg-amber-500/10 transition-colors"
                         @click="acceptDuplicate(msg.id, dup)"
                       >
                         <div class="flex flex-col">
                           <span class="font-mono text-xs">{{ dup.short_text }}</span>
-                          <span class="text-[10px] text-muted-foreground">ID: {{ dup.material_id }}</span>
+                          <span v-if="dup.material_id" class="text-[10px] text-muted-foreground">ID: {{ dup.material_id }}</span>
+                          <span v-else class="text-[10px] text-muted-foreground italic">Codigo pendiente</span>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                           <Badge variant="outline" class="text-xs">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
@@ -1077,7 +1085,7 @@ onMounted(async () => {
 
                   <div class="px-4 py-2 flex items-center gap-2 flex-wrap">
                     <p class="text-xs font-mono text-muted-foreground">{{ msg.proposal.short_text }}</p>
-                    <Badge class="text-xs bg-amber-500/10 text-amber-600 hover:bg-amber-500/10 shrink-0">{{ msg.proposal.material_type_id }}</Badge>
+                    <Badge class="text-xs bg-amber-500/10 text-amber-600 hover:bg-amber-500/10 shrink-0">{{ msg.proposal.selected_class?.material_type_code || msg.proposal.material_type_id }}</Badge>
                     <Badge v-if="msg.proposal.selected_class" class="text-xs bg-violet-500/10 text-violet-600 hover:bg-violet-500/10 shrink-0">
                       {{ msg.proposal.selected_class.code }} — {{ msg.proposal.selected_class.name }}
                     </Badge>
@@ -1101,7 +1109,7 @@ onMounted(async () => {
                         </template>
 
                         <dt class="text-xs text-muted-foreground">Tipo de material</dt>
-                        <dd><Badge class="bg-amber-500/10 text-amber-600 hover:bg-amber-500/10 text-xs">{{ msg.proposal.material_type_id }}</Badge></dd>
+                        <dd><Badge class="bg-amber-500/10 text-amber-600 hover:bg-amber-500/10 text-xs">{{ msg.proposal.selected_class?.material_type_code || msg.proposal.material_type_id }}</Badge></dd>
 
                         <template v-if="msg.proposal.request_id">
                           <dt class="text-xs text-muted-foreground">Solicitud</dt>
@@ -1138,13 +1146,14 @@ onMounted(async () => {
                         </p>
                         <div class="space-y-1.5">
                           <div
-                            v-for="dup in msg.proposal.duplicates"
-                            :key="dup.material_id"
+                            v-for="(dup, di) in msg.proposal.duplicates"
+                            :key="dup.material_id ?? di"
                             class="flex items-center justify-between px-3 py-1.5 rounded-md bg-background/60 text-sm"
                           >
                             <div class="flex flex-col">
                               <span class="font-mono text-xs">{{ dup.short_text }}</span>
-                              <span class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
+                              <span v-if="dup.material_id" class="text-[10px] text-muted-foreground">{{ dup.material_id }}</span>
+                              <span v-else class="text-[10px] text-muted-foreground italic">Codigo pendiente</span>
                             </div>
                             <Badge variant="outline" class="text-xs ml-2 shrink-0">{{ (dup.similarity * 100).toFixed(0) }}%</Badge>
                           </div>

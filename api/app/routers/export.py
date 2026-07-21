@@ -63,6 +63,10 @@ def list_exportable_requests(
     if exclude_exported:
         where_clauses.append("r.exported_at IS NULL")
 
+    # Exclude requests created by admin (testing) accounts so test data never
+    # reaches the export queue / material master.
+    where_clauses.append("COALESCE(u.admin, false) = false")
+
     where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
 
     rows = db.execute(
@@ -73,8 +77,10 @@ def list_exportable_requests(
                    r.confidence, r.corrected, r.status,
                    r.created_at, r.confirmed_at, r.exported_at
             FROM silver.requests r
-            LEFT JOIN silver.material_types mt ON mt.id = r.material_type_id
             LEFT JOIN silver.classes c ON c.code = r.category
+            -- The class is authoritative for material type; fall back to the stored value
+            LEFT JOIN silver.material_types mt ON mt.id = COALESCE(c.material_type_id, r.material_type_id)
+            LEFT JOIN public.users u ON u.id = r.created_by
             {where_sql}
             ORDER BY r.confirmed_at DESC NULLS LAST, r.created_at DESC
             LIMIT 500
@@ -128,9 +134,12 @@ def export_xlsx(body: ExportRequest, db: Session = Depends(get_db)):
                    r.llm_elapsed_s, r.duplicates_elapsed_s, r.predict_elapsed_s,
                    r.processing_time_s
             FROM silver.requests r
-            LEFT JOIN silver.material_types mt ON mt.id = r.material_type_id
             LEFT JOIN silver.classes c ON c.code = r.category
+            -- The class is authoritative for material type; fall back to the stored value
+            LEFT JOIN silver.material_types mt ON mt.id = COALESCE(c.material_type_id, r.material_type_id)
+            LEFT JOIN public.users u ON u.id = r.created_by
             WHERE r.id IN ({placeholders})
+              AND COALESCE(u.admin, false) = false
             ORDER BY r.id
         """),
         params,
@@ -205,9 +214,39 @@ def export_xlsx(body: ExportRequest, db: Session = Depends(get_db)):
     wb.save(buffer)
     buffer.seek(0)
 
-    # Mark as exported
+    # Move each exported request into the material master so it can be suggested
+    # as a duplicate for future similar materials. The SAP code is still pending
+    # (NULL) at this point — it gets reconciled later. Idempotent per request.
     db.execute(
-        text(f"UPDATE silver.requests SET exported_at = now() WHERE id IN ({placeholders})"),
+        text(f"""
+            INSERT INTO silver.materials (code, class_id, short_text, source_request_id)
+            SELECT NULL, c.id, r.short_text, r.id
+            FROM silver.requests r
+            LEFT JOIN silver.classes c ON c.code = r.category
+            LEFT JOIN public.users u ON u.id = r.created_by
+            WHERE r.id IN ({placeholders})
+              AND r.short_text IS NOT NULL
+              AND COALESCE(u.admin, false) = false
+            ON CONFLICT (source_request_id) WHERE source_request_id IS NOT NULL
+            DO UPDATE SET short_text = EXCLUDED.short_text,
+                          class_id   = EXCLUDED.class_id,
+                          updated_at = now()
+        """),
+        params,
+    )
+
+    # Mark as exported: stamp the timestamp and advance the lifecycle status.
+    # Skip admin (testing) requests; NOT EXISTS keeps legacy rows with no creator.
+    db.execute(
+        text(f"""
+            UPDATE silver.requests
+            SET exported_at = now(), status = 'exported'
+            WHERE id IN ({placeholders})
+              AND NOT EXISTS (
+                  SELECT 1 FROM public.users u
+                  WHERE u.id = silver.requests.created_by AND u.admin
+              )
+        """),
         params,
     )
     db.commit()

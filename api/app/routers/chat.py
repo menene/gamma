@@ -153,7 +153,7 @@ def delete_conversation(
 # --- Shared schemas & helpers ---
 
 class DuplicateMatch(BaseModel):
-    material_id: str
+    material_id: str | None = None  # NULL for materials still pending a SAP code
     short_text: str
     similarity: float
 
@@ -688,18 +688,33 @@ def update_request(request_id: int, body: UpdateRequestBody, db: Session = Depen
         sets.append("long_text = :long_text")
         params["long_text"] = body.long_text
 
+    # Material type resolution: the selected class is authoritative and overrides
+    # the LLM guess. Fall back to an explicit material_type_id only when no class.
+    mt_fk = None
+    set_mt = False
     if body.material_type_id is not None:
         mt_fk = _resolve_material_type(db, body.material_type_id)
-        sets.append("material_type_id = :material_type_id")
-        params["material_type_id"] = mt_fk
+        set_mt = True
 
     if body.class_code is not None or body.category is not None:
         selected = body.class_code or body.category
         sets.append("category = :category")
         params["category"] = selected
+        # The class carries the correct material_type_id — take it from there
+        class_mt = db.execute(
+            text("SELECT material_type_id FROM silver.classes WHERE code = :code"),
+            {"code": selected},
+        ).fetchone()
+        if class_mt and class_mt[0] is not None:
+            mt_fk = class_mt[0]
+            set_mt = True
         # Detect correction
         if body.class_code and body.category and body.class_code != body.category:
             sets.append("corrected = true")
+
+    if set_mt:
+        sets.append("material_type_id = :material_type_id")
+        params["material_type_id"] = mt_fk
 
     if body.confidence is not None:
         sets.append("confidence = :confidence")
