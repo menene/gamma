@@ -121,7 +121,14 @@ SELECT
     r.confidence,
     r.corrected,
     r.auto_resolved,
-    r.processing_time_s,
+    -- Nunca dejar processing_time_s en blanco: reconstruir de los pasos cuando
+    -- no se calculo al confirmar (queda 0 solo si no se midio ninguna fase).
+    COALESCE(
+        r.processing_time_s,
+        COALESCE(r.llm_elapsed_s, 0)
+            + COALESCE(r.duplicates_elapsed_s, 0)
+            + COALESCE(r.predict_elapsed_s, 0)
+    )                   AS processing_time_s,
     r.llm_elapsed_s,
     r.duplicates_elapsed_s,
     r.predict_elapsed_s,
@@ -131,7 +138,14 @@ SELECT
 FROM silver.requests r
 LEFT JOIN silver.material_types mt ON mt.id = r.material_type_id
 LEFT JOIN public.users u ON u.id = r.created_by
-WHERE COALESCE(u.admin, false) = false;
+WHERE COALESCE(u.admin, false) = false
+  -- Excluir solicitudes heredadas sin ningun tiempo medido (no utilizables).
+  AND (
+      r.processing_time_s IS NOT NULL
+      OR r.llm_elapsed_s IS NOT NULL
+      OR r.duplicates_elapsed_s IS NOT NULL
+      OR r.predict_elapsed_s IS NOT NULL
+  );
 
 CREATE OR REPLACE VIEW gold.kpi_requests_by_user AS
 SELECT
