@@ -10,6 +10,7 @@ const router = createRouter({
     { path: '/datos', component: () => import('@/pages/Datos.vue') },
     { path: '/referencia', component: () => import('@/pages/Referencia.vue') },
     { path: '/lab', component: () => import('@/pages/Lab.vue') },
+    { path: '/ayuda', component: () => import('@/pages/Ayuda.vue') },
     { path: '/chat', component: () => import('@/pages/Chat.vue') },
   ],
 })

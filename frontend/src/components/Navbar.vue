@@ -17,6 +17,7 @@ const protectedLinks = [
   { label: 'Datos', to: '/datos', icon: 'fa-solid fa-database' },
   { label: 'Referencia', to: '/referencia', icon: 'fa-solid fa-book' },
   { label: 'Lab', to: '/lab', icon: 'fa-solid fa-flask' },
+  { label: 'Ayuda', to: '/ayuda', icon: 'fa-solid fa-circle-question' },
 ]
 
 const links = computed(() =>
