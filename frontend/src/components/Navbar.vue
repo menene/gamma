@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
@@ -52,6 +53,7 @@ function handleLogout() {
             </a>
           </Button>
           <Separator orientation="vertical" class="mx-2 h-6" />
+          <ThemeToggle class="mr-1" />
           <span class="text-xs text-muted-foreground">{{ user?.name }}</span>
           <button
             class="text-xs text-muted-foreground hover:text-foreground transition-colors ml-1"
@@ -62,6 +64,7 @@ function handleLogout() {
         </template>
 
         <template v-else>
+          <ThemeToggle class="ml-2" />
           <Button as-child variant="outline" class="ml-2 px-3 py-2 h-auto">
             <RouterLink to="/login" class="flex items-center gap-2 text-sm">
               <i class="fa-solid fa-right-to-bracket"></i>

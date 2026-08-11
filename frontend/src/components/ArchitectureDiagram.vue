@@ -1,5 +1,8 @@
 <template>
-  <svg viewBox="0 0 940 980" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" class="w-full h-auto">
+  <!-- El diagrama usa una paleta clara fija en sus nodos y etiquetas, por lo que
+       conserva su propio lienzo blanco en ambos temas. En modo oscuro se lee como
+       una lamina sobre la tarjeta, en lugar de perder el texto contra el fondo. -->
+  <svg viewBox="0 0 940 980" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" class="w-full h-auto bg-white rounded-md">
     <rect width="940" height="980" fill="white" rx="8"/>
 
     <defs>
