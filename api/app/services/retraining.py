@@ -19,6 +19,7 @@ import time
 from datetime import datetime, timezone
 
 import joblib
+import numpy as np
 import pandas as pd
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -45,6 +46,10 @@ ARCHIVE_DIR = os.path.join(MODEL_DIR, "archive")
 # Numero minimo de ejemplos por clase. Por debajo de tres no alcanza para
 # entrenar y evaluar la misma categoria.
 MIN_EJEMPLOS_POR_CLASE = 3
+
+# Particiones de calibracion deseadas. Se reducen automaticamente si alguna
+# clase no tiene suficientes ejemplos en el conjunto de entrenamiento.
+CV_PREFERIDO = 3
 
 # Cuantos artefactos archivados se conservan. Cada uno ocupa lo mismo que el
 # activo, de modo que el limite es una decision de disco.
@@ -105,7 +110,25 @@ def build_dataset(db) -> tuple[pd.DataFrame, dict]:
     return df, origen
 
 
-def build_pipeline() -> Pipeline:
+def safe_cv(y, preferido: int = CV_PREFERIDO) -> int:
+    """
+    Numero de particiones de calibracion que el conjunto admite.
+
+    La calibracion exige al menos tantos ejemplos por clase como particiones. El
+    filtro de clases raras se aplica sobre el conjunto completo, pero la
+    particion de entrenamiento se queda con cerca del 80 %, de modo que una
+    clase con el minimo de tres ejemplos llega al entrenamiento con dos y
+    rompe una validacion de tres pliegues.
+
+    Antes que descartar esas clases —lo que dejaria materiales que el modelo no
+    podria predecir nunca— se reduce el numero de pliegues a lo que el conjunto
+    soporte. El minimo es dos, garantizado por el filtro de clases raras.
+    """
+    _, counts = np.unique(y, return_counts=True)
+    return int(max(2, min(preferido, int(counts.min()))))
+
+
+def build_pipeline(cv: int = CV_PREFERIDO) -> Pipeline:
     """
     Misma configuracion que gano la competencia de modelos del laboratorio.
 
@@ -117,7 +140,7 @@ def build_pipeline() -> Pipeline:
         ("tfidf", TfidfVectorizer(
             analyzer="char_wb", ngram_range=(2, 5),
             max_features=50000, sublinear_tf=True, strip_accents="unicode")),
-        ("clf", CalibratedClassifierCV(LinearSVC(C=1.0, max_iter=2000), cv=3, ensemble=False)),
+        ("clf", CalibratedClassifierCV(LinearSVC(C=1.0, max_iter=2000), cv=cv, ensemble=False)),
     ])
 
 
@@ -225,8 +248,14 @@ def run_retraining(db, job_id: int, user_id: int | None = None) -> None:
             X, y, test_size=0.2, random_state=42, stratify=y
         )
 
-        step("entrenando")
-        pipeline = build_pipeline()
+        cv = safe_cv(y_train)
+        if cv < CV_PREFERIDO:
+            logger.warning(
+                "Se reduce la calibracion a %d particiones: la clase mas pequena "
+                "aporta %d ejemplos al entrenamiento", cv, cv)
+
+        step(f"entrenando (calibracion de {cv} particiones)")
+        pipeline = build_pipeline(cv)
         t_train = time.time()
         pipeline.fit(X_train, y_train)
         train_seconds = round(time.time() - t_train, 3)
@@ -234,7 +263,10 @@ def run_retraining(db, job_id: int, user_id: int | None = None) -> None:
         step("evaluando")
         metrics = evaluate(pipeline, X_test, y_test)
 
+        # Se conserva el mismo numero de particiones que en la evaluacion, para
+        # que el artefacto desplegado corresponda a la configuracion medida.
         step("reentrenando sobre el conjunto completo")
+        pipeline = build_pipeline(cv)
         pipeline.fit(X, y)
 
         version = _now_version()
@@ -251,7 +283,7 @@ def run_retraining(db, job_id: int, user_id: int | None = None) -> None:
             "model_name": "LinearSVC + CharTFIDF",
             "n_classes": int(len(le.classes_)),
             "n_samples": int(len(X)),
-            "metrics": metrics,
+            "metrics": {**metrics, "cv": cv},
             "label_to_class_code": {int(k): str(v) for k, v in label_to_class.items()},
             "version": version,
         }
@@ -301,7 +333,7 @@ def run_retraining(db, job_id: int, user_id: int | None = None) -> None:
         """), {
             "elapsed": elapsed, "vid": row[0], "id": job_id,
             "ntr": len(X_train), "nte": len(X_test), "ncl": artifact["n_classes"],
-            "metrics": json.dumps(metrics),
+            "metrics": json.dumps({**metrics, "cv": cv}),
         })
         db.commit()
 
