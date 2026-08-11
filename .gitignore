@@ -9,6 +9,10 @@ dbdata/
 .ipynb_checkpoints/
 sample_data/
 .virtual_documents/
-lab/notebooks/
 .claude
 *.joblib
+
+# Los notebooks si se versionan: son el entregable analitico y se despliegan a
+# produccion por bind mount. Se excluyen las figuras que generan al ejecutarse,
+# porque son reproducibles y ya van embebidas en las salidas del propio .ipynb.
+lab/notebooks/**/figuras/

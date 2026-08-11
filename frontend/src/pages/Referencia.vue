@@ -1172,14 +1172,6 @@ const derGold = `erDiagram
               <p class="text-foreground font-medium text-xs mb-1">frontend (Vue 3 + Nginx)</p>
               <p class="text-xs">Puerto 8089. Dual-mode: desarrollo (Vite dev server) o produccion (build + Nginx). Controlado por <code>FRONTEND_MODE</code>.</p>
             </div>
-            <div class="p-3 rounded-md border bg-card">
-              <p class="text-foreground font-medium text-xs mb-1">planka (Kanban)</p>
-              <p class="text-xs">Puerto 3000. Tablero de gestion de proyecto. Base de datos propia independiente (<code>planka-db</code>).</p>
-            </div>
-            <div class="p-3 rounded-md border bg-card">
-              <p class="text-foreground font-medium text-xs mb-1">planka-db (PostgreSQL 16)</p>
-              <p class="text-xs">Instancia exclusiva para Planka. Aislada del esquema medallon de GAMMA.</p>
-            </div>
           </div>
 
           <Separator />
@@ -1261,10 +1253,6 @@ const derGold = `erDiagram
               <div class="flex items-center gap-3 p-2 rounded border bg-card text-xs">
                 <code class="text-foreground font-mono shrink-0 w-48">FRONTEND_MODE</code>
                 <span><code>development</code> o <code>production</code> (default: development)</span>
-              </div>
-              <div class="flex items-center gap-3 p-2 rounded border bg-card text-xs">
-                <code class="text-foreground font-mono shrink-0 w-48">PLANKA_SECRET, PLANKA_URL</code>
-                <span>Configuracion del tablero Kanban</span>
               </div>
             </div>
           </div>

@@ -21,7 +21,6 @@ import pydanticLogo from '@/assets/logos/pydantic.svg'
 import nginxLogo from '@/assets/logos/nginx.svg'
 import jwtLogo from '@/assets/logos/jwt.svg'
 import viteLogo from '@/assets/logos/vite.svg'
-import plankaLogo from '@/assets/logos/planka.svg'
 
 const servicios = [
   {
@@ -125,12 +124,6 @@ const stack = [
     tech: 'Vue 3 + Vite + Tailwind + shadcn',
     desc: 'SPA con chatbot, ETL, docs y Swagger integrado',
     logos: [vueLogo, viteLogo, tailwindLogo, shadcnLogo],
-  },
-  {
-    layer: 'Gestion',
-    tech: 'Planka',
-    desc: 'Tablero Kanban para gestion de tareas del equipo',
-    logos: [plankaLogo],
   },
   {
     layer: 'Analitica',

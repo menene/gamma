@@ -24,11 +24,6 @@
     <text x="400" y="44" text-anchor="middle" font-size="14" font-weight="600" fill="#134e4a">Frontend</text>
     <text x="400" y="64" text-anchor="middle" font-size="10.5" fill="#4b5563">Vue 3 + Vite — Login · Chatbot · ETL · Exportador</text>
 
-    <!-- Planka (teal, connected to frontend) -->
-    <rect x="720" y="25" width="160" height="56" rx="10" fill="#f0fdfa" stroke="#2dd4bf" stroke-width="1.4"/>
-    <text x="800" y="48" text-anchor="middle" font-size="12" font-weight="600" fill="#134e4a">Planka</text>
-    <text x="800" y="64" text-anchor="middle" font-size="9.5" fill="#6b7280">Gestion de tareas</text>
-
     <!-- Nginx + JWT (sky blue) -->
     <rect x="275" y="128" width="250" height="55" rx="10" fill="#f0f9ff" stroke="#38bdf8" stroke-width="1.8"/>
     <text x="400" y="151" text-anchor="middle" font-size="13" font-weight="600" fill="#0c4a6e">Nginx + JWT</text>
@@ -105,9 +100,6 @@
     <text x="376" y="896" text-anchor="middle" font-size="10" fill="#6b7280">Carga masiva</text>
 
     <!-- ==================== ARROWS ==================== -->
-
-    <!-- Frontend → Planka (horizontal connector) -->
-    <line x1="655" y1="53" x2="720" y2="53" stroke="#6b7280" stroke-width="1.3" stroke-dasharray="5,3"/>
 
     <!-- Frontend → Nginx -->
     <line x1="400" y1="88" x2="400" y2="128" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
