@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -10,48 +10,23 @@ import LogsContent from '@/pages/LogsContent.vue'
 
 const activeTab = ref('notebooks')
 
-const notebooks = [
-  {
-    file: '01_eda.ipynb',
-    title: 'Exploracion del Maestro',
-    badge: 'EDA',
-    desc: 'Explora la estructura del maestro de materiales en silver.materials. Analiza la distribucion de categorias, longitud de descripciones y detecta materiales potencialmente duplicados.',
-    tags: ['silver.materials', 'pandas', 'matplotlib'],
-  },
-  {
-    file: '02_evaluacion_modelos.ipynb',
-    title: 'Competencia de Modelos',
-    badge: 'ML',
-    desc: 'Evalua cuatro configuraciones de clasificacion sobre el histórico del catalogo. Genera matriz de confusion, metricas por categoria y el analisis de exactitud frente a cobertura por umbral de confianza.',
-    tags: ['sklearn', 'LinearSVC', 'TF-IDF', 'metricas'],
-  },
-  {
-    file: '03_modelos_candidatos_v2.ipynb',
-    title: 'Candidatos Adicionales',
-    badge: 'ML',
-    desc: 'Segunda ronda de la competencia: XGBoost, fastText y un transformer multilingue con ajuste fino, contrastados contra el ganador de la primera ronda.',
-    tags: ['XGBoost', 'fastText', 'transformers'],
-  },
-  {
-    file: '04_monetizacion.ipynb',
-    title: 'Monetizacion y ROI',
-    badge: 'KPI',
-    desc: 'Cuantifica el ahorro en horas-gestor y el retorno de la inversion. Recalcula los tiempos post-GAMMA desde el registro individual de solicitudes, los contrasta contra la linea base y valida la diferencia estadisticamente.',
-    tags: ['costo-hora', 'ahorro anual', 'ROI', 'Mann-Whitney'],
-  },
+// ── Analisis exploratorio ────────────────────────────────────────────────
+// Vistas consolidadas del maestro, transversales a los tipos de material.
+const edaConsolidados = [
   {
     file: 'eda/EDA_Unificado_M402_GAMMA.ipynb',
     title: 'EDA Unificado M402',
-    badge: 'EDA',
-    desc: 'Consolidado de los once tipos de material del mandante 402: 43,177 registros analizados, con duplicidad exacta, registros bloqueados y adherencia al separador estandar por tipo.',
-    tags: ['consolidado', '11 tipos', 'calidad'],
+    desc: 'Consolidado de los once tipos del mandante 402: 43,177 registros, con duplicidad exacta, registros bloqueados y adherencia al separador estandar por tipo.',
   },
   {
     file: 'eda/EDA_COMBINADO.ipynb',
     title: 'EDA Combinado',
-    badge: 'EDA',
-    desc: 'Comparativo transversal entre tipos de material: tamano del catalogo, tasa de duplicados y proporcion de registros sin separador estandar.',
-    tags: ['comparativo', 'duplicados', 'matplotlib'],
+    desc: 'Comparativo transversal entre tipos: tamano del catalogo, tasa de duplicados y proporcion de registros sin separador estandar.',
+  },
+  {
+    file: '01_eda.ipynb',
+    title: 'Exploracion del Maestro',
+    desc: 'Exploracion sobre silver.materials: distribucion de categorias, longitud de descripciones y deteccion de duplicados potenciales.',
   },
 ]
 
@@ -69,6 +44,31 @@ const edaTipos = [
   { tipo: 'ZEQU', nombre: 'Equipos', registros: '145', dup: '35.2%' },
   { tipo: 'ZMAQ', nombre: 'Maquinaria', registros: '93', dup: '0.0%' },
   { tipo: 'ZMAF', nombre: 'Maquinaria y fabricacion', registros: '80', dup: '5.0%' },
+]
+
+// ── Modelado y analitica de negocio ──────────────────────────────────────
+const notebooks = [
+  {
+    file: '02_evaluacion_modelos.ipynb',
+    title: 'Competencia de Modelos',
+    badge: 'ML',
+    desc: 'Evalua cuatro configuraciones de clasificacion sobre el historico del catalogo. Genera matriz de confusion, metricas por categoria y el analisis de exactitud frente a cobertura por umbral de confianza.',
+    tags: ['sklearn', 'LinearSVC', 'TF-IDF', 'metricas'],
+  },
+  {
+    file: '03_modelos_candidatos_v2.ipynb',
+    title: 'Candidatos Adicionales',
+    badge: 'ML',
+    desc: 'Segunda ronda de la competencia: XGBoost, fastText y un transformer multilingue con ajuste fino, contrastados contra el ganador de la primera ronda.',
+    tags: ['XGBoost', 'fastText', 'transformers'],
+  },
+  {
+    file: '04_monetizacion.ipynb',
+    title: 'Monetizacion y ROI',
+    badge: 'KPI',
+    desc: 'Cuantifica el ahorro en horas-gestor y el retorno de la inversion. Recalcula los tiempos post-GAMMA desde el registro individual, los contrasta contra la linea base y valida la diferencia estadisticamente.',
+    tags: ['costo-hora', 'ahorro anual', 'ROI', 'Mann-Whitney'],
+  },
 ]
 </script>
 
@@ -101,7 +101,76 @@ const edaTipos = [
 
       <!-- Notebooks -->
       <TabsContent value="notebooks">
-        <div class="grid md:grid-cols-2 gap-6">
+
+        <!-- Analisis exploratorio — tarjeta a todo el ancho -->
+        <Card class="mb-8">
+          <CardHeader class="pb-3">
+            <CardTitle class="text-base flex items-center gap-2">
+              <Badge>EDA</Badge>
+              Analisis Exploratorio de Datos
+              <span class="ml-auto text-xs font-normal text-muted-foreground">
+                {{ edaConsolidados.length + edaTipos.length }} notebooks
+              </span>
+            </CardTitle>
+            <CardDescription>
+              Caracterizacion del maestro de materiales del mandante 402: completitud de campos,
+              duplicidad exacta, grupos de articulos, unidades de medida, materiales bloqueados y
+              patrones de texto breve.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            <!-- Vistas consolidadas -->
+            <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
+              Vistas consolidadas
+            </p>
+            <div class="grid md:grid-cols-3 gap-3">
+              <div
+                v-for="e in edaConsolidados"
+                :key="e.file"
+                class="p-3 rounded-md border bg-muted/40 hover:shadow-sm transition-shadow flex flex-col"
+              >
+                <p class="text-sm font-medium leading-tight mb-1">{{ e.title }}</p>
+                <p class="text-xs text-muted-foreground flex-1">{{ e.desc }}</p>
+                <Separator class="my-2" />
+                <p class="text-xs text-muted-foreground font-mono break-all">{{ e.file }}</p>
+              </div>
+            </div>
+
+            <Separator class="my-5" />
+
+            <!-- Por tipo de material -->
+            <div class="flex items-baseline justify-between mb-3">
+              <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Por tipo de material
+              </p>
+              <span class="text-xs text-muted-foreground">{{ edaTipos.length }} catalogos</span>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div
+                v-for="t in edaTipos"
+                :key="t.tipo"
+                class="p-3 rounded-md border bg-card hover:shadow-sm transition-shadow"
+              >
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <Badge variant="secondary" class="font-mono text-xs">{{ t.tipo }}</Badge>
+                  <span class="text-xs text-muted-foreground shrink-0">{{ t.registros }}</span>
+                </div>
+                <p class="text-sm font-medium leading-tight">{{ t.nombre }}</p>
+                <p class="text-xs text-muted-foreground mt-1">Duplicados: {{ t.dup }}</p>
+                <Separator class="my-2" />
+                <p class="text-xs text-muted-foreground font-mono break-all">eda/EDA_{{ t.tipo }}.ipynb</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- Modelado y analitica de negocio -->
+        <div class="flex items-baseline justify-between mb-4">
+          <h2 class="text-base font-semibold tracking-tight">Modelado y analitica de negocio</h2>
+          <span class="text-xs text-muted-foreground">{{ notebooks.length }} notebooks</span>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
           <Card v-for="nb in notebooks" :key="nb.file" class="hover:shadow-md transition-shadow">
             <CardHeader class="pb-2">
               <CardTitle class="text-base flex items-center gap-2">
@@ -118,35 +187,6 @@ const edaTipos = [
               <p class="text-xs text-muted-foreground font-mono">{{ nb.file }}</p>
             </CardContent>
           </Card>
-        </div>
-
-        <!-- EDA por tipo de material -->
-        <div class="mt-8">
-          <div class="flex items-baseline justify-between mb-1">
-            <h2 class="text-base font-semibold tracking-tight">EDA por tipo de material</h2>
-            <span class="text-xs text-muted-foreground">{{ edaTipos.length }} catalogos</span>
-          </div>
-          <p class="text-sm text-muted-foreground mb-4">
-            Misma plantilla de analisis aplicada a cada tipo del mandante 402: completitud de campos,
-            duplicidad exacta, grupos de articulos, unidades de medida, materiales bloqueados y patrones
-            de texto breve.
-          </p>
-          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <div
-              v-for="t in edaTipos"
-              :key="t.tipo"
-              class="p-3 rounded-md border bg-card hover:shadow-sm transition-shadow"
-            >
-              <div class="flex items-center justify-between gap-2 mb-1">
-                <Badge variant="secondary" class="font-mono text-xs">{{ t.tipo }}</Badge>
-                <span class="text-xs text-muted-foreground shrink-0">{{ t.registros }} reg.</span>
-              </div>
-              <p class="text-sm font-medium leading-tight">{{ t.nombre }}</p>
-              <p class="text-xs text-muted-foreground mt-1">Duplicados exactos: {{ t.dup }}</p>
-              <Separator class="my-2" />
-              <p class="text-xs text-muted-foreground font-mono break-all">eda/EDA_{{ t.tipo }}.ipynb</p>
-            </div>
-          </div>
         </div>
       </TabsContent>
 
