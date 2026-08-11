@@ -1,0 +1,15 @@
+\section{Objetivo General}
+Desarrollar GAMMA (Gobierno Automatizado del Maestro de Materiales), una plataforma de asistencia analítica para el flujo de creación individual de materiales en SAP, mediante la articulación de procesamiento de lenguaje natural, búsqueda por similitud difusa y aprendizaje automático supervisado sobre el histórico del catálogo, para reducir el tiempo de gestión y mejorar la calidad del maestro de materiales de una unidad de negocio del sector energético con operación en Centroamérica y el Caribe.
+
+\section{Objetivos Específicos}
+\begin{enumerate}
+	\item Implementar un pipeline de integración del maestro de materiales de SAP mediante una arquitectura medallón sobre PostgreSQL, para consolidar en un repositorio único, normalizado y trazable los registros dispersos en trece archivos de exportación que constituyen el insumo de los módulos analíticos.
+
+	\item Analizar los defectos de calidad acumulados en el catálogo mediante la aplicación retroactiva de los motores de similitud difusa y de clasificación sobre los registros existentes, para cuantificar el volumen de duplicados y de errores de categorización que arrastra la operación y establecer la línea base contra la cual medir la mejora.
+
+	\item Seleccionar el algoritmo de clasificación de categoría mediante la evaluación comparativa de siete configuraciones sobre una partición estratificada del histórico del catálogo, para adoptar el que maximice la exactitud dentro de un costo de reentrenamiento sostenible en la operación.
+
+	\item Construir una plataforma web de asistencia conversacional que articule la normalización de descripciones, la detección de duplicados y la sugerencia de categoría dentro del flujo de creación individual de materiales, para asistir al gestor en el momento de la decisión conservando la validación humana antes del registro en SAP.
+
+	\item Evaluar el efecto de la herramienta sobre el proceso de creación de materiales mediante la comparación de los tiempos de gestión y las tasas de error registrados antes y después de su implementación, para determinar el ahorro en horas-gestor y el retorno de la inversión del proyecto.
+\end{enumerate}

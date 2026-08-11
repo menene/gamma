@@ -1,0 +1,36 @@
+% ================================================================================
+% Paquetes y comandos definidos por el usuario
+% ================================================================================
+
+% Permite definir tipos de columna personalizados en tablas
+\usepackage{array}
+
+% Reglas horizontales de calidad tipográfica para cuadros en formato científico
+% (sin líneas verticales ni color), conforme a la guía de la universidad.
+\usepackage{booktabs}
+
+% La guía de la universidad denomina "cuadro" a las tablas, y así se titula el
+% listado correspondiente. Se ajusta el rótulo de los pies para que coincida con
+% el listado y con las referencias cruzadas del texto.
+\addto\captionsspanish{\renewcommand{\tablename}{Cuadro}}
+
+% Columna de párrafo alineada a la izquierda (sin justificar). Se usa en cuadros
+% con columnas angostas, donde justificar el texto produce espacios excesivos.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% ================================================================================
+% NUMERACIÓN Y SANGRÍA DE FIGURAS Y CUADROS
+% ================================================================================
+% La clase 'report' numera figuras y cuadros por capítulo (8.1, 8.2, ...) y los
+% reinicia en cada uno. Se desvincula el contador del capítulo para que la
+% numeración sea corrida a lo largo de todo el trabajo (1, 2, 3, ...).
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+
+% Los listados de figuras y cuadros heredan la sangría de un nivel interior. Se
+% redefinen sus entradas para que queden alineadas al margen izquierdo, como
+% corresponde a un elemento de primer nivel.
+\makeatletter
+\renewcommand*\l@figure{\@dottedtocline{1}{0em}{2.3em}}
+\renewcommand*\l@table{\@dottedtocline{1}{0em}{2.3em}}
+\makeatother

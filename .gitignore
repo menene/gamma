@@ -12,7 +12,20 @@ sample_data/
 .claude
 *.joblib
 
-# Los notebooks si se versionan: son el entregable analitico y se despliegan a
-# produccion por bind mount. Se excluyen las figuras que generan al ejecutarse,
-# porque son reproducibles y ya van embebidas en las salidas del propio .ipynb.
-lab/notebooks/**/figuras/
+# Artefactos de compilacion de LaTeX. Se versionan las fuentes (.tex, .bib),
+# las figuras y el PDF final; lo demas lo regenera latexmk en cada corrida.
+latex/*.aux
+latex/*.bbl
+latex/*.blg
+latex/*.fdb_latexmk
+latex/*.fls
+latex/*.glo
+latex/*.ist
+latex/*.lof
+latex/*.log
+latex/*.lot
+latex/*.nlo
+latex/*.out
+latex/*.toc
+latex/*.synctex.gz
+latex/**/*-eps-converted-to.pdf
