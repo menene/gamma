@@ -33,11 +33,11 @@ const notebooks = [
     tags: ['XGBoost', 'fastText', 'transformers'],
   },
   {
-    file: '03_monetizacion.ipynb',
-    title: 'Dashboard de Monetizacion',
+    file: '04_monetizacion.ipynb',
+    title: 'Monetizacion y ROI',
     badge: 'KPI',
-    desc: 'Visualiza los indicadores de ahorro. Calcula horas-hombre ahorradas por semana, ahorro acumulado en quetzales y la tasa de auto-resolucion vs correccion manual.',
-    tags: ['gold.kpi_savings', 'gold.kpi_processing_time', 'plotly'],
+    desc: 'Cuantifica el ahorro en horas-gestor y el retorno de la inversion. Recalcula los tiempos post-GAMMA desde el registro individual de solicitudes, los contrasta contra la linea base y valida la diferencia estadisticamente.',
+    tags: ['costo-hora', 'ahorro anual', 'ROI', 'Mann-Whitney'],
   },
   {
     file: 'eda/EDA_Unificado_M402_GAMMA.ipynb',
