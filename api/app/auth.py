@@ -44,9 +44,26 @@ def get_current_user(
 ) -> dict:
     payload = decode_token(credentials.credentials)
     row = db.execute(
-        text("SELECT id, email, name, is_active FROM public.users WHERE id = :id"),
+        text("SELECT id, email, name, is_active, COALESCE(admin, false) AS admin "
+             "FROM public.users WHERE id = :id"),
         {"id": payload["sub"]},
     ).fetchone()
     if not row or not row.is_active:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario no encontrado")
-    return {"id": row.id, "email": row.email, "name": row.name}
+    return {"id": row.id, "email": row.email, "name": row.name, "admin": bool(row.admin)}
+
+
+def require_admin(user: dict = Depends(get_current_user)) -> dict:
+    """
+    Restringe una ruta a cuentas administrativas.
+
+    La comprobacion vive en el servidor y no en el cliente: ocultar un boton no
+    protege nada, cualquiera puede llamar la ruta directamente. El frontend
+    esconde la pantalla por comodidad, pero es esta dependencia la que decide.
+    """
+    if not user.get("admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requieren privilegios de administrador",
+        )
+    return user

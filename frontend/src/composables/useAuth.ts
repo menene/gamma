@@ -5,12 +5,17 @@ interface User {
   id: number
   email: string
   name: string
+  admin?: boolean
 }
 
 const token = ref<string | null>(localStorage.getItem('gamma_token'))
 const user = ref<User | null>(JSON.parse(localStorage.getItem('gamma_user') || 'null'))
 
 export const isAuthenticated = computed(() => !!token.value)
+
+// Solo controla que se muestre en la interfaz. La autorizacion real la impone
+// el API: cada ruta de administracion valida el rol del lado del servidor.
+export const isAdmin = computed(() => !!user.value?.admin)
 
 export function getToken() {
   return token.value
@@ -71,6 +76,29 @@ export async function register(email: string, name: string, password: string): P
   }
 }
 
+/**
+ * Revalida la sesion contra el API y actualiza los datos del usuario.
+ *
+ * Necesario porque el usuario guardado en el navegador puede haberse
+ * almacenado antes de que existiera el campo `admin`, o quedar desfasado si el
+ * rol cambia. Se invoca al arrancar la aplicacion.
+ */
+export async function refreshUser(): Promise<void> {
+  if (!token.value) return
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token.value}` },
+    })
+    if (!res.ok) return
+    const data = await res.json()
+    user.value = data
+    localStorage.setItem('gamma_user', JSON.stringify(data))
+  } catch {
+    // Sin conexion se conserva lo que haya en el navegador; el API sigue
+    // siendo quien autoriza cada llamada.
+  }
+}
+
 export function logout() {
   token.value = null
   user.value = null
@@ -79,5 +107,5 @@ export function logout() {
 }
 
 export function useAuth() {
-  return { token, user, isAuthenticated, login, register, logout, authFetch, authHeaders, getToken }
+  return { token, user, isAuthenticated, isAdmin, login, register, logout, refreshUser, authFetch, authHeaders, getToken }
 }

@@ -7,7 +7,7 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
 import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
-const { user, isAuthenticated, logout } = useAuth()
+const { user, isAuthenticated, isAdmin, logout } = useAuth()
 
 const publicLinks = [
   { label: 'Arquitectura', to: '/arquitectura', icon: 'fa-solid fa-cubes' },
@@ -20,9 +20,18 @@ const protectedLinks = [
   { label: 'Ayuda', to: '/ayuda', icon: 'fa-solid fa-circle-question' },
 ]
 
-const links = computed(() =>
-  isAuthenticated.value ? [...publicLinks, ...protectedLinks] : publicLinks
-)
+// El enlace de administracion solo se anade cuando el rol lo permite. Ocultarlo
+// es una comodidad de interfaz: la ruta y el API validan el rol por su cuenta.
+const adminLinks = [
+  { label: 'Admin', to: '/admin', icon: 'fa-solid fa-screwdriver-wrench' },
+]
+
+const links = computed(() => {
+  if (!isAuthenticated.value) return publicLinks
+  return isAdmin.value
+    ? [...publicLinks, ...protectedLinks, ...adminLinks]
+    : [...publicLinks, ...protectedLinks]
+})
 
 function handleLogout() {
   logout()

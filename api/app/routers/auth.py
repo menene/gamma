@@ -33,12 +33,14 @@ class UserResponse(BaseModel):
     id: int
     email: str
     name: str
+    admin: bool = False
 
 
 @router.post("/login", response_model=AuthResponse)
 def login(body: LoginRequest, db: Session = Depends(get_db)):
     row = db.execute(
-        text("SELECT id, email, name, password_hash, is_active FROM public.users WHERE email = :email"),
+        text("SELECT id, email, name, password_hash, is_active, COALESCE(admin, false) AS admin "
+             "FROM public.users WHERE email = :email"),
         {"email": body.email},
     ).fetchone()
 
@@ -49,7 +51,8 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Usuario desactivado")
 
     token = create_token(row.id, row.email)
-    return {"token": token, "user": {"id": row.id, "email": row.email, "name": row.name}}
+    return {"token": token, "user": {"id": row.id, "email": row.email, "name": row.name,
+                                     "admin": bool(row.admin)}}
 
 
 @router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)

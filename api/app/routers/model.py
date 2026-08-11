@@ -1,13 +1,12 @@
 import logging
 import os
-import re
-import unicodedata
 
 import joblib
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.auth import get_current_user
+from app.services.text import preprocess_text
 
 logger = logging.getLogger(__name__)
 
@@ -31,16 +30,15 @@ def _get_artifact():
     return _artifact
 
 
-# ── Preprocessing (matches training pipeline) ────────────────
-
-def preprocess_text(text: str) -> str:
-    text = text.upper()
-    text = unicodedata.normalize("NFD", text)
-    text = "".join(c for c in text if unicodedata.category(c) != "Mn")
-    text = re.sub(r"[;:,/\\|]+", " ", text)
-    text = re.sub(r"[^A-Z0-9.\-\s]", "", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
+def invalidate_artifact() -> None:
+    """
+    Descarta el artefacto en memoria para que la siguiente prediccion cargue el
+    que este en disco. Lo usa el reentrenamiento tras publicar una version
+    nueva, y evita tener que reiniciar el contenedor.
+    """
+    global _artifact
+    _artifact = None
+    logger.info("Artefacto invalidado; se recargara en la proxima prediccion")
 
 
 # ── Schemas ───────────────────────────────────────────────────

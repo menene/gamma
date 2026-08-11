@@ -307,6 +307,10 @@ const derGold = `erDiagram
           <i class="fa-solid fa-rocket text-xs"></i>
           Despliegue
         </TabsTrigger>
+        <TabsTrigger value="reentrenamiento" class="gap-2">
+          <i class="fa-solid fa-arrows-rotate text-xs"></i>
+          Reentrenamiento
+        </TabsTrigger>
       </TabsList>
 
       <!-- API (Swagger) -->
@@ -1284,6 +1288,170 @@ const derGold = `erDiagram
                 </ul>
               </div>
             </div>
+          </div>
+        </div>
+      </TabsContent>
+
+      <!-- Reentrenamiento del modelo -->
+      <TabsContent value="reentrenamiento">
+        <div class="max-w-4xl space-y-6 text-sm text-muted-foreground">
+          <div>
+            <h3 class="text-foreground font-semibold mb-2">Reentrenamiento del modelo</h3>
+            <p class="mb-3">
+              El clasificador se despliega como un artefacto entrenado previamente. No se reentrena
+              solo ni de forma programada: el proceso se dispara a mano, bajo supervision, y esta
+              pensado para ejecutarse en contadas ocasiones, tipicamente despues de una carga
+              importante al maestro de materiales.
+            </p>
+            <p>
+              Todas las rutas de esta seccion exigen privilegios de administrador. La validacion
+              ocurre en el servidor mediante la dependencia <code>require_admin</code>, de modo que
+              conocer la URL no otorga acceso.
+            </p>
+          </div>
+
+          <Separator />
+
+          <div>
+            <h4 class="text-foreground font-medium mb-2">Mecanica de versionado</h4>
+            <p class="mb-3">
+              El artefacto activo conserva siempre el mismo nombre en disco, de manera que el
+              cargador del API no cambia nunca. Antes de escribir uno nuevo, el vigente se aparta
+              en <code>archive/</code> con una marca de tiempo. Revertir consiste en devolver ese
+              archivo a su lugar.
+            </p>
+            <pre class="rounded-md border bg-muted/50 p-3 text-xs overflow-x-auto"><code>api/app/model/
+├── model_artifact_v1.joblib              activo — el nombre no cambia
+└── archive/
+    ├── model_artifact_20260811T143000.joblib
+    └── model_artifact_20260615T090000.joblib</code></pre>
+            <p class="mt-3">
+              Se conservan los tres artefactos mas recientes; el limite se ajusta con la variable
+              <code>MODEL_MAX_ARCHIVED</code>. Tras publicar una version nueva, el API descarta el
+              modelo en memoria y carga el de disco en la siguiente prediccion, sin reiniciar el
+              contenedor.
+            </p>
+          </div>
+
+          <Separator />
+
+          <div>
+            <h4 class="text-foreground font-medium mb-2">Rutas</h4>
+            <div class="space-y-2">
+              <div class="p-3 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-1">
+                  <Badge class="text-xs">POST</Badge>
+                  <code class="text-foreground font-mono text-xs">/api/model/retrain</code>
+                </div>
+                <p class="text-xs">
+                  Encola un reentrenamiento y responde <code>202</code> con el identificador del
+                  trabajo. Devuelve <code>409</code> si ya hay uno en curso: solo se admite una
+                  ejecucion simultanea.
+                </p>
+              </div>
+              <div class="p-3 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-1">
+                  <Badge variant="secondary" class="text-xs">GET</Badge>
+                  <code class="text-foreground font-mono text-xs">/api/model/retrain/{job_id}</code>
+                </div>
+                <p class="text-xs">
+                  Estado de una ejecucion: etapa en curso, tiempos, tamano de las particiones y
+                  metricas obtenidas, con la comparacion frente al modelo anterior.
+                </p>
+              </div>
+              <div class="p-3 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-1">
+                  <Badge variant="secondary" class="text-xs">GET</Badge>
+                  <code class="text-foreground font-mono text-xs">/api/model/retrain</code>
+                </div>
+                <p class="text-xs">Historial de ejecuciones, incluidas las fallidas.</p>
+              </div>
+              <div class="p-3 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-1">
+                  <Badge variant="secondary" class="text-xs">GET</Badge>
+                  <code class="text-foreground font-mono text-xs">/api/model/versions</code>
+                </div>
+                <p class="text-xs">
+                  Versiones registradas con sus metricas y tamano. Cruza el registro de la base con
+                  los artefactos presentes en disco: una version sin archivo ya no se puede
+                  restaurar y aparece senalada.
+                </p>
+              </div>
+              <div class="p-3 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-1">
+                  <Badge class="text-xs">POST</Badge>
+                  <code class="text-foreground font-mono text-xs">/api/model/rollback</code>
+                </div>
+                <p class="text-xs">
+                  Restaura un artefacto archivado. El vigente se aparta primero, de modo que el
+                  rollback tambien puede deshacerse.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <h4 class="text-foreground font-medium mb-2">Conjunto de entrenamiento</h4>
+            <p class="mb-2">
+              La fuente principal es <code>silver.materials</code>, que ya incorpora todo lo
+              cargado por el proceso de ingesta. Se le suman las solicitudes confirmadas que el
+              gestor <strong class="text-foreground">corrigio de forma explicita</strong>.
+            </p>
+            <p>
+              Quedan fuera, deliberadamente, las solicitudes que el modelo resolvio por su cuenta y
+              el gestor acepto sin cambios: reentrenar con las propias sugerencias aceptadas
+              refuerza los sesgos del modelo en lugar de corregirlos. Se descartan tambien las
+              clases con menos de tres ejemplos, insuficientes para entrenar y evaluar la misma
+              categoria.
+            </p>
+          </div>
+
+          <Separator />
+
+          <div>
+            <h4 class="text-foreground font-medium mb-2">Trazabilidad</h4>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div class="p-3 rounded-md border bg-card">
+                <p class="text-foreground font-medium text-xs mb-1">silver.model_versions</p>
+                <p class="text-xs">
+                  Historial de artefactos con metricas, procedencia del conjunto, tamano y quien lo
+                  genero. La fila activa corresponde al modelo cargado.
+                </p>
+              </div>
+              <div class="p-3 rounded-md border bg-card">
+                <p class="text-foreground font-medium text-xs mb-1">silver.retrain_jobs</p>
+                <p class="text-xs">
+                  Ejecuciones con su etapa, duracion y resultado. Los intentos fallidos tambien se
+                  registran, con el mensaje de error.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <h4 class="text-foreground font-medium mb-2">Consideraciones de operacion</h4>
+            <ul class="list-disc pl-5 space-y-1.5">
+              <li>
+                El proceso mantiene en memoria el modelo vigente y el nuevo a la vez. El servicio
+                de prediccion puede responder mas lento mientras dura.
+              </li>
+              <li>
+                Cada punto de rollback ocupa lo mismo que el artefacto activo. Conviene vigilar el
+                espacio en disco al aumentar <code>MODEL_MAX_ARCHIVED</code>.
+              </li>
+              <li>
+                El modelo nuevo entra en produccion al terminar. La comparacion de metricas se
+                muestra en la pantalla de administracion para decidir si conviene revertir.
+              </li>
+              <li>
+                Una clase nueva necesita al menos tres materiales en el maestro antes de que el
+                modelo pueda predecirla.
+              </li>
+            </ul>
           </div>
         </div>
       </TabsContent>
