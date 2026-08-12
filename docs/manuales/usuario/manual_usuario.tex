@@ -4,110 +4,11 @@
 %
 % Compilar con:  latexmk -pdf manual_usuario.tex
 %
-% CAPTURAS: van en manual/capturas/ con los nombres que indica cada \captura.
+% CAPTURAS: van en capturas/ con los nombres que indica cada \captura.
 % Mientras falte una, se dibuja un recuadro con el nombre esperado, de modo que
 % el documento compila desde el primer dia y las imagenes se van agregando.
 % ================================================================================
-\documentclass[11pt, letterpaper]{article}
-
-\usepackage[spanish,mexico]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-
-% Tipografia: Inter, la mas cercana en TeX Live a la Geist que usa la
-% aplicacion. Sin serifas en todo el documento, igual que la interfaz.
-\usepackage[sfdefault]{inter}
-\usepackage[scaled=0.86]{beramono}
-
-\usepackage[top=2.4cm, bottom=2.4cm, left=2.6cm, right=2.6cm]{geometry}
-\usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{enumitem}
-\usepackage{fancyhdr}
-\usepackage{titlesec}
-\usepackage{tcolorbox}
-% `enhanced` y `borderline west` viven en skins; `breakable` en su propia
-% libreria. Sin declararlas, tcolorbox ignora esas claves en silencio y los
-% recuadros pierden la barra lateral que los distingue.
-\tcbuselibrary{skins,breakable}
-\usepackage{booktabs}
-\usepackage[hidelinks]{hyperref}
-
-% ── Paleta ──────────────────────────────────────────────────────────────────
-% Tomada de las variables de src/style.css. La interfaz es enteramente
-% acromatica —todos sus colores son oklch(L 0 0)— asi que el manual tampoco
-% introduce color: solo grises, con el texto como unico elemento de contraste.
-\definecolor{fg}{HTML}{0A0A0A}        % --foreground
-\definecolor{fgsoft}{HTML}{171717}    % --primary
-\definecolor{muted}{HTML}{737373}     % --muted-foreground
-\definecolor{surface}{HTML}{F5F5F5}   % --muted / --secondary
-\definecolor{surfacealt}{HTML}{FAFAFA}% --sidebar
-\definecolor{line}{HTML}{E5E5E5}      % --border
-
-\titleformat{\section}{\LARGE\bfseries\color{fg}}{\thesection}{0.7em}{}
-\titlespacing*{\section}{0pt}{1.6em}{0.7em}
-\titleformat{\subsection}{\large\bfseries\color{fgsoft}}{\thesubsection}{0.6em}{}
-\titlespacing*{\subsection}{0pt}{1.3em}{0.4em}
-\titleformat{\subsubsection}[runin]{\bfseries\color{fgsoft}}{}{0pt}{}[.]
-
-\pagestyle{fancy}
-\fancyhf{}
-\lhead{\footnotesize\color{muted}Manual de usuario}
-\rhead{\footnotesize\color{muted}\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\headrule}{\color{line}\hrule height 0.4pt}
-
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{0.62em}
-
-% Enlaces y referencias en el mismo gris del cuerpo: sin subrayados ni azules.
-\hypersetup{colorlinks=false}
-
-% ── Recuadros ───────────────────────────────────────────────────────────────
-% Se distinguen por una barra lateral y el peso del titulo, no por color.
-\newtcolorbox{nota}[1][Nota]{
-  enhanced, breakable, colback=surfacealt, colframe=surfacealt,
-  borderline west={2pt}{0pt}{line},
-  coltitle=fg, fonttitle=\bfseries\footnotesize\sffamily,
-  title=#1, boxrule=0pt, arc=0pt, outer arc=0pt,
-  left=10pt, right=10pt, top=7pt, bottom=7pt, toptitle=1pt, bottomtitle=3pt}
-
-\newtcolorbox{aviso}[1][Importante]{
-  enhanced, breakable, colback=surface, colframe=surface,
-  borderline west={2pt}{0pt}{fg},
-  coltitle=fg, fonttitle=\bfseries\footnotesize\sffamily,
-  title=#1, boxrule=0pt, arc=0pt, outer arc=0pt,
-  left=10pt, right=10pt, top=7pt, bottom=7pt, toptitle=1pt, bottomtitle=3pt}
-
-% ── Captura de pantalla con marcador de posicion ────────────────────────────
-% Uso: \captura{nombre-archivo}{Pie de la figura}
-% Si manual/capturas/<nombre>.png existe, la inserta. Si no, dibuja el hueco.
-\newcommand{\captura}[2]{%
-  \begin{figure}[htbp]
-  \centering
-  \IfFileExists{capturas/#1.png}{%
-    % Ancho completo, pero acotado en alto: una captura de ventana completa
-    % puede ser muy alta y desbordaria la pagina. keepaspectratio evita que se
-    % deforme cuando manda la restriccion de altura.
-    {\color{line}\fboxrule=0.6pt\fboxsep=0pt\fbox{%
-      \includegraphics[width=0.94\textwidth, height=0.62\textheight, keepaspectratio]{capturas/#1.png}}}%
-  }{%
-    \fcolorbox{line}{surfacealt}{%
-      \begin{minipage}[c][3.1cm][c]{0.93\textwidth}
-        \centering
-        {\footnotesize\bfseries\color{muted}CAPTURA PENDIENTE}\\[5pt]
-        {\ttfamily\footnotesize\color{fgsoft} capturas/#1.png}\\[4pt]
-        {\footnotesize\color{muted} #2}
-      \end{minipage}}%
-  }
-  \caption{#2}
-  \label{fig:#1}
-  \end{figure}%
-}
-
-% Pies de figura discretos
-\usepackage{caption}
-\captionsetup{font={small,color=muted}, labelfont={bf,color=muted}, skip=6pt}
+\input{../preambulo}
 
 \begin{document}
 

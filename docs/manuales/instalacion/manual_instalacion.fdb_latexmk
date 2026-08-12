@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1786572692.50467 "manual_usuario.tex" "manual_usuario.pdf" "manual_usuario" 1786572693.45681 0
+["pdflatex"] 1786572883.76889 "manual_instalacion.tex" "manual_instalacion.pdf" "manual_instalacion" 1786572884.52605 0
   "../preambulo.tex" 1786572692.36539 4996 d7e383173f9fbd3941e86a5771e5152d ""
   "/Users/menene/Library/texlive/2026basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1786567345 471942 3798b59c59a833e15d8ebc8d4aab9a8a ""
   "/Users/menene/Library/texmf/fonts/enc/dvips/inter/a_6zlbe6.enc" 1700945067 3299 f5182ff935cc92b11f832b34c12bfd24 ""
@@ -183,14 +183,14 @@
   "/usr/local/texlive/2026basic/texmf-dist/web2c/texmf.cnf" 1770478701 43630 e9fa012910491fe5ae08a72c3c2997a7 ""
   "/usr/local/texlive/2026basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1786288277 2974852 9d74916487756b66cd48579204c5fcb5 ""
   "/usr/local/texlive/2026basic/texmf.cnf" 1772405582 628 bbc09d6d38872d53c11bb48dc9b14e88 ""
-  "manual_usuario.aux" 1786572693.34869 5951 87b71217ed3898a6b331a6de9fae0d7e "pdflatex"
-  "manual_usuario.out" 1786572693.35029 3033 c4007f8b050cd9a599925624b90d4af3 "pdflatex"
-  "manual_usuario.tex" 1786572692.36573 15086 c67d155b80819feed78bd65e4bb2e38f ""
-  "manual_usuario.toc" 1786572693.35058 1487 8521123612944a32969b4dadf3f333b1 "pdflatex"
+  "manual_instalacion.aux" 1786572884.42188 2412 1e7a5af26289e1e8ed1a613f8f0f099d "pdflatex"
+  "manual_instalacion.out" 1786572884.42345 2786 5632607f0356d9a3c80ecc499b2803bb "pdflatex"
+  "manual_instalacion.tex" 1786572847.1817 12477 f5b4cd94d2478c059b19f08a295edcf4 ""
+  "manual_instalacion.toc" 1786572884.42379 1444 3544f28bb0f8b4449e58b210cebc3f6d "pdflatex"
   (generated)
-  "manual_usuario.aux"
-  "manual_usuario.log"
-  "manual_usuario.out"
-  "manual_usuario.pdf"
-  "manual_usuario.toc"
+  "manual_instalacion.aux"
+  "manual_instalacion.log"
+  "manual_instalacion.out"
+  "manual_instalacion.pdf"
+  "manual_instalacion.toc"
   (rewritten before read)

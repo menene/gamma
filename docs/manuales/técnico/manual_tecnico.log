@@ -1,9 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.8.9)  12 AUG 2026 16:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.8.9)  12 AUG 2026 16:14
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
-**manual_usuario.tex
-(./manual_usuario.tex
+**manual_tecnico.tex
+(./manual_tecnico.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (../preambulo.tex
@@ -890,62 +891,62 @@ Package caption Info: Standard document class detected.
 Package caption Info: hyperref package is loaded.
 ))
 LaTeX Font Info:    Trying to load font information for T1+Inter-TLF on input l
-ine 13.
+ine 11.
 
 (/Users/menene/Library/texmf/tex/latex/inter/t1inter-tlf.fd
 File: T1Inter-TLF.fd 2023/11/24 (autoinst) Font definitions for T1/Inter-TLF.
 )
 LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 13.
+(Font)              scaled to size 10.95pt on input line 11.
 
 (/usr/local/texlive/2026basic/texmf-dist/tex/latex/l3backend/l3backend-pdftex.d
 ef
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count334
-) (./manual_usuario.aux
+) (./manual_tecnico.aux
 LaTeX Info: Redefining \. on input line 8.
 LaTeX Info: Redefining \% on input line 8.
 Package babel Info: 'spanish' activates 'spanish' shorthands.
 (babel)             Reported on input line 8.
 )
-\openout1 = `manual_usuario.aux'.
+\openout1 = `manual_tecnico.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for LGR/cmr/m/n on input line 13.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for LGR/cmr/m/n on input line 11.
 LaTeX Font Info:    Trying to load font information for LGR+cmr on input line 1
-3.
+1.
 
 (/Users/menene/Library/texmf/tex/latex/cbfonts-fd/lgrcmr.fd
 File: lgrcmr.fd 2017/07/29 v1.2 Greek European Computer Regular
 )
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for LY1/ptm/m/n on input line 11.
 LaTeX Font Info:    Trying to load font information for LY1+ptm on input line 1
-3.
+1.
 
 (/Users/menene/Library/texmf/tex/latex/ly1/ly1ptm.fd
 File: ly1ptm.fd 2001/02/01 font definitions for LY1/ptm using Berry names.
 )
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 13.
-LaTeX Font Info:    ... okay on input line 13.
-LaTeX Info: Redefining \. on input line 13.
-LaTeX Info: Redefining \% on input line 13.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Info: Redefining \. on input line 11.
+LaTeX Info: Redefining \% on input line 11.
 \c@mv@tabular=\count335
 \c@mv@boldtabular=\count336
 
@@ -1007,44 +1008,44 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 13.
- (./manual_usuario.out) (./manual_usuario.out)
+Package hyperref Info: Link coloring OFF on input line 11.
+ (./manual_tecnico.out) (./manual_tecnico.out)
 \@outlinefile=\write4
-\openout4 = `manual_usuario.out'.
+\openout4 = `manual_tecnico.out'.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
-(Font)              scaled to size 46.0pt on input line 19.
+(Font)              scaled to size 46.0pt on input line 17.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
-(Font)              scaled to size 46.0pt on input line 19.
+(Font)              scaled to size 46.0pt on input line 17.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 21.
+(Font)              scaled to size 12.0pt on input line 19.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
-(Font)              scaled to size 20.74pt on input line 27.
+(Font)              scaled to size 20.74pt on input line 25.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
-(Font)              scaled to size 20.74pt on input line 27.
+(Font)              scaled to size 20.74pt on input line 25.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 34.
+(Font)              scaled to size 9.0pt on input line 32.
 LaTeX Font Info:    Trying to load font information for TS1+Inter-TLF on input 
-line 35.
+line 33.
 
 (/Users/menene/Library/texmf/tex/latex/inter/ts1inter-tlf.fd
 File: TS1Inter-TLF.fd 2023/11/24 (autoinst) Font definitions for TS1/Inter-TLF.
 
 )
 LaTeX Font Info:    Font shape `TS1/Inter-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 35.
+(Font)              scaled to size 9.0pt on input line 33.
  [1
 
 {/Users/menene/Library/texlive/2026basic/texmf-var/fonts/map/pdftex/updmap/pdft
 ex.map}{/Users/menene/Library/texmf/fonts/enc/dvips/inter/a_djwlf6.enc}{/Users/
 menene/Library/texmf/fonts/enc/dvips/inter/a_6zlbe6.enc}]
 LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
-(Font)              scaled to size 17.28pt on input line 42.
+(Font)              scaled to size 17.28pt on input line 41.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
-(Font)              scaled to size 17.28pt on input line 42.
- (./manual_usuario.toc
+(Font)              scaled to size 17.28pt on input line 41.
+ (./manual_tecnico.toc
 LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
 LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
@@ -1057,36 +1058,40 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 3.
 )
 \tf@toc=\write5
-\openout5 = `manual_usuario.toc'.
+\openout5 = `manual_tecnico.toc'.
 
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.43 \newpage
+l.42 \newpage
               [1]
 LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 60.
-LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 67.
- [2]
-LaTeX Font Info:    Trying to load font information for T1+fvm on input line 85
+(Font)              scaled to size 12.0pt on input line 64.
+LaTeX Font Info:    Trying to load font information for T1+fvm on input line 73
 .
  (/Users/menene/Library/texmf/tex/latex/bera/t1fvm.fd
 File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
 )
 LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 9.41699pt on input line 85.
-LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 7.74pt on input line 85.
-LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
-(Font)              scaled to size 10.0pt on input line 85.
-LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
-(Font)              scaled to size 10.0pt on input line 85.
+(Font)              scaled to size 9.41699pt on input line 73.
 
-[3{/usr/local/texlive/2026basic/texmf-dist/fonts/enc/dvips/base/8r.enc}]
-[4] [5] [6] [7] [8] [9] [10] [11] [12] [13] (./manual_usuario.aux
+[2{/usr/local/texlive/2026basic/texmf-dist/fonts/enc/dvips/base/8r.enc}]
+LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
+(Font)              scaled to size 9.0pt on input line 104.
+
+[3]
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 7.74pt on input line 136.
+LaTeX Font Info:    Font shape `T1/Inter-TLF/m/n' will be
+(Font)              scaled to size 10.0pt on input line 136.
+LaTeX Font Info:    Font shape `T1/Inter-TLF/b/n' will be
+(Font)              scaled to size 10.0pt on input line 136.
+ [4]
+LaTeX Font Info:    Font shape `T1/Inter-TLF/m/it' will be
+(Font)              scaled to size 10.95pt on input line 166.
+ [5] [6] [7] [8] [9] [10] [11] [12] [13] (./manual_tecnico.aux
 LaTeX Info: Redefining \. on input line 8.
 LaTeX Info: Redefining \% on input line 8.
 )
@@ -1094,24 +1099,25 @@ LaTeX Info: Redefining \% on input line 8.
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
-Package rerunfilecheck Info: File `manual_usuario.out' has not changed.
-(rerunfilecheck)             Checksum: C4007F8B050CD9A599925624B90D4AF3;3033.
+Package rerunfilecheck Info: File `manual_tecnico.out' has not changed.
+(rerunfilecheck)             Checksum: 4F2F1B0CA9B9B7CE69CB11037BD53F49;4270.
  ) 
 Here is how much of TeX's memory you used:
- 29630 strings out of 468962
- 590871 string characters out of 5453511
- 991903 words of memory out of 5000000
- 57809 multiletter control sequences out of 15000+600000
- 745411 words of font info for 81 fonts, out of 8000000 for 9000
+ 29626 strings out of 468962
+ 590846 string characters out of 5453511
+ 991598 words of memory out of 5000000
+ 57812 multiletter control sequences out of 15000+600000
+ 753161 words of font info for 83 fonts, out of 8000000 for 9000
  345 hyphenation exceptions out of 8191
- 103i,12n,120p,481b,964s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 103i,12n,120p,481b,1058s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </Users/menene/Library/texmf/fonts/type1/public/inter/Inter-Bold.pfb></Users/
-menene/Library/texmf/fonts/type1/public/inter/Inter-Regular.pfb></Users/menene/
-Library/texmf/fonts/type1/public/bera/fvmr8a.pfb>
-Output written on manual_usuario.pdf (14 pages, 151085 bytes).
+menene/Library/texmf/fonts/type1/public/inter/Inter-Italic.pfb></Users/menene/L
+ibrary/texmf/fonts/type1/public/inter/Inter-Regular.pfb></Users/menene/Library/
+texmf/fonts/type1/public/bera/fvmr8a.pfb>
+Output written on manual_tecnico.pdf (14 pages, 173134 bytes).
 PDF statistics:
- 225 PDF objects out of 1000 (max. 8388607)
- 200 compressed objects within 2 object streams
- 65 named destinations out of 1000 (max. 500000)
- 149 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 257 PDF objects out of 1000 (max. 8388607)
+ 229 compressed objects within 3 object streams
+ 56 named destinations out of 1000 (max. 500000)
+ 221 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,0 +1,344 @@
+% ================================================================================
+% MANUAL DE INSTALACION — GAMMA
+% Puesta en marcha, actualizacion y operacion de los contenedores.
+% Sustituye a la pestana "Despliegue" que existia en la seccion Referencia.
+%
+% Compilar con:  latexmk -pdf manual_instalacion.tex
+% ================================================================================
+\input{../preambulo}
+
+\begin{document}
+
+% ── Portada ─────────────────────────────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{5.5cm}
+{\fontsize{46}{50}\selectfont\bfseries\color{fg} GAMMA\par}
+\vspace{0.5em}
+{\large\color{muted} Gobierno Automatizado del Maestro de Materiales\par}
+
+\vspace{2.6cm}
+{\color{line}\hrule height 1pt}
+\vspace{1.2em}
+
+{\huge\bfseries\color{fg} Manual de instalación\par}
+\vspace{0.5em}
+{\large\color{muted} Puesta en marcha, actualización y operación\par}
+
+\vfill
+{\color{line}\hrule height 0.4pt}
+\vspace{1em}
+{\footnotesize\color{muted}
+Unidad de Energía \quad·\quad \today\par
+\vspace{0.4em}
+Dirigido a quien despliega y mantiene la plataforma.
+El uso diario se documenta en el manual de usuario, y la administración en el
+manual técnico.\par}
+\vspace{1cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================================
+\section{Requisitos}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Docker} con el complemento Compose. Es el único requisito
+        obligatorio: todo lo demás corre dentro de contenedores.
+  \item \textbf{Git}, para obtener y actualizar el código.
+  \item Una \textbf{clave de acceso al servicio de modelo de lenguaje}. Es el
+        único componente que no es de código abierto y el único que tiene costo,
+        bajo un esquema de pago por uso.
+  \item Alrededor de \textbf{4 GB de memoria disponible}. El modelo de
+        clasificación se carga completo en memoria, y durante un reentrenamiento
+        conviven dos en paralelo.
+\end{itemize}
+
+\newpage
+% ============================================================================
+\section{Servicios}
+
+Todo se orquesta con Docker Compose sobre una red interna.
+
+\begin{center}
+\begin{tabular}{@{}llp{6.5cm}@{}}
+\toprule
+\textbf{Servicio} & \textbf{Puerto} & \textbf{Qué es} \\
+\midrule
+\texttt{db}       & 5436 & PostgreSQL 16 con la extensión \texttt{pg\_trgm}, que resuelve la búsqueda por similitud \\
+\texttt{api}      & 8001 & FastAPI sobre Python 3.12. Incluye el modelo de clasificación y la conexión al modelo de lenguaje \\
+\texttt{lab}      & 8888 & Jupyter Lab con los cuadernos de análisis \\
+\texttt{frontend} & 8089 & La aplicación web. Sirve además de proxy hacia los demás servicios \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{El frontend como punto de entrada}
+
+En producción, el frontend no solo sirve la aplicación: unifica el acceso a todo
+bajo un mismo dominio.
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Ruta} & \textbf{Destino} \\
+\midrule
+\texttt{/}           & La aplicación web \\
+\texttt{/api/*}      & El API \\
+\texttt{/swagger-ui} & La documentación interactiva del API \\
+\texttt{/lab/*}      & Jupyter Lab \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Los dos modos del frontend}
+
+El comportamiento lo decide la variable \texttt{FRONTEND\_MODE}:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{development} — servidor de desarrollo con recarga automática.
+        Los cambios en el código se reflejan sin reconstruir nada.
+  \item \textbf{production} — compila la aplicación y sirve archivos estáticos.
+        Más rápido, pero \textbf{cada cambio exige reconstruir la imagen}.
+\end{itemize}
+
+\begin{nota}[Cuál usar]
+En modo desarrollo una actualización se aplica con solo recrear el contenedor,
+lo que simplifica bastante el mantenimiento. Si opta por modo producción,
+recuerde que tras cada actualización hay que reconstruir:
+\texttt{docker compose up -d -{}-build frontend}.
+\end{nota}
+
+\newpage
+% ============================================================================
+\section{Variables de entorno}
+
+Se definen en un archivo \texttt{.env} en la raíz del proyecto. Parta de
+\texttt{.env.example}.
+
+\begin{center}
+\begin{tabular}{@{}lp{8.4cm}@{}}
+\toprule
+\textbf{Variable} & \textbf{Para qué sirve} \\
+\midrule
+\texttt{DB\_USER}, \texttt{DB\_PASSWORD} & Credenciales de la base de datos \\
+\texttt{DB\_NAME}, \texttt{DB\_HOST}, \texttt{DB\_PORT} & Ubicación de la base \\
+\texttt{JWT\_SECRET} & Clave con la que se firman las sesiones. \textbf{Debe ser un valor largo y aleatorio} \\
+\texttt{JWT\_EXPIRY\_HOURS} & Duración de la sesión \\
+\texttt{LLM\_API\_KEY} & Clave del servicio de modelo de lenguaje \\
+\texttt{LLM\_MODEL} & Modelo de lenguaje a utilizar \\
+\texttt{JUPYTER\_TOKEN} & Token de acceso al laboratorio \\
+\texttt{CONFIANZA\_UMBRAL} & A partir de qué confianza una sugerencia se da por resuelta \\
+\texttt{DUPLICADO\_UMBRAL} & A partir de qué similitud se alerta de un posible duplicado \\
+\texttt{FRONTEND\_MODE} & \texttt{development} o \texttt{production} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{aviso}[No versione el archivo .env]
+Contiene credenciales y claves. Está excluido del repositorio a propósito. Cada
+entorno mantiene el suyo.
+\end{aviso}
+
+\subsection{Los dos umbrales}
+
+Merecen atención porque cambian el comportamiento del asistente:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \texttt{DUPLICADO\_UMBRAL} está deliberadamente bajo. Bajarlo aún más
+        genera más alertas irrelevantes; subirlo deja pasar duplicados reales,
+        que son mucho más costosos.
+  \item \texttt{CONFIANZA\_UMBRAL} decide cuándo el sistema da por buena su
+        propia sugerencia. Subirlo aumenta la exactitud pero deriva más casos a
+        revisión manual.
+\end{itemize}
+
+\newpage
+% ============================================================================
+\section{Primera instalación}
+
+\subsection{Obtener el código y configurar}
+
+\begin{verbatim}
+git clone <repositorio> gamma
+cd gamma
+cp .env.example .env
+\end{verbatim}
+
+Complete el \texttt{.env} con las credenciales y claves.
+
+\subsection{Levantar los servicios}
+
+\begin{verbatim}
+docker compose up -d --build
+\end{verbatim}
+
+La primera vez tarda varios minutos: descarga las imágenes base e instala
+dependencias.
+
+\subsection{Aplicar las migraciones}
+
+\begin{verbatim}
+docker compose exec api python migrate.py --status
+docker compose exec api python migrate.py
+\end{verbatim}
+
+El primer comando lista qué hay aplicado y qué falta; el segundo aplica lo
+pendiente. Es idempotente: repetirlo no causa daño.
+
+\begin{nota}[Los scripts de inicialización solo corren una vez]
+Los archivos de \texttt{db/init/} se ejecutan únicamente cuando el volumen de
+datos está vacío. En una base ya creada no vuelven a correr: para eso están las
+migraciones.
+\end{nota}
+
+\subsection{Crear el primer administrador}
+
+Registre una cuenta desde la aplicación y promuévala. \textbf{Este paso es
+obligatorio}: sin él nadie puede entrar a las secciones de administración.
+
+\begin{verbatim}
+docker compose exec db psql -U <usuario> -d <base> \
+  -c "UPDATE public.users SET admin=true WHERE email='...';"
+\end{verbatim}
+
+A partir de ahí, los demás roles se gestionan desde la sección Usuarios.
+
+\subsection{Cargar los datos iniciales}
+
+Desde la sección \textbf{Datos}, pestaña Importar, cargue en este orden: UNSPSC,
+luego el catálogo de clases y al final los archivos del maestro. El orden
+importa; el manual técnico explica por qué.
+
+\newpage
+% ============================================================================
+\section{Actualizar una instalación existente}
+
+\subsection{Procedimiento}
+
+\begin{verbatim}
+cd /ruta/del/proyecto
+git status          # revisar que no haya cambios locales sin guardar
+git pull
+docker compose exec api python migrate.py
+docker compose up -d --force-recreate --no-deps frontend
+\end{verbatim}
+
+\subsection{Por qué cada paso}
+
+\begin{itemize}[leftmargin=*, itemsep=4pt]
+  \item \textbf{Las migraciones} deben correr siempre. Una pantalla que consulta
+        una tabla que todavía no existe falla sin explicación clara.
+  \item \textbf{Recrear el frontend} es necesario porque algunos archivos se
+        montan individualmente en el contenedor, y al reemplazarlos el
+        contenedor pierde la referencia. Se detalla más adelante.
+  \item \textbf{El API no requiere nada}: su código se monta como directorio y
+        el servidor recarga solo. Solo hay que reconstruirlo si cambiaron sus
+        dependencias.
+\end{itemize}
+
+\begin{aviso}[Reconstruir si cambian las dependencias]
+Si la actualización modificó las dependencias del API o de la aplicación web, sí
+hay que reconstruir la imagen correspondiente con
+\texttt{docker compose up -d -{}-build}. Revise el registro de cambios ante la
+duda.
+\end{aviso}
+
+\newpage
+% ============================================================================
+\section{Problemas frecuentes}
+
+\subsection*{Tras actualizar, la aplicación muestra un error de archivo no encontrado}
+
+Es el problema más común y no significa que falte nada. Algunos archivos se
+montan individualmente en el contenedor, y Docker los sigue por su identificador
+interno, no por su nombre. Cuando la actualización reemplaza uno de esos
+archivos, el contenedor queda apuntando a algo que ya no existe.
+
+\begin{verbatim}
+docker compose up -d --force-recreate --no-deps frontend
+\end{verbatim}
+
+\begin{nota}[Reiniciar no basta]
+\texttt{docker compose restart} reutiliza el mismo contenedor y conserva el
+montaje defectuoso. Hay que recrearlo.
+\end{nota}
+
+\subsection*{El pull falla diciendo que las ramas divergieron}
+
+Ocurre si el historial del repositorio se reescribió. En un servidor, que solo
+consume código y no produce cambios, la salida es adoptar el remoto tal cual:
+
+\begin{verbatim}
+git fetch origin
+git reset --hard origin/main
+\end{verbatim}
+
+\begin{aviso}[Revise antes de descartar]
+\texttt{git reset -{}-hard} descarta cualquier cambio local en archivos
+versionados. Ejecute \texttt{git status} primero. Los archivos excluidos del
+repositorio, como \texttt{.env} y los artefactos del modelo, no se ven
+afectados.
+\end{aviso}
+
+\subsection*{El pull falla por archivos sin versionar que serían sobrescritos}
+
+Sucede cuando un archivo que antes estaba excluido pasa a formar parte del
+repositorio. Aparta los locales y vuelve a intentar:
+
+\begin{verbatim}
+mkdir -p ~/respaldo && mv <archivos> ~/respaldo/
+git pull
+\end{verbatim}
+
+\subsection*{Nadie puede entrar a las secciones de administración}
+
+Ninguna cuenta tiene el rol. Promueva una desde la base de datos, como se
+describe en la primera instalación.
+
+\subsection*{Una pantalla falla al consultar datos}
+
+Casi siempre son migraciones sin aplicar. Verifique con
+\texttt{migrate.py -{}-status}.
+
+\subsection*{El asistente no responde}
+
+Revise que \texttt{LLM\_API\_KEY} esté configurada y que el servicio externo
+esté disponible. Los errores de comunicación quedan registrados y se pueden
+consultar desde la sección Datos.
+
+\newpage
+% ============================================================================
+\section{Respaldos}
+
+Tres cosas merecen respaldo, y solo una está en el repositorio:
+
+\begin{center}
+\begin{tabular}{@{}lp{8.6cm}@{}}
+\toprule
+\textbf{Qué} & \textbf{Por qué} \\
+\midrule
+La base de datos & Contiene el catálogo, las solicitudes, las conversaciones y las cuentas. Es lo único verdaderamente irrecuperable \\
+El archivo \texttt{.env} & Credenciales y claves. No está versionado \\
+Los artefactos del modelo & No viajan por el repositorio. Se pueden regenerar reentrenando, pero eso toma tiempo y no reproduce exactamente el modelo anterior \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+El código no necesita respaldo: vive en el repositorio.
+
+\begin{nota}[Los artefactos son propios de cada entorno]
+Como no se versionan, cada instalación mantiene los suyos. Un entorno recién
+desplegado arranca con el modelo inicial y su propio historial de versiones.
+\end{nota}
+
+\vspace{1cm}
+
+\begin{aviso}[Antes de recrear la base]
+\texttt{docker compose down -v} borra los volúmenes, y con ellos toda la
+información. Úselo solo cuando quiera partir de cero, y nunca sin respaldo
+previo.
+\end{aviso}
+
+\end{document}

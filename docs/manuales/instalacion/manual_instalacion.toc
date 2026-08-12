@@ -1,0 +1,18 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Requisitos}{2}{section.1}%
+\contentsline {section}{\numberline {2}Servicios}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}El frontend como punto de entrada}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Los dos modos del frontend}{3}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Variables de entorno}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Los dos umbrales}{4}{subsection.3.1}%
+\contentsline {section}{\numberline {4}Primera instalación}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Obtener el código y configurar}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Levantar los servicios}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Aplicar las migraciones}{5}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Crear el primer administrador}{5}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Cargar los datos iniciales}{5}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Actualizar una instalación existente}{6}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Procedimiento}{6}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Por qué cada paso}{6}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Problemas frecuentes}{7}{section.6}%
+\contentsline {section}{\numberline {7}Respaldos}{9}{section.7}%

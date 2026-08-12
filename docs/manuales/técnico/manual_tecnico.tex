@@ -1,0 +1,403 @@
+% ================================================================================
+% MANUAL TECNICO — GAMMA
+% Dirigido al administrador de la plataforma. Cubre las secciones restringidas.
+% El uso diario del gestor se documenta en el manual de usuario, y la puesta en
+% marcha en el manual de instalacion.
+%
+% Compilar con:  latexmk -pdf manual_tecnico.tex
+% ================================================================================
+\input{../preambulo}
+
+\begin{document}
+
+% ── Portada ─────────────────────────────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{5.5cm}
+{\fontsize{46}{50}\selectfont\bfseries\color{fg} GAMMA\par}
+\vspace{0.5em}
+{\large\color{muted} Gobierno Automatizado del Maestro de Materiales\par}
+
+\vspace{2.6cm}
+{\color{line}\hrule height 1pt}
+\vspace{1.2em}
+
+{\huge\bfseries\color{fg} Manual técnico\par}
+\vspace{0.5em}
+{\large\color{muted} Guía del administrador de la plataforma\par}
+
+\vfill
+{\color{line}\hrule height 0.4pt}
+\vspace{1em}
+{\footnotesize\color{muted}
+Unidad de Energía \quad·\quad \today\par
+\vspace{0.4em}
+Cubre las secciones restringidas a cuentas administrativas.
+El uso diario se documenta en el manual de usuario, y la puesta en marcha en el
+manual de instalación.\par}
+\vspace{1cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================================
+\section{Alcance de este manual}
+
+Este documento está dirigido a quien administra GAMMA: la persona que gestiona
+las cuentas, vigila la calidad del catálogo y decide cuándo reentrenar el
+modelo. Supone que ya conoce el flujo de creación de materiales; si no es así,
+empiece por el manual de usuario.
+
+\begin{center}
+\begin{tabular}{@{}lp{9.2cm}@{}}
+\toprule
+\textbf{Manual} & \textbf{Qué cubre} \\
+\midrule
+Usuario      & El alta de materiales, la exportación a SAP y la ayuda en pantalla. Lo que hace un gestor a diario. \\
+Técnico      & Este documento: las cinco secciones restringidas a administradores. \\
+Instalación  & Puesta en marcha, actualización y operación de los contenedores. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Las cinco secciones restringidas}
+
+Un administrador ve en la barra superior cinco secciones que un gestor no:
+
+\begin{center}
+\begin{tabular}{@{}llp{7.4cm}@{}}
+\toprule
+\textbf{Sección} & \textbf{Ruta} & \textbf{Para qué sirve} \\
+\midrule
+Arquitectura & \texttt{/arquitectura} & Cómo está construida la plataforma \\
+Referencia   & \texttt{/referencia}   & Documentación del sistema y de su base de datos \\
+Lab          & \texttt{/lab}          & Cuadernos de análisis del proyecto \\
+Modelo       & \texttt{/modelo}       & Reentrenamiento y versiones del clasificador \\
+Usuarios     & \texttt{/usuarios}     & Alta, baja y modificación de cuentas \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+% ============================================================================
+\section{Roles y control de acceso}
+
+GAMMA distingue dos roles: \textbf{gestor} y \textbf{administrador}. No hay
+niveles intermedios.
+
+\subsection{Qué cambia según el rol}
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & \textbf{Gestor} & \textbf{Administrador} \\
+\midrule
+Chat, Datos y Ayuda                & Sí & Sí \\
+Arquitectura, Referencia y Lab     & No & Sí \\
+Modelo y Usuarios                  & No & Sí \\
+Su actividad cuenta en los indicadores & Sí & No \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{aviso}[La actividad de un administrador no se contabiliza]
+Las cuentas administrativas se excluyen de todas las vistas de indicadores. Fue
+una decisión deliberada: el tráfico de pruebas y demostraciones contaminaría las
+mediciones de tiempo y de calidad del equipo.
+
+La consecuencia práctica es que \textbf{un administrador no debe usar su cuenta
+para dar de alta materiales de la operación real}: esas solicitudes no
+aparecerían en ningún reporte. Si necesita crear materiales, hágalo con una
+cuenta de gestor.
+\end{aviso}
+
+\subsection{Cómo se aplica la restricción}
+
+El control ocurre en tres capas, y solo la última es la que realmente protege:
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item \textbf{La barra superior} oculta los enlaces que el rol no permite. Es
+        comodidad visual, nada más.
+  \item \textbf{La navegación} revalida el rol contra el servidor antes de
+        abrir una sección restringida, de modo que escribir la dirección a mano
+        no sirve.
+  \item \textbf{El servidor} verifica el rol en cada llamada. Aunque alguien
+        burlara las dos capas anteriores, no obtendría ningún dato.
+\end{enumerate}
+
+\newpage
+% ============================================================================
+\section{Usuarios}
+
+La sección \textbf{Usuarios} se abre desde el menú de la cuenta, en el extremo
+derecho de la barra: haga clic en su nombre y elija \textbf{Administrar}.
+
+\captura{01-menu-administrar}{Menú de la cuenta con la opción Administrar}
+
+\captura{02-usuarios-listado}{Listado de cuentas}
+
+El listado muestra nombre, correo, rol, estado y fecha de alta de cada cuenta
+vigente.
+
+\subsection{Crear una cuenta}
+
+Presione \textbf{Nueva cuenta} y complete el formulario. La contraseña debe
+tener al menos ocho caracteres. Los dos interruptores del pie definen si la
+cuenta es administrativa y si está habilitada.
+
+\captura{03-usuarios-nueva}{Formulario de alta}
+
+\subsection{Editar una cuenta}
+
+El botón \textbf{Editar} de cada fila abre el mismo formulario con los datos
+cargados. Puede cambiar nombre, correo, rol y estado.
+
+\begin{nota}[La contraseña se deja en blanco]
+Al editar, el campo de contraseña aparece vacío. Déjelo así para conservar la
+actual; escriba una nueva solo si quiere cambiarla.
+\end{nota}
+
+\subsection{Deshabilitar frente a dar de baja}
+
+Son dos cosas distintas y conviene no confundirlas:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Deshabilitar} (quitar la marca de \emph{cuenta habilitada})
+        suspende el acceso sin dar de baja a la persona. Úselo para ausencias
+        temporales.
+  \item \textbf{Dar de baja} retira la cuenta del listado. Úselo cuando alguien
+        deja el equipo.
+\end{itemize}
+
+\subsection{La baja es lógica}
+
+Dar de baja \textbf{no borra nada}. La cuenta se marca como retirada y
+desaparece del listado, pero sus solicitudes, conversaciones y decisiones sobre
+duplicados conservan la referencia a quien las creó. El historial no pierde
+trazabilidad.
+
+Marque \textbf{Mostrar cuentas dadas de baja} para verlas, junto con la fecha en
+que se retiraron y un botón para restaurarlas.
+
+\captura{04-usuarios-bajas}{Cuentas dadas de baja}
+
+\begin{nota}[El correo se libera]
+Al dar de baja una cuenta, su correo queda disponible para volver a usarse. Si
+después crea una cuenta nueva con ese mismo correo, la antigua ya no se podrá
+restaurar mientras la nueva exista: el sistema se lo advertirá.
+\end{nota}
+
+\subsection{Resguardos que no puede saltarse}
+
+El sistema impide cuatro operaciones que dejarían la plataforma sin
+administración:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item Retirarse a usted mismo el rol de administrador.
+  \item Desactivar su propia cuenta.
+  \item Darse de baja a usted mismo.
+  \item Dejar el sistema sin ningún administrador activo.
+\end{itemize}
+
+En todos los casos aparece un mensaje explicando el motivo y la operación no se
+realiza. Si necesita retirarse, promueva primero a otra persona.
+
+\newpage
+% ============================================================================
+\section{Modelo}
+
+La sección \textbf{Modelo} controla el clasificador que sugiere la categoría de
+cada material. Se llega desde la barra superior.
+
+\captura{05-modelo-pantalla}{Pantalla de modelo}
+
+\subsection{Cuándo reentrenar}
+
+Casi nunca. El reentrenamiento tiene sentido después de una \textbf{carga
+importante al maestro}: materiales nuevos, clases nuevas o una corrección
+masiva del catálogo. No es una tarea programada ni periódica.
+
+\begin{aviso}[Es un proceso costoso]
+Tarda alrededor de diez minutos y mantiene en memoria el modelo vigente y el
+nuevo a la vez. Durante ese lapso el servicio de predicción puede responder más
+lento. Ejecútelo fuera del horario de mayor uso.
+\end{aviso}
+
+\subsection{Cómo se ejecuta}
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item Presione \textbf{Iniciar reentrenamiento} y confirme.
+  \item La pantalla muestra la etapa en curso y se actualiza sola cada pocos
+        segundos. Puede cerrarla: el proceso sigue en el servidor.
+  \item Al terminar aparece la comparación de métricas contra el modelo
+        anterior.
+\end{enumerate}
+
+\captura{06-modelo-comparacion}{Comparación de métricas al terminar}
+
+\subsection{Cómo leer la comparación}
+
+Se comparan cuatro medidas. La diferencia se expresa en puntos porcentuales:
+verde si mejoró, rojo si empeoró.
+
+\begin{center}
+\begin{tabular}{@{}lp{9.2cm}@{}}
+\toprule
+\textbf{Medida} & \textbf{Qué significa} \\
+\midrule
+Exactitud     & Proporción de aciertos en la primera sugerencia \\
+F1 macro      & Desempeño promediado dando el mismo peso a cada clase, sin importar cuántos materiales tenga \\
+F1 ponderado  & Lo mismo, pero pesando cada clase por su tamaño \\
+Top-3         & Proporción de casos donde la clase correcta aparece entre las tres sugerencias \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{nota}[Fíjese en el F1 macro]
+Si la exactitud sube pero el F1 macro baja, el modelo mejoró en las clases
+grandes a costa de las pequeñas. Como buena parte del catálogo son clases con
+pocos materiales, esa combinación no siempre es una mejora real.
+\end{nota}
+
+\subsection{El modelo nuevo entra de inmediato}
+
+Al terminar, el modelo reentrenado queda en servicio sin necesidad de reiniciar
+nada. Por eso conviene revisar la comparación en cuanto termina: si algo
+empeoró de forma relevante, revierta.
+
+\subsection{Versiones y reversión}
+
+Cada reentrenamiento archiva el modelo anterior con una marca de tiempo antes de
+publicar el nuevo. El listado de versiones muestra las disponibles con sus
+métricas y su tamaño.
+
+\captura{07-modelo-versiones}{Historial de versiones}
+
+Para revertir, presione \textbf{Revertir} en la versión que quiera restaurar y
+confirme. El modelo vigente se archiva también, de modo que una reversión
+puede deshacerse.
+
+\begin{nota}[Se conservan las tres últimas]
+Los artefactos ocupan espacio considerable en disco, así que solo se guardan las
+tres versiones más recientes. Una versión listada sin archivo disponible aparece
+señalada y ya no se puede restaurar.
+\end{nota}
+
+\subsection{Con qué datos se reentrena}
+
+El conjunto se arma con el maestro de materiales vigente más las solicitudes que
+un gestor \textbf{corrigió de forma explícita}.
+
+Quedan fuera, a propósito, las solicitudes que el modelo resolvió por su cuenta
+y el gestor aceptó sin cambios: reentrenar con las propias sugerencias aceptadas
+refuerza los sesgos del modelo en lugar de corregirlos. También se descartan las
+clases con muy pocos materiales, insuficientes para entrenar y evaluar.
+
+\begin{aviso}[Una clase nueva necesita ejemplos]
+Un material cuya clase acaba de crearse no será sugerido por el modelo hasta que
+esa clase tenga al menos tres materiales en el maestro y se haya reentrenado.
+\end{aviso}
+
+\newpage
+% ============================================================================
+\section{Arquitectura}
+
+La sección \textbf{Arquitectura} es documentación de consulta: describe cómo
+está construida la plataforma. No tiene controles ni acciones.
+
+\captura{08-arquitectura}{Sección de arquitectura}
+
+Contiene el diagrama de los componentes y su relación, la tabla del stack
+tecnológico con la justificación de cada elección, y la descripción de la
+arquitectura de datos por capas.
+
+Es útil para explicar el sistema a alguien de fuera, o para ubicarse antes de
+tocar algo.
+
+\newpage
+% ============================================================================
+\section{Referencia}
+
+La sección \textbf{Referencia} es la documentación técnica detallada,
+organizada en pestañas.
+
+\captura{09-referencia}{Sección de referencia}
+
+\begin{center}
+\begin{tabular}{@{}lp{9.2cm}@{}}
+\toprule
+\textbf{Pestaña} & \textbf{Contenido} \\
+\midrule
+API             & Documentación interactiva de todas las rutas. Permite probarlas desde el navegador \\
+Esquema         & Diagramas de la base de datos por capa, con sus tablas y relaciones \\
+Decisiones      & Las decisiones de diseño del proyecto y su justificación \\
+Modelo          & Cómo funciona el clasificador: representación del texto, algoritmo y métricas \\
+Reentrenamiento & Detalle técnico del mecanismo de versionado y las rutas que lo exponen \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{nota}[La pestaña API es interactiva]
+No es solo documentación: permite ejecutar llamadas reales contra el sistema.
+Tenga presente que lo que ejecute ahí \textbf{afecta los datos de verdad}.
+\end{nota}
+
+\newpage
+% ============================================================================
+\section{Lab}
+
+La sección \textbf{Lab} reúne los cuadernos de análisis del proyecto. Son de
+consulta: documentan cómo se llegó a los resultados, no forman parte de la
+operación.
+
+\captura{10-lab}{Sección de laboratorio}
+
+Se agrupan en dos bloques:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Análisis exploratorio}, con las vistas consolidadas del maestro
+        y un cuaderno por cada tipo de material, con su volumen y su tasa de
+        duplicados.
+  \item \textbf{Modelado y analítica de negocio}, con la comparación de
+        algoritmos y el análisis de ahorro y retorno de la inversión.
+\end{itemize}
+
+El botón \textbf{Jupyter} de la esquina abre el entorno donde los cuadernos se
+pueden ejecutar y modificar.
+
+\newpage
+% ============================================================================
+\section{Operación recomendada}
+
+\subsection{Al incorporar a alguien al equipo}
+
+Cree la cuenta desde \textbf{Usuarios} sin marcar el interruptor de
+administrador. Entréguele el manual de usuario. Marque administrador solo si esa
+persona va a gestionar cuentas o el modelo.
+
+\subsection{Al actualizar el maestro}
+
+Cargue los archivos desde \textbf{Datos}, pestaña Importar, respetando el orden:
+UNSPSC, luego clases y al final materiales. Verifique que los conteos hayan
+subido. Reentrene solo si la carga fue significativa.
+
+\subsection{Al reentrenar}
+
+Hágalo fuera del horario de mayor uso, revise la comparación de métricas en
+cuanto termine, y revierta si alguna empeoró de forma relevante.
+
+\subsection{Revisión periódica}
+
+Vale la pena mirar de vez en cuando los indicadores de la sección Datos: si la
+tasa de corrección del modelo sube de forma sostenida, es señal de que el
+catálogo cambió lo suficiente como para justificar un reentrenamiento.
+
+\vspace{1cm}
+
+\begin{nota}[Puesta en marcha y actualización]
+Todo lo relativo a instalar, actualizar o resolver problemas de los contenedores
+está en el manual de instalación.
+\end{nota}
+
+\end{document}
