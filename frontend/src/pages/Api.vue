@@ -9,7 +9,7 @@ const docsUrl = isLocal ? `${API_BASE}/docs` : '/swagger-ui'
   <section class="h-[calc(100vh-4rem)]">
     <iframe
       :src="docsUrl"
-      class="w-full h-full border-0"
+      class="w-full h-full border-0 bg-white"
       title="Swagger UI"
     />
   </section>

@@ -479,8 +479,8 @@ onMounted(() => {
             </CardContent>
           </Card>
 
-          <div v-else class="rounded-lg border overflow-hidden">
-            <table class="w-full text-sm">
+          <div v-else class="rounded-lg border overflow-x-auto">
+            <table class="w-full text-sm min-w-[34rem]">
               <thead class="bg-muted/50">
                 <tr>
                   <th class="text-left px-4 py-2.5 font-medium text-muted-foreground">Archivo</th>

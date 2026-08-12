@@ -96,6 +96,9 @@ const expandedConfirmed = ref<Set<number>>(new Set())
 const classSearchOpen = ref<number | null>(null)
 const classSearchQuery = ref('')
 const awaitingAction = ref(false)
+// Debajo de lg el historial no cabe al lado del chat, asi que se abre como
+// panel superpuesto. Sin esto no habia forma de cambiar de conversacion en movil.
+const historialAbierto = ref(false)
 const classSearchResults = ref<{ code: string; name: string }[]>([])
 let classSearchTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -647,7 +650,19 @@ onMounted(async () => {
   <section class="h-[calc(100vh-4.0625rem)] flex overflow-hidden">
 
     <!-- Sidebar -->
-    <aside class="hidden lg:flex w-64 border-r flex-col bg-muted/30 shrink-0">
+    <!-- Velo: cierra el historial al tocar fuera, solo debajo de lg -->
+    <div
+      v-if="historialAbierto"
+      class="lg:hidden fixed inset-0 top-[4.0625rem] bg-black/40 z-30"
+      @click="historialAbierto = false"
+    ></div>
+
+    <aside
+      class="w-64 border-r flex-col bg-muted/30 shrink-0 lg:flex
+             lg:static lg:z-auto lg:translate-x-0
+             fixed left-0 top-[4.0625rem] bottom-0 z-40 transition-transform"
+      :class="historialAbierto ? 'flex translate-x-0' : 'hidden lg:flex -translate-x-full lg:translate-x-0'"
+    >
       <div class="h-12 border-b flex items-center px-4">
         <h2 class="font-semibold text-sm flex items-center gap-2">
           <i class="fa-solid fa-clock-rotate-left text-muted-foreground"></i>
@@ -660,7 +675,7 @@ onMounted(async () => {
           :key="conv.id"
           class="w-full text-left px-3 py-2 rounded-md text-sm flex items-center gap-2 group transition-colors cursor-pointer"
           :class="conv.id === activeConvId ? 'bg-primary/10 font-medium' : 'hover:bg-muted'"
-          @click="loadConversation(conv.id)"
+          @click="loadConversation(conv.id); historialAbierto = false"
         >
           <i class="fa-solid fa-message text-xs shrink-0" :class="conv.id === activeConvId ? 'text-primary' : 'text-muted-foreground'"></i>
           <span class="truncate flex-1">{{ conv.title }}</span>
@@ -674,7 +689,7 @@ onMounted(async () => {
         <p v-if="conversations.length === 0" class="text-xs text-muted-foreground text-center py-4">Sin conversaciones</p>
       </div>
       <div class="p-3 border-t">
-        <Button variant="ghost" class="w-full justify-start gap-2 text-sm" @click="startNewConversation">
+        <Button variant="ghost" class="w-full justify-start gap-2 text-sm" @click="startNewConversation(); historialAbierto = false">
           <i class="fa-solid fa-plus"></i>
           Nueva conversacion
         </Button>
@@ -687,6 +702,13 @@ onMounted(async () => {
       <!-- Header -->
       <div class="h-12 border-b flex items-center justify-between px-4 shrink-0">
         <div class="flex items-center gap-2 text-sm">
+          <Button
+            variant="ghost" size="sm" class="lg:hidden -ml-2"
+            aria-label="Historial de conversaciones"
+            @click="historialAbierto = true"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </Button>
           <div class="w-2 h-2 rounded-full bg-green-500"></div>
           <span class="text-muted-foreground">GAMMA Asistente</span>
         </div>

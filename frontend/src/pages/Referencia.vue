@@ -314,7 +314,7 @@ const derGold = `erDiagram
         <div class="rounded-lg border overflow-hidden" style="height: calc(100vh - 16rem)">
           <iframe
             :src="docsUrl"
-            class="w-full h-full border-0"
+            class="w-full h-full border-0 bg-white"
             title="Swagger UI"
           />
         </div>
