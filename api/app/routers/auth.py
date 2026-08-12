@@ -40,7 +40,7 @@ class UserResponse(BaseModel):
 def login(body: LoginRequest, db: Session = Depends(get_db)):
     row = db.execute(
         text("SELECT id, email, name, password_hash, is_active, COALESCE(admin, false) AS admin "
-             "FROM public.users WHERE email = :email"),
+             "FROM public.users WHERE email = :email AND deleted_at IS NULL"),
         {"email": body.email},
     ).fetchone()
 

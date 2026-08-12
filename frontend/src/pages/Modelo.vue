@@ -172,12 +172,9 @@ onUnmounted(detenerSondeo)
 <template>
   <section class="max-w-6xl mx-auto px-6 py-8">
     <div class="mb-8">
-      <div class="flex items-center gap-2">
-        <h1 class="text-2xl font-bold tracking-tight">Administracion</h1>
-        <Badge variant="secondary" class="text-xs">Solo administradores</Badge>
-      </div>
+      <h1 class="text-2xl font-bold tracking-tight">Modelo</h1>
       <p class="text-sm text-muted-foreground mt-1">
-        Procesos manuales del modelo de clasificacion
+        Reentrenamiento y versiones del clasificador de categoria
       </p>
     </div>
 

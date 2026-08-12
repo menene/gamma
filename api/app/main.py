@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, chat, etl, duplicates, model, logs, export, retrain
+from app.routers import auth, chat, etl, duplicates, model, logs, export, retrain, users
 
 app = FastAPI(
     title="GAMMA API",
@@ -18,6 +18,7 @@ app = FastAPI(
         {"name": "Duplicados", "description": "Busqueda de duplicados por similitud"},
         {"name": "Modelo", "description": "Categorizacion de materiales con ML"},
         {"name": "Reentrenamiento", "description": "Versionado y reentrenamiento del modelo. Requiere privilegios de administrador"},
+        {"name": "Usuarios", "description": "Administracion de cuentas. Requiere privilegios de administrador"},
         {"name": "Export", "description": "Exportacion de solicitudes a XLSX"},
         {"name": "Logs", "description": "Logs del sistema y errores"},
     ],
@@ -37,6 +38,7 @@ app.include_router(etl.router)
 app.include_router(duplicates.router)
 app.include_router(model.router)
 app.include_router(retrain.router)
+app.include_router(users.router)
 app.include_router(logs.router)
 app.include_router(export.router)
 

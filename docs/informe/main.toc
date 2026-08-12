@@ -1,0 +1,93 @@
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\babel@toc {spanish}{}\relax 
+\contentsline {chapter}{Prefacio}{\es@scroman {iii}}{section*.3}%
+\contentsline {chapter}{Agradecimientos}{\es@scroman {iv}}{section*.4}%
+\contentsline {chapter}{Lista de Figuras}{\es@scroman {viii}}{section*.6}%
+\contentsline {chapter}{Lista de Cuadros}{\es@scroman {ix}}{section*.7}%
+\contentsline {chapter}{Resumen}{\es@scroman {x}}{section*.8}%
+\contentsline {chapter}{\numberline {1}Introducción}{1}{chapter.9}%
+\contentsline {chapter}{\numberline {2}Objetivos}{3}{chapter.13}%
+\contentsline {section}{\numberline {2.1}Objetivo General}{3}{section.14}%
+\contentsline {section}{\numberline {2.2}Objetivos Específicos}{3}{section.15}%
+\contentsline {chapter}{\numberline {3}Justificación}{5}{chapter.21}%
+\contentsline {chapter}{\numberline {4}Marco Teórico}{6}{chapter.22}%
+\contentsline {section}{\numberline {4.1}Gobierno de datos maestros}{6}{section.23}%
+\contentsline {subsection}{\numberline {4.1.1}Dimensiones de calidad del dato maestro}{6}{subsection.24}%
+\contentsline {subsection}{\numberline {4.1.2}Impacto económico de la mala calidad de datos}{7}{subsection.25}%
+\contentsline {subsection}{\numberline {4.1.3}Estándares para la descripción de datos maestros de materiales}{7}{subsection.26}%
+\contentsline {section}{\numberline {4.2}Inteligencia de negocios y medición del desempeño del proceso}{7}{section.27}%
+\contentsline {subsection}{\numberline {4.2.1}Modelado dimensional}{8}{subsection.28}%
+\contentsline {subsection}{\numberline {4.2.2}Indicadores clave de desempeño}{8}{subsection.29}%
+\contentsline {subsection}{\numberline {4.2.3}Valoración económica de la información}{8}{subsection.30}%
+\contentsline {section}{\numberline {4.3}Metodología para proyectos de analítica}{8}{section.31}%
+\contentsline {section}{\numberline {4.4}Arquitectura de datos por capas (medallón)}{9}{section.32}%
+\contentsline {section}{\numberline {4.5}Procesamiento de lenguaje natural para normalización de texto}{9}{section.33}%
+\contentsline {subsection}{\numberline {4.5.1}Enfoques basados en reglas y basados en modelos de lenguaje}{9}{subsection.34}%
+\contentsline {subsection}{\numberline {4.5.2}La arquitectura Transformer}{9}{subsection.35}%
+\contentsline {subsection}{\numberline {4.5.3}Modelos de lenguaje aplicados a tareas de preparación de datos}{10}{subsection.36}%
+\contentsline {section}{\numberline {4.6}Detección de duplicados y resolución de entidades}{10}{section.37}%
+\contentsline {subsection}{\numberline {4.6.1}El problema de la detección de duplicados}{10}{subsection.38}%
+\contentsline {subsection}{\numberline {4.6.2}Similitud por q-gramas y trigramas}{10}{subsection.39}%
+\contentsline {subsection}{\numberline {4.6.3}Umbral de similitud y compromiso entre exhaustividad y precisión}{11}{subsection.40}%
+\contentsline {section}{\numberline {4.7}Representación vectorial de texto}{11}{section.41}%
+\contentsline {subsection}{\numberline {4.7.1}TF-IDF}{11}{subsection.42}%
+\contentsline {subsection}{\numberline {4.7.2}N-gramas de carácter}{11}{subsection.43}%
+\contentsline {section}{\numberline {4.8}Algoritmos de clasificación supervisada evaluados}{12}{section.44}%
+\contentsline {subsection}{\numberline {4.8.1}Regresión logística}{12}{subsection.45}%
+\contentsline {subsection}{\numberline {4.8.2}Máquinas de vectores de soporte (SVM lineal)}{12}{subsection.46}%
+\contentsline {subsection}{\numberline {4.8.3}Random Forest}{12}{subsection.47}%
+\contentsline {subsection}{\numberline {4.8.4}XGBoost}{12}{subsection.48}%
+\contentsline {subsection}{\numberline {4.8.5}fastText}{12}{subsection.49}%
+\contentsline {subsection}{\numberline {4.8.6}Transformer (embeddings contextuales)}{13}{subsection.50}%
+\contentsline {section}{\numberline {4.9}Evaluación de clasificadores multiclase}{13}{section.51}%
+\contentsline {subsection}{\numberline {4.9.1}Métricas y esquemas de promediado}{13}{subsection.52}%
+\contentsline {subsection}{\numberline {4.9.2}Exactitud top-k}{13}{subsection.53}%
+\contentsline {subsection}{\numberline {4.9.3}Desbalance de clases}{13}{subsection.54}%
+\contentsline {subsection}{\numberline {4.9.4}Protocolo de validación}{14}{subsection.55}%
+\contentsline {section}{\numberline {4.10}Calibración de probabilidades y predicción selectiva}{14}{section.56}%
+\contentsline {subsection}{\numberline {4.10.1}Calibración de probabilidades}{14}{subsection.57}%
+\contentsline {subsection}{\numberline {4.10.2}Clasificación con opción de rechazo}{14}{subsection.58}%
+\contentsline {chapter}{\numberline {5}Antecedentes}{15}{chapter.59}%
+\contentsline {chapter}{\numberline {6}Alcance}{17}{chapter.60}%
+\contentsline {chapter}{\numberline {7}Metodología}{19}{chapter.61}%
+\contentsline {section}{\numberline {7.1}Enfoque metodológico}{19}{section.62}%
+\contentsline {section}{\numberline {7.2}Materiales}{19}{section.63}%
+\contentsline {subsection}{\numberline {7.2.1}Fuentes de información}{19}{subsection.64}%
+\contentsline {subsection}{\numberline {7.2.2}Recursos tecnológicos}{20}{subsection.65}%
+\contentsline {section}{\numberline {7.3}Integración de la información}{20}{section.66}%
+\contentsline {subsection}{\numberline {7.3.1}Arquitectura implementada}{20}{subsection.67}%
+\contentsline {subsection}{\numberline {7.3.2}Proceso de ingesta}{20}{subsection.68}%
+\contentsline {section}{\numberline {7.4}Preparación de los datos}{21}{section.69}%
+\contentsline {subsection}{\numberline {7.4.1}Preprocesamiento de texto}{21}{subsection.70}%
+\contentsline {subsection}{\numberline {7.4.2}Criterios de construcción del conjunto de modelado}{21}{subsection.71}%
+\contentsline {section}{\numberline {7.5}Métodos analíticos}{21}{section.72}%
+\contentsline {subsection}{\numberline {7.5.1}Normalización de descripciones mediante modelo de lenguaje}{21}{subsection.73}%
+\contentsline {subsection}{\numberline {7.5.2}Detección de duplicados}{22}{subsection.74}%
+\contentsline {subsection}{\numberline {7.5.3}Diseño de la evaluación de algoritmos de clasificación}{22}{subsection.75}%
+\contentsline {section}{\numberline {7.6}Arquitectura tecnológica e implementación}{23}{section.76}%
+\contentsline {subsection}{\numberline {7.6.1}Componentes y despliegue}{23}{subsection.77}%
+\contentsline {subsection}{\numberline {7.6.2}Ciclo de vida de una solicitud}{23}{subsection.78}%
+\contentsline {section}{\numberline {7.7}Instrumentación y medición}{24}{section.79}%
+\contentsline {section}{\numberline {7.8}Protocolo de validación en producción}{24}{section.80}%
+\contentsline {chapter}{\numberline {8}Resultados}{25}{chapter.81}%
+\contentsline {section}{\numberline {8.1}Caracterización del maestro de materiales}{25}{section.82}%
+\contentsline {section}{\numberline {8.2}Conjunto de modelado resultante}{27}{section.87}%
+\contentsline {section}{\numberline {8.3}Desempeño comparado de los algoritmos}{27}{section.89}%
+\contentsline {section}{\numberline {8.4}Desempeño del modelo seleccionado}{27}{section.92}%
+\contentsline {section}{\numberline {8.5}Exactitud y cobertura según el umbral de confianza}{28}{section.95}%
+\contentsline {section}{\numberline {8.6}Resultados de la operación en producción}{29}{section.98}%
+\contentsline {chapter}{\numberline {9}Discusión}{30}{chapter.99}%
+\contentsline {section}{\numberline {9.1}Sobre la selección del algoritmo}{30}{section.100}%
+\contentsline {section}{\numberline {9.2}Sobre el efecto del desbalance de clases}{30}{section.101}%
+\contentsline {section}{\numberline {9.3}Sobre el transformador que no convergió}{31}{section.102}%
+\contentsline {section}{\numberline {9.4}Sobre la naturaleza de los errores del modelo}{31}{section.103}%
+\contentsline {section}{\numberline {9.5}Sobre el punto de operación seleccionado}{32}{section.104}%
+\contentsline {section}{\numberline {9.6}Comparación con los antecedentes}{32}{section.105}%
+\contentsline {section}{\numberline {9.7}Limitaciones del estudio}{32}{section.106}%
+\contentsline {chapter}{\numberline {10}Conclusiones}{34}{chapter.107}%
+\contentsline {chapter}{\numberline {11}Recomendaciones}{35}{chapter.108}%
+\contentsline {section}{Referencias}{36}{section*.110}%
+\contentsline {chapter}{Bibliografía}{37}{section*.110}%
+\contentsline {chapter}{Anexos}{38}{section*.111}%
+\contentsline {chapter}{\numberline {A}xxx}{38}{chapter.112}%

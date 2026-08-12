@@ -6,13 +6,14 @@ const router = createRouter({
   routes: [
     { path: '/login', component: () => import('@/pages/Login.vue'), meta: { public: true } },
     { path: '/', component: () => import('@/pages/Presentacion.vue'), meta: { public: true } },
-    { path: '/arquitectura', component: () => import('@/pages/Arquitectura.vue'), meta: { public: true } },
+    { path: '/arquitectura', component: () => import('@/pages/Arquitectura.vue'), meta: { admin: true } },
     { path: '/datos', component: () => import('@/pages/Datos.vue') },
-    { path: '/referencia', component: () => import('@/pages/Referencia.vue') },
-    { path: '/lab', component: () => import('@/pages/Lab.vue') },
+    { path: '/referencia', component: () => import('@/pages/Referencia.vue'), meta: { admin: true } },
+    { path: '/lab', component: () => import('@/pages/Lab.vue'), meta: { admin: true } },
     { path: '/ayuda', component: () => import('@/pages/Ayuda.vue') },
     { path: '/chat', component: () => import('@/pages/Chat.vue') },
-    { path: '/admin', component: () => import('@/pages/Admin.vue'), meta: { admin: true } },
+    { path: '/modelo', component: () => import('@/pages/Modelo.vue'), meta: { admin: true } },
+    { path: '/usuarios', component: () => import('@/pages/Usuarios.vue'), meta: { admin: true } },
   ],
 })
 

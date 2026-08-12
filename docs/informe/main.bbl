@@ -1,0 +1,960 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Albayrak%
+, Aytekin%
+\BCBL {}\ \BBA {} Kalayc{\i}%
+}{%
+Albayrak%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2022}}%
+}]{%
+albayrak2022}
+\APACinsertmetastar {%
+albayrak2022}%
+\begin{APACrefauthors}%
+Albayrak, O\BPBI S.%
+, Aytekin, T.%
+\BCBL {}\ \BBA {} Kalayc{\i}, T\BPBI A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Duplicate product record detection engine for e-commerce platforms} {Duplicate product record detection engine for e-commerce platforms}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Expert Systems with Applications}{193}{}{116420}.
+\newblock
+\begin{APACrefDOI} \doi{10.1016/j.eswa.2021.116420} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Breiman%
+}{%
+Breiman%
+}{%
+{\protect \APACyear {2001}}%
+}]{%
+breiman2001}
+\APACinsertmetastar {%
+breiman2001}%
+\begin{APACrefauthors}%
+Breiman, L.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2001}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Random forests} {Random forests}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Machine Learning}{45}{1}{5--32}.
+\newblock
+\begin{APACrefDOI} \doi{10.1023/A:1010933404324} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Brown%
+\ \protect \BOthers {.}}{%
+Brown%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2020}}%
+}]{%
+brown2020}
+\APACinsertmetastar {%
+brown2020}%
+\begin{APACrefauthors}%
+Brown, T\BPBI B.%
+, Mann, B.%
+, Ryder, N.%
+, Subbiah, M.%
+, Kaplan, J.%
+, Dhariwal, P.%
+\BDBL {}Amodei, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2020}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Language models are few-shot learners} {Language models are few-shot learners}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Advances in Neural Information Processing Systems} {Advances in neural information processing systems}\ (\BVOL~33, \BPGS\ 1877--1901).
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cavnar%
+\ \BBA {} Trenkle%
+}{%
+Cavnar%
+\ \BBA {} Trenkle%
+}{%
+{\protect \APACyear {1994}}%
+}]{%
+cavnar1994}
+\APACinsertmetastar {%
+cavnar1994}%
+\begin{APACrefauthors}%
+Cavnar, W\BPBI B.%
+\BCBT {}\ \BBA {} Trenkle, J\BPBI M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1994}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {N-gram-based text categorization} {N-gram-based text categorization}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 3rd Annual Symposium on Document Analysis and Information Retrieval ({SDAIR-94})} {Proceedings of the 3rd annual symposium on document analysis and information retrieval ({SDAIR-94})}\ (\BPGS\ 161--175).
+\newblock
+\APACaddressPublisher{Las Vegas, NV}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Chen%
+\ \BBA {} Guestrin%
+}{%
+Chen%
+\ \BBA {} Guestrin%
+}{%
+{\protect \APACyear {2016}}%
+}]{%
+chen2016}
+\APACinsertmetastar {%
+chen2016}%
+\begin{APACrefauthors}%
+Chen, T.%
+\BCBT {}\ \BBA {} Guestrin, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2016}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{XGBoost}: A scalable tree boosting system} {{XGBoost}: A scalable tree boosting system}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 22nd {ACM SIGKDD} International Conference on Knowledge Discovery and Data Mining} {Proceedings of the 22nd {ACM SIGKDD} international conference on knowledge discovery and data mining}\ (\BPGS\ 785--794).
+\newblock
+\APACaddressPublisher{}{ACM}.
+\newblock
+\begin{APACrefDOI} \doi{10.1145/2939672.2939785} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cheng%
+\ \protect \BOthers {.}}{%
+Cheng%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2024}}%
+}]{%
+cheng2024}
+\APACinsertmetastar {%
+cheng2024}%
+\begin{APACrefauthors}%
+Cheng, Z.%
+, Zhang, W.%
+, Chou, C\BHBI C.%
+, Jau, Y\BHBI Y.%
+, Pathak, A.%
+, Gao, P.%
+\BCBL {}\ \BBA {} Batur, U.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2024}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {E-commerce product categorization with {LLM}-based dual-expert classification paradigm} {E-commerce product categorization with {LLM}-based dual-expert classification paradigm}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 1st Workshop on Customizable {NLP} ({CustomNLP4U})} {Proceedings of the 1st workshop on customizable {NLP} ({CustomNLP4U})}\ (\BPGS\ 294--304).
+\newblock
+\APACaddressPublisher{}{Association for Computational Linguistics}.
+\newblock
+\begin{APACrefDOI} \doi{10.18653/v1/2024.customnlp4u-1.22} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Chow%
+}{%
+Chow%
+}{%
+{\protect \APACyear {1970}}%
+}]{%
+chow1970}
+\APACinsertmetastar {%
+chow1970}%
+\begin{APACrefauthors}%
+Chow, C\BPBI K.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1970}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {On optimum recognition error and reject tradeoff} {On optimum recognition error and reject tradeoff}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Information Theory}{16}{1}{41--46}.
+\newblock
+\begin{APACrefDOI} \doi{10.1109/TIT.1970.1054406} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cortes%
+\ \BBA {} Vapnik%
+}{%
+Cortes%
+\ \BBA {} Vapnik%
+}{%
+{\protect \APACyear {1995}}%
+}]{%
+cortes1995}
+\APACinsertmetastar {%
+cortes1995}%
+\begin{APACrefauthors}%
+Cortes, C.%
+\BCBT {}\ \BBA {} Vapnik, V.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1995}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Support-vector networks} {Support-vector networks}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Machine Learning}{20}{3}{273--297}.
+\newblock
+\begin{APACrefDOI} \doi{10.1007/BF00994018} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Cox%
+}{%
+Cox%
+}{%
+{\protect \APACyear {1958}}%
+}]{%
+cox1958}
+\APACinsertmetastar {%
+cox1958}%
+\begin{APACrefauthors}%
+Cox, D\BPBI R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1958}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The regression analysis of binary sequences} {The regression analysis of binary sequences}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of the Royal Statistical Society: Series B (Methodological)}{20}{2}{215--232}.
+\newblock
+\begin{APACrefDOI} \doi{10.1111/j.2517-6161.1958.tb00292.x} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{DAMA International}%
+}{%
+{DAMA International}%
+}{%
+{\protect \APACyear {2017}}%
+}]{%
+dama2017}
+\APACinsertmetastar {%
+dama2017}%
+\begin{APACrefauthors}%
+{DAMA International}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2017}.
+\newblock
+\APACrefbtitle {{DAMA-DMBOK}: Data Management Body of Knowledge} {{DAMA-DMBOK}: Data management body of knowledge}\ (\PrintOrdinal{2nd}\ \BEd).
+\newblock
+\APACaddressPublisher{Basking Ridge, NJ}{Technics Publications}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{Databricks}%
+}{%
+{Databricks}%
+}{%
+{\protect \APACyear {{\protect \bibnodate {}}}}%
+}]{%
+databricks}
+\APACinsertmetastar {%
+databricks}%
+\begin{APACrefauthors}%
+{Databricks}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{{\protect \bibnodate {}}}{}{}.
+\newblock
+\APACrefbtitle {What is the medallion lakehouse architecture?} {What is the medallion lakehouse architecture?}
+\newblock
+\begin{APACrefURL} [{agosto de 2026}]\url{https://docs.databricks.com/aws/en/lakehouse/medallion} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Ding%
+\ \protect \BOthers {.}}{%
+Ding%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2002}}%
+}]{%
+ding2002}
+\APACinsertmetastar {%
+ding2002}%
+\begin{APACrefauthors}%
+Ding, Y.%
+, Korotkiy, M.%
+, Omelayenko, B.%
+, Kartseva, V.%
+, Zykov, V.%
+, Klein, M.%
+\BDBL {}Fensel, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2002}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{GoldenBullet}: Automated classification of product data in e-commerce} {{GoldenBullet}: Automated classification of product data in e-commerce}.{\BBCQ}
+\newblock
+\BIn{} W.~Abramowicz\ (\BED), \APACrefbtitle {Business Information Systems: Proceedings of {BIS} 2002.} {Business information systems: Proceedings of {BIS} 2002.}
+\newblock
+\APACaddressPublisher{Pozna{\'n}, Polonia}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Elmagarmid%
+, Ipeirotis%
+\BCBL {}\ \BBA {} Verykios%
+}{%
+Elmagarmid%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2007}}%
+}]{%
+elmagarmid2007}
+\APACinsertmetastar {%
+elmagarmid2007}%
+\begin{APACrefauthors}%
+Elmagarmid, A\BPBI K.%
+, Ipeirotis, P\BPBI G.%
+\BCBL {}\ \BBA {} Verykios, V\BPBI S.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Duplicate record detection: A survey} {Duplicate record detection: A survey}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Knowledge and Data Engineering}{19}{1}{1--16}.
+\newblock
+\begin{APACrefDOI} \doi{10.1109/TKDE.2007.250581} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{Ernst \& Young}%
+}{%
+{Ernst \& Young}%
+}{%
+{\protect \APACyear {{\protect \bibnodate {}}}}%
+}]{%
+ey}
+\APACinsertmetastar {%
+ey}%
+\begin{APACrefauthors}%
+{Ernst \& Young}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{{\protect \bibnodate {}}}{}{}.
+\newblock
+\APACrefbtitle {{Case study}: Transforming {MRO} material master data.} {{Case study}: Transforming {MRO} material master data.}
+\newblock
+\begin{APACrefURL} [{agosto de 2026}]\url{https://www.ey.com/en_us/insights/energy-resources/oil-gas/transforming-mro-material-master-data-case-study} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Gravano%
+\ \protect \BOthers {.}}{%
+Gravano%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2001}}%
+}]{%
+gravano2001}
+\APACinsertmetastar {%
+gravano2001}%
+\begin{APACrefauthors}%
+Gravano, L.%
+, Ipeirotis, P\BPBI G.%
+, Jagadish, H\BPBI V.%
+, Koudas, N.%
+, Muthukrishnan, S.%
+\BCBL {}\ \BBA {} Srivastava, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2001}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Approximate string joins in a database (almost) for free} {Approximate string joins in a database (almost) for free}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 27th International Conference on Very Large Data Bases ({VLDB})} {Proceedings of the 27th international conference on very large data bases ({VLDB})}\ (\BPGS\ 491--500).
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+He%
+\ \BBA {} Garcia%
+}{%
+He%
+\ \BBA {} Garcia%
+}{%
+{\protect \APACyear {2009}}%
+}]{%
+he2009}
+\APACinsertmetastar {%
+he2009}%
+\begin{APACrefauthors}%
+He, H.%
+\BCBT {}\ \BBA {} Garcia, E\BPBI A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2009}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Learning from imbalanced data} {Learning from imbalanced data}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{IEEE Transactions on Knowledge and Data Engineering}{21}{9}{1263--1284}.
+\newblock
+\begin{APACrefDOI} \doi{10.1109/TKDE.2008.239} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{International Organization for Standardization}%
+}{%
+{International Organization for Standardization}%
+}{%
+{\protect \APACyear {2010}}%
+}]{%
+iso22745}
+\APACinsertmetastar {%
+iso22745}%
+\begin{APACrefauthors}%
+{International Organization for Standardization}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2010}.
+\newblock
+\APACrefbtitle {{Industrial automation systems and integration --- Open technical dictionaries and their application to master data --- Part 1: Overview and fundamental principles (ISO 22745-1:2010)}} {{Industrial automation systems and integration --- Open technical dictionaries and their application to master data --- Part 1: Overview and fundamental principles (ISO 22745-1:2010)}}.
+\newblock
+\APACaddressPublisher{Ginebra, Suiza}{ISO}.
+\newblock
+\begin{APACrefURL} \url{https://www.iso.org/standard/53995.html} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{International Organization for Standardization}%
+}{%
+{International Organization for Standardization}%
+}{%
+{\protect \APACyear {2021}}%
+}]{%
+iso8000110}
+\APACinsertmetastar {%
+iso8000110}%
+\begin{APACrefauthors}%
+{International Organization for Standardization}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2021}.
+\newblock
+\APACrefbtitle {{Data quality --- Part 110: Master data: Exchange of characteristic data: Syntax, semantic encoding, and conformance to data specification (ISO 8000-110:2021)}} {{Data quality --- Part 110: Master data: Exchange of characteristic data: Syntax, semantic encoding, and conformance to data specification (ISO 8000-110:2021)}}.
+\newblock
+\APACaddressPublisher{Ginebra, Suiza}{ISO}.
+\newblock
+\begin{APACrefURL} \url{https://www.iso.org/standard/78501.html} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Joulin%
+, Grave%
+, Bojanowski%
+\BCBL {}\ \BBA {} Mikolov%
+}{%
+Joulin%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2017}}%
+}]{%
+joulin2017}
+\APACinsertmetastar {%
+joulin2017}%
+\begin{APACrefauthors}%
+Joulin, A.%
+, Grave, E.%
+, Bojanowski, P.%
+\BCBL {}\ \BBA {} Mikolov, T.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Bag of tricks for efficient text classification} {Bag of tricks for efficient text classification}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 15th Conference of the {European Chapter of the Association for Computational Linguistics}} {Proceedings of the 15th conference of the {European Chapter of the Association for Computational Linguistics}}\ (\BVOL~2, \BPGS\ 427--431).
+\newblock
+\APACaddressPublisher{}{Association for Computational Linguistics}.
+\newblock
+\begin{APACrefDOI} \doi{10.18653/v1/E17-2068} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Kimball%
+\ \BBA {} Ross%
+}{%
+Kimball%
+\ \BBA {} Ross%
+}{%
+{\protect \APACyear {2013}}%
+}]{%
+kimball2013}
+\APACinsertmetastar {%
+kimball2013}%
+\begin{APACrefauthors}%
+Kimball, R.%
+\BCBT {}\ \BBA {} Ross, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2013}.
+\newblock
+\APACrefbtitle {The Data Warehouse Toolkit: The Definitive Guide to Dimensional Modeling} {The data warehouse toolkit: The definitive guide to dimensional modeling}\ (\PrintOrdinal{3rd}\ \BEd).
+\newblock
+\APACaddressPublisher{Indianapolis, IN}{John Wiley \& Sons}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Laney%
+}{%
+Laney%
+}{%
+{\protect \APACyear {2018}}%
+}]{%
+laney2018}
+\APACinsertmetastar {%
+laney2018}%
+\begin{APACrefauthors}%
+Laney, D\BPBI B.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2018}.
+\newblock
+\APACrefbtitle {Infonomics: How to Monetize, Manage, and Measure Information as an Asset for Competitive Advantage} {Infonomics: How to monetize, manage, and measure information as an asset for competitive advantage}.
+\newblock
+\APACaddressPublisher{Nueva York, NY}{Routledge}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Loshin%
+}{%
+Loshin%
+}{%
+{\protect \APACyear {2009}}%
+}]{%
+loshin2009}
+\APACinsertmetastar {%
+loshin2009}%
+\begin{APACrefauthors}%
+Loshin, D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2009}.
+\newblock
+\APACrefbtitle {Master Data Management} {Master data management}.
+\newblock
+\APACaddressPublisher{Burlington, MA}{Morgan Kaufmann}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Narayan%
+, Chami%
+, Orr%
+\BCBL {}\ \BBA {} R{\'e}%
+}{%
+Narayan%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2022}}%
+}]{%
+narayan2022}
+\APACinsertmetastar {%
+narayan2022}%
+\begin{APACrefauthors}%
+Narayan, A.%
+, Chami, I.%
+, Orr, L.%
+\BCBL {}\ \BBA {} R{\'e}, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2022}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Can foundation models wrangle your data?} {Can foundation models wrangle your data?}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Proceedings of the VLDB Endowment}{16}{4}{738--746}.
+\newblock
+\begin{APACrefDOI} \doi{10.14778/3574245.3574258} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Platt%
+}{%
+Platt%
+}{%
+{\protect \APACyear {1999}}%
+}]{%
+platt1999}
+\APACinsertmetastar {%
+platt1999}%
+\begin{APACrefauthors}%
+Platt, J\BPBI C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1999}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods} {Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods}.{\BBCQ}
+\newblock
+\BIn{} A\BPBI J.~Smola, P.~Bartlett, B.~Sch{\"o}lkopf\BCBL {}\ \BBA {} D.~Schuurmans\ (\BEDS), \APACrefbtitle {Advances in Large Margin Classifiers} {Advances in large margin classifiers}\ (\BPGS\ 61--74).
+\newblock
+\APACaddressPublisher{Cambridge, MA}{MIT Press}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{PostgreSQL Global Development Group}%
+}{%
+{PostgreSQL Global Development Group}%
+}{%
+{\protect \APACyear {2023}}%
+}]{%
+postgresql2023}
+\APACinsertmetastar {%
+postgresql2023}%
+\begin{APACrefauthors}%
+{PostgreSQL Global Development Group}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock
+\APACrefbtitle {pg\_trgm: Support for similarity of text using trigram matching.} {pg\_trgm: Support for similarity of text using trigram matching.}
+\newblock
+\APAChowpublished {{PostgreSQL 16 Documentation}}.
+\newblock
+\begin{APACrefURL} [{agosto de 2026}]\url{https://www.postgresql.org/docs/16/pgtrgm.html} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Redman%
+}{%
+Redman%
+}{%
+{\protect \APACyear {1998}}%
+}]{%
+redman1998}
+\APACinsertmetastar {%
+redman1998}%
+\begin{APACrefauthors}%
+Redman, T\BPBI C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1998}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The impact of poor data quality on the typical enterprise} {The impact of poor data quality on the typical enterprise}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Communications of the ACM}{41}{2}{79--82}.
+\newblock
+\begin{APACrefDOI} \doi{10.1145/269012.269025} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Salton%
+\ \BBA {} Buckley%
+}{%
+Salton%
+\ \BBA {} Buckley%
+}{%
+{\protect \APACyear {1988}}%
+}]{%
+salton1988}
+\APACinsertmetastar {%
+salton1988}%
+\begin{APACrefauthors}%
+Salton, G.%
+\BCBT {}\ \BBA {} Buckley, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1988}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Term-weighting approaches in automatic text retrieval} {Term-weighting approaches in automatic text retrieval}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Information Processing \& Management}{24}{5}{513--523}.
+\newblock
+\begin{APACrefDOI} \doi{10.1016/0306-4573(88)90021-0} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{SAP SE}%
+}{%
+{SAP SE}%
+}{%
+{\protect \APACyear {{\protect \bibnodate {}}}}%
+}]{%
+sapmdg}
+\APACinsertmetastar {%
+sapmdg}%
+\begin{APACrefauthors}%
+{SAP SE}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{{\protect \bibnodate {}}}{}{}.
+\newblock
+\APACrefbtitle {{SAP Master Data Governance}.} {{SAP Master Data Governance}.}
+\newblock
+\APAChowpublished {{SAP Help Portal}}.
+\newblock
+\begin{APACrefURL} [{agosto de 2026}]\url{https://help.sap.com/docs/SAP_MASTER_DATA_GOVERNANCE} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Sebastiani%
+}{%
+Sebastiani%
+}{%
+{\protect \APACyear {2002}}%
+}]{%
+sebastiani2002}
+\APACinsertmetastar {%
+sebastiani2002}%
+\begin{APACrefauthors}%
+Sebastiani, F.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2002}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Machine learning in automated text categorization} {Machine learning in automated text categorization}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{ACM Computing Surveys}{34}{1}{1--47}.
+\newblock
+\begin{APACrefDOI} \doi{10.1145/505282.505283} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Sokolova%
+\ \BBA {} Lapalme%
+}{%
+Sokolova%
+\ \BBA {} Lapalme%
+}{%
+{\protect \APACyear {2009}}%
+}]{%
+sokolova2009}
+\APACinsertmetastar {%
+sokolova2009}%
+\begin{APACrefauthors}%
+Sokolova, M.%
+\BCBT {}\ \BBA {} Lapalme, G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2009}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {A systematic analysis of performance measures for classification tasks} {A systematic analysis of performance measures for classification tasks}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Information Processing \& Management}{45}{4}{427--437}.
+\newblock
+\begin{APACrefDOI} \doi{10.1016/j.ipm.2009.03.002} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{United Nations Development Programme}%
+}{%
+{United Nations Development Programme}%
+}{%
+{\protect \APACyear {2023}}%
+}]{%
+undp2023}
+\APACinsertmetastar {%
+undp2023}%
+\begin{APACrefauthors}%
+{United Nations Development Programme}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2023}{}{}.
+\newblock
+\APACrefbtitle {{United Nations Standard Products and Services Code (UNSPSC)}.} {{United Nations Standard Products and Services Code (UNSPSC)}.}
+\newblock
+\begin{APACrefURL} [{agosto de 2026}]\url{https://www.undp.org/unspsc} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Vaswani%
+\ \protect \BOthers {.}}{%
+Vaswani%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2017}}%
+}]{%
+vaswani2017}
+\APACinsertmetastar {%
+vaswani2017}%
+\begin{APACrefauthors}%
+Vaswani, A.%
+, Shazeer, N.%
+, Parmar, N.%
+, Uszkoreit, J.%
+, Jones, L.%
+, Gomez, A\BPBI N.%
+\BDBL {}Polosukhin, I.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2017}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Attention is all you need} {Attention is all you need}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Advances in Neural Information Processing Systems} {Advances in neural information processing systems}\ (\BVOL~30, \BPGS\ 5998--6008).
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+{Verdantis}%
+}{%
+{Verdantis}%
+}{%
+{\protect \APACyear {{\protect \bibnodate {}}}}%
+}]{%
+verdantis}
+\APACinsertmetastar {%
+verdantis}%
+\begin{APACrefauthors}%
+{Verdantis}.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{{\protect \bibnodate {}}}{}{}.
+\newblock
+\APACrefbtitle {Materials master data management.} {Materials master data management.}
+\newblock
+\begin{APACrefURL} [{agosto de 2026}]\url{https://www.verdantis.com/materials-master-data-management/} \end{APACrefURL}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wang%
+\ \BBA {} Strong%
+}{%
+Wang%
+\ \BBA {} Strong%
+}{%
+{\protect \APACyear {1996}}%
+}]{%
+wang1996}
+\APACinsertmetastar {%
+wang1996}%
+\begin{APACrefauthors}%
+Wang, R\BPBI Y.%
+\BCBT {}\ \BBA {} Strong, D\BPBI M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1996}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Beyond accuracy: What data quality means to data consumers} {Beyond accuracy: What data quality means to data consumers}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Journal of Management Information Systems}{12}{4}{5--33}.
+\newblock
+\begin{APACrefDOI} \doi{10.1080/07421222.1996.11518099} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Wirth%
+\ \BBA {} Hipp%
+}{%
+Wirth%
+\ \BBA {} Hipp%
+}{%
+{\protect \APACyear {2000}}%
+}]{%
+wirth2000}
+\APACinsertmetastar {%
+wirth2000}%
+\begin{APACrefauthors}%
+Wirth, R.%
+\BCBT {}\ \BBA {} Hipp, J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2000}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{CRISP-DM}: Towards a standard process model for data mining} {{CRISP-DM}: Towards a standard process model for data mining}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 4th International Conference on the Practical Applications of Knowledge Discovery and Data Mining} {Proceedings of the 4th international conference on the practical applications of knowledge discovery and data mining}\ (\BPGS\ 29--40).
+\newblock
+\APACaddressPublisher{Manchester, Reino Unido}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Zadrozny%
+\ \BBA {} Elkan%
+}{%
+Zadrozny%
+\ \BBA {} Elkan%
+}{%
+{\protect \APACyear {2002}}%
+}]{%
+zadrozny2002}
+\APACinsertmetastar {%
+zadrozny2002}%
+\begin{APACrefauthors}%
+Zadrozny, B.%
+\BCBT {}\ \BBA {} Elkan, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2002}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Transforming classifier scores into accurate multiclass probability estimates} {Transforming classifier scores into accurate multiclass probability estimates}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 8th {ACM SIGKDD} International Conference on Knowledge Discovery and Data Mining} {Proceedings of the 8th {ACM SIGKDD} international conference on knowledge discovery and data mining}\ (\BPGS\ 694--699).
+\newblock
+\APACaddressPublisher{}{ACM}.
+\newblock
+\begin{APACrefDOI} \doi{10.1145/775047.775151} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Zaharia%
+, Ghodsi%
+, Xin%
+\BCBL {}\ \BBA {} Armbrust%
+}{%
+Zaharia%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2021}}%
+}]{%
+zaharia2021}
+\APACinsertmetastar {%
+zaharia2021}%
+\begin{APACrefauthors}%
+Zaharia, M.%
+, Ghodsi, A.%
+, Xin, R.%
+\BCBL {}\ \BBA {} Armbrust, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2021}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Lakehouse: A new generation of open platforms that unify data warehousing and advanced analytics} {Lakehouse: A new generation of open platforms that unify data warehousing and advanced analytics}.{\BBCQ}
+\newblock
+\BIn{} \APACrefbtitle {Proceedings of the 11th Conference on Innovative Data Systems Research ({CIDR}).} {Proceedings of the 11th conference on innovative data systems research ({CIDR}).}
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}

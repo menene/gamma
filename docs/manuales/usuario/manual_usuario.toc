@@ -1,0 +1,18 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Qué es GAMMA y qué no es}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}El recorrido completo}{2}{subsection.1.1}%
+\contentsline {section}{\numberline {2}Iniciar sesión}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Cerrar sesión}{4}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Dar de alta un material}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Paso 1. Describa el material}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Paso 2. Complete lo que falte}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Paso 3. Revise los posibles duplicados}{6}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Paso 4. Revise la propuesta y la clase}{7}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Paso 5. Confirme o descarte}{7}{subsection.3.5}%
+\contentsline {section}{\numberline {4}Exportar a SAP}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Cómo exportar}{8}{subsection.4.1}%
+\contentsline {section}{\numberline {5}Importar el maestro de materiales}{10}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Los tres archivos y su orden}{10}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Cómo cargar}{10}{subsection.5.2}%
+\contentsline {section}{\numberline {6}La sección de Ayuda}{12}{section.6}%
+\contentsline {section}{\numberline {7}Preguntas frecuentes}{13}{section.7}%

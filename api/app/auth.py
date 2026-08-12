@@ -45,7 +45,7 @@ def get_current_user(
     payload = decode_token(credentials.credentials)
     row = db.execute(
         text("SELECT id, email, name, is_active, COALESCE(admin, false) AS admin "
-             "FROM public.users WHERE id = :id"),
+             "FROM public.users WHERE id = :id AND deleted_at IS NULL"),
         {"id": payload["sub"]},
     ).fetchone()
     if not row or not row.is_active:

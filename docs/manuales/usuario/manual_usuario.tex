@@ -1,0 +1,484 @@
+% ================================================================================
+% MANUAL DE USUARIO — GAMMA
+% Dirigido al gestor de datos maestros. No cubre funciones de administracion.
+%
+% Compilar con:  latexmk -pdf manual_usuario.tex
+%
+% CAPTURAS: van en manual/capturas/ con los nombres que indica cada \captura.
+% Mientras falte una, se dibuja un recuadro con el nombre esperado, de modo que
+% el documento compila desde el primer dia y las imagenes se van agregando.
+% ================================================================================
+\documentclass[11pt, letterpaper]{article}
+
+\usepackage[spanish,mexico]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Tipografia: Inter, la mas cercana en TeX Live a la Geist que usa la
+% aplicacion. Sin serifas en todo el documento, igual que la interfaz.
+\usepackage[sfdefault]{inter}
+\usepackage[scaled=0.86]{beramono}
+
+\usepackage[top=2.4cm, bottom=2.4cm, left=2.6cm, right=2.6cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+% `enhanced` y `borderline west` viven en skins; `breakable` en su propia
+% libreria. Sin declararlas, tcolorbox ignora esas claves en silencio y los
+% recuadros pierden la barra lateral que los distingue.
+\tcbuselibrary{skins,breakable}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+% ── Paleta ──────────────────────────────────────────────────────────────────
+% Tomada de las variables de src/style.css. La interfaz es enteramente
+% acromatica —todos sus colores son oklch(L 0 0)— asi que el manual tampoco
+% introduce color: solo grises, con el texto como unico elemento de contraste.
+\definecolor{fg}{HTML}{0A0A0A}        % --foreground
+\definecolor{fgsoft}{HTML}{171717}    % --primary
+\definecolor{muted}{HTML}{737373}     % --muted-foreground
+\definecolor{surface}{HTML}{F5F5F5}   % --muted / --secondary
+\definecolor{surfacealt}{HTML}{FAFAFA}% --sidebar
+\definecolor{line}{HTML}{E5E5E5}      % --border
+
+\titleformat{\section}{\LARGE\bfseries\color{fg}}{\thesection}{0.7em}{}
+\titlespacing*{\section}{0pt}{1.6em}{0.7em}
+\titleformat{\subsection}{\large\bfseries\color{fgsoft}}{\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{1.3em}{0.4em}
+\titleformat{\subsubsection}[runin]{\bfseries\color{fgsoft}}{}{0pt}{}[.]
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\footnotesize\color{muted}Manual de usuario}
+\rhead{\footnotesize\color{muted}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\color{line}\hrule height 0.4pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.62em}
+
+% Enlaces y referencias en el mismo gris del cuerpo: sin subrayados ni azules.
+\hypersetup{colorlinks=false}
+
+% ── Recuadros ───────────────────────────────────────────────────────────────
+% Se distinguen por una barra lateral y el peso del titulo, no por color.
+\newtcolorbox{nota}[1][Nota]{
+  enhanced, breakable, colback=surfacealt, colframe=surfacealt,
+  borderline west={2pt}{0pt}{line},
+  coltitle=fg, fonttitle=\bfseries\footnotesize\sffamily,
+  title=#1, boxrule=0pt, arc=0pt, outer arc=0pt,
+  left=10pt, right=10pt, top=7pt, bottom=7pt, toptitle=1pt, bottomtitle=3pt}
+
+\newtcolorbox{aviso}[1][Importante]{
+  enhanced, breakable, colback=surface, colframe=surface,
+  borderline west={2pt}{0pt}{fg},
+  coltitle=fg, fonttitle=\bfseries\footnotesize\sffamily,
+  title=#1, boxrule=0pt, arc=0pt, outer arc=0pt,
+  left=10pt, right=10pt, top=7pt, bottom=7pt, toptitle=1pt, bottomtitle=3pt}
+
+% ── Captura de pantalla con marcador de posicion ────────────────────────────
+% Uso: \captura{nombre-archivo}{Pie de la figura}
+% Si manual/capturas/<nombre>.png existe, la inserta. Si no, dibuja el hueco.
+\newcommand{\captura}[2]{%
+  \begin{figure}[htbp]
+  \centering
+  \IfFileExists{capturas/#1.png}{%
+    % Ancho completo, pero acotado en alto: una captura de ventana completa
+    % puede ser muy alta y desbordaria la pagina. keepaspectratio evita que se
+    % deforme cuando manda la restriccion de altura.
+    {\color{line}\fboxrule=0.6pt\fboxsep=0pt\fbox{%
+      \includegraphics[width=0.94\textwidth, height=0.62\textheight, keepaspectratio]{capturas/#1.png}}}%
+  }{%
+    \fcolorbox{line}{surfacealt}{%
+      \begin{minipage}[c][3.1cm][c]{0.93\textwidth}
+        \centering
+        {\footnotesize\bfseries\color{muted}CAPTURA PENDIENTE}\\[5pt]
+        {\ttfamily\footnotesize\color{fgsoft} capturas/#1.png}\\[4pt]
+        {\footnotesize\color{muted} #2}
+      \end{minipage}}%
+  }
+  \caption{#2}
+  \label{fig:#1}
+  \end{figure}%
+}
+
+% Pies de figura discretos
+\usepackage{caption}
+\captionsetup{font={small,color=muted}, labelfont={bf,color=muted}, skip=6pt}
+
+\begin{document}
+
+% ── Portada ─────────────────────────────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{5.5cm}
+{\fontsize{46}{50}\selectfont\bfseries\color{fg} GAMMA\par}
+\vspace{0.5em}
+{\large\color{muted} Gobierno Automatizado del Maestro de Materiales\par}
+
+\vspace{2.6cm}
+{\color{line}\hrule height 1pt}
+\vspace{1.2em}
+
+{\huge\bfseries\color{fg} Manual de usuario\par}
+\vspace{0.5em}
+{\large\color{muted} Guía para el gestor de datos maestros\par}
+
+\vfill
+{\color{line}\hrule height 0.4pt}
+\vspace{1em}
+{\footnotesize\color{muted}
+Unidad de Energía \quad·\quad \today\par
+\vspace{0.4em}
+Este manual cubre el uso diario de la herramienta.
+Las funciones de administración se documentan por separado.\par}
+\vspace{1cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================================
+\section{Qué es GAMMA y qué no es}
+
+GAMMA es un asistente que lo acompaña al dar de alta un material en SAP. Hace
+tres cosas por usted:
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Redacta la descripción} en el formato estándar de la
+        corporación, a partir de lo que usted escriba en lenguaje corriente.
+  \item \textbf{Revisa si el material ya existe} comparándolo contra el
+        catálogo, para evitar que se creen duplicados.
+  \item \textbf{Sugiere la clase} a la que pertenece el material, con base en
+        cómo se han clasificado materiales parecidos en el pasado.
+\end{enumerate}
+
+\begin{aviso}[GAMMA no crea el material en SAP]
+La herramienta \textbf{no escribe en SAP}. Prepara y valida la solicitud; el
+registro final lo hace usted, cargando en SAP el archivo de Excel que GAMMA
+genera. Usted conserva siempre la última palabra: puede aceptar, corregir o
+descartar cualquier sugerencia.
+\end{aviso}
+
+\subsection{El recorrido completo}
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item Inicia sesión.
+  \item Le describe el material al asistente, con sus palabras.
+  \item Si falta información, el asistente le indica exactamente qué falta.
+  \item Revisa los posibles duplicados que le muestre.
+  \item Confirma o corrige la clase sugerida.
+  \item Confirma la solicitud.
+  \item Cuando tenga varias listas, las exporta a Excel y las carga en SAP.
+\end{enumerate}
+
+\newpage
+% ============================================================================
+\section{Iniciar sesión}
+
+Abra la dirección de GAMMA en su navegador. Verá la pantalla de acceso.
+
+\captura{01-login}{Pantalla de inicio de sesión}
+
+Escriba su correo y su contraseña, y presione \textbf{Iniciar sesión}.
+
+\begin{nota}[Si no tiene cuenta]
+Las cuentas las crea el área de datos maestros. Si es la primera vez que entra
+o olvidó su contraseña, solicítelo a su coordinación; el asistente no puede
+crear cuentas.
+\end{nota}
+
+Una vez dentro, la barra superior le da acceso a todo. De izquierda a derecha
+encontrará \textbf{Datos}, el botón de \textbf{Chat}, y luego tres controles:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item El signo de interrogación abre la \textbf{Ayuda}.
+  \item El sol o la luna cambia entre \textbf{modo claro y modo oscuro}. Su
+        preferencia se recuerda para la próxima vez que entre.
+  \item Su nombre despliega el \textbf{menú de la cuenta}.
+\end{itemize}
+
+\captura{02-barra-superior}{Barra de navegación, con la sesión iniciada}
+
+\begin{nota}[Si ve más secciones de las que aquí se describen]
+Las cuentas administrativas tienen acceso a secciones técnicas adicionales
+—Arquitectura, Referencia, Lab, Modelo y Usuarios— que no forman parte del
+trabajo diario del gestor y no se cubren en este manual.
+\end{nota}
+
+\subsection{Cerrar sesión}
+
+Haga clic sobre su nombre, en el extremo derecho de la barra. Se despliega un
+menú con sus datos y la opción \textbf{Cerrar sesión}.
+
+\captura{03-menu-cuenta}{Menú de la cuenta}
+
+\newpage
+% ============================================================================
+\section{Dar de alta un material}
+
+Esta es la función principal. Entre a \textbf{Chat} desde la barra superior.
+
+\captura{04-chat-inicio}{Pantalla del asistente al abrirla}
+
+A la izquierda está el listado de sus conversaciones anteriores. El botón
+\textbf{Nueva conversación} abre una en blanco. Conviene usar una conversación
+por material: así queda ordenado y puede volver a consultarla después.
+
+\subsection{Paso 1. Describa el material}
+
+Escriba en el cuadro de abajo lo que necesita dar de alta, con sus palabras. No
+tiene que usar abreviaturas, mayúsculas ni el formato de SAP: de eso se encarga
+el asistente.
+
+\begin{nota}[Ejemplos de cómo pedirlo]
+\ttfamily
+necesito una valvula de bola de pvc de 3 pulgadas\\[3pt]
+tornillo hexagonal de acero galvanizado 1/2 por 2 pulgadas\\[3pt]
+filtro de aceite para motor john deere, numero AT35155
+\end{nota}
+
+Mientras el asistente trabaja verá el avance en pantalla: primero redacta la
+descripción, luego busca duplicados y por último sugiere la clase.
+
+\captura{05-chat-procesando}{Indicador de avance mientras el asistente procesa}
+
+\subsection{Paso 2. Complete lo que falte}
+
+Si lo que escribió no alcanza, el asistente \textbf{no inventa datos}: le
+responde con la lista de lo que hace falta.
+
+\captura{06-chat-datos-faltantes}{Respuesta del asistente cuando falta información}
+
+La respuesta viene redactada para que pueda copiarla y enviársela tal cual al
+solicitante. Cuando le respondan, escriba los datos en la misma conversación y
+el asistente continúa.
+
+\begin{nota}[Dos campos que casi siempre le van a pedir]
+El \textbf{material de fabricación} (acero, PVC, cobre, aluminio\ldots) es
+obligatorio para materiales físicos.
+
+La \textbf{marca y el modelo} solo se piden cuando se trata de un repuesto o un
+componente donde la marca es indispensable para identificarlo. Para
+herramientas, ferretería y consumibles genéricos no se piden.
+\end{nota}
+
+\subsection{Paso 3. Revise los posibles duplicados}
+
+Si el asistente encuentra materiales parecidos en el catálogo, se los muestra
+antes de continuar, con un porcentaje de parecido al lado de cada uno.
+
+\captura{07-chat-duplicados}{Listado de posibles duplicados}
+
+Tiene dos caminos:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Alguno le sirve.} Haga clic sobre él. La solicitud se cierra
+        indicando que el material ya existe, y usted se lleva su código. No se
+        crea nada nuevo.
+  \item \textbf{Ninguno le sirve.} Presione \textbf{Ninguno, continuar}. El
+        asistente sigue con la propuesta de material nuevo.
+\end{itemize}
+
+\begin{nota}[Si le muestra cosas que no se parecen]
+Es normal y es a propósito. El sistema prefiere mostrarle una sugerencia de más
+antes que dejar pasar un duplicado. Revisarlas toma segundos; un duplicado en
+el catálogo queda para siempre.
+\end{nota}
+
+\subsection{Paso 4. Revise la propuesta y la clase}
+
+El asistente le presenta la propuesta completa: la descripción corta en formato
+SAP, la descripción larga, el tipo de material y la clase sugerida con su grupo
+de artículo y sector.
+
+\captura{08-chat-propuesta}{Tarjeta con la propuesta de material}
+
+Junto a la clase verá un porcentaje de confianza. Es qué tan seguro está el
+modelo de esa sugerencia.
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Confianza alta.} La sugerencia es muy probablemente correcta.
+        Reviséla de todas formas.
+  \item \textbf{Confianza baja.} Ponga más atención. El asistente le ofrece
+        alternativas.
+\end{itemize}
+
+\subsubsection*{Si la clase sugerida no es la correcta}
+
+Puede buscar otra. Use el buscador de clases: escriba parte del código o del
+nombre y seleccione la que corresponda.
+
+\captura{09-chat-buscar-clase}{Buscador de clases}
+
+\begin{nota}[Sus correcciones sirven]
+Cuando usted corrige una clase, el sistema lo registra. Esas correcciones se
+usan después para mejorar el modelo. Vale la pena tomarse el momento de
+corregir en lugar de aceptar algo que no cuadra.
+\end{nota}
+
+\subsection{Paso 5. Confirme o descarte}
+
+Al pie de la propuesta hay dos botones:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Confirmar} — la solicitud queda lista para exportar a SAP.
+  \item \textbf{Descartar} — la solicitud no procede y se cierra sin crear nada.
+\end{itemize}
+
+\captura{10-chat-confirmado}{Solicitud confirmada}
+
+Una vez confirmada, la solicitud entra a la lista de pendientes por exportar.
+
+\newpage
+% ============================================================================
+\section{Exportar a SAP}
+
+Las solicitudes confirmadas no viajan solas a SAP: usted las descarga en un
+archivo de Excel y lo carga en el sistema.
+
+Entre a \textbf{Datos} en la barra superior y elija la pestaña
+\textbf{Exportar}.
+
+\captura{11-datos-exportar}{Pestaña de exportación}
+
+\subsection{Cómo exportar}
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item Elija el estado que quiere ver. Por omisión aparecen las
+        \textbf{confirmadas}.
+  \item Deje marcada la casilla \textbf{Excluir ya exportados} para no repetir
+        lo que ya bajó antes.
+  \item Marque las solicitudes que quiera incluir. Puede seleccionarlas todas.
+  \item Presione \textbf{Exportar}. El archivo se descarga a su computadora.
+\end{enumerate}
+
+\captura{12-datos-exportar-seleccion}{Selección de solicitudes para exportar}
+
+El archivo trae la descripción corta, la descripción larga, el tipo de material
+y la clase asignada de cada solicitud: todo lo que necesita para el alta en SAP.
+
+\begin{aviso}[Después de cargar en SAP]
+Las solicitudes exportadas quedan marcadas como tales. Si vuelve a exportar con
+la casilla \textbf{Excluir ya exportados} marcada, no le aparecerán otra vez.
+Eso evita cargas duplicadas.
+\end{aviso}
+
+\newpage
+% ============================================================================
+\section{Importar el maestro de materiales}
+
+La pestaña \textbf{Importar} de la sección \textbf{Datos} sirve para actualizar
+la copia del catálogo con la que trabaja GAMMA. Es una tarea que se hace de
+tanto en tanto, no a diario, y normalmente la coordina el área de datos
+maestros.
+
+\captura{13-datos-importar}{Pestaña de importación}
+
+\subsection{Los tres archivos y su orden}
+
+Se cargan tres cosas distintas, y \textbf{el orden importa}:
+
+\begin{enumerate}[leftmargin=*, itemsep=4pt]
+  \item \textbf{UNSPSC.} El clasificador de Naciones Unidas. Va primero porque
+        las clases se apoyan en él.
+  \item \textbf{Clases o denominaciones.} El catálogo de clases de material.
+        Necesita el UNSPSC ya cargado.
+  \item \textbf{Maestro de materiales.} Los archivos exportados de SAP, uno por
+        tipo de material. Necesitan las clases ya cargadas.
+\end{enumerate}
+
+\begin{aviso}[Respete el orden]
+Si carga los materiales antes que las clases, los que apunten a una clase que
+todavía no existe entran \textbf{sin clasificar}. No dan error: simplemente
+quedan fuera del alcance del asistente hasta que se vuelvan a cargar. Cargue
+siempre UNSPSC, luego clases y al final materiales.
+\end{aviso}
+
+\subsection{Cómo cargar}
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item Presione \textbf{Seleccionar archivos .xlsx} en el bloque que
+        corresponda. Puede elegir varios de una vez.
+  \item Los archivos se van a una cola y se procesan uno por uno. Cada línea
+        muestra su avance y si terminó bien o falló.
+  \item Al terminar, revise los conteos de la parte superior: deben haber
+        subido.
+\end{enumerate}
+
+\begin{nota}[Cargar dos veces no duplica]
+Los materiales se identifican por su código. Si vuelve a cargar un archivo que
+ya subió, los registros existentes se actualizan en lugar de duplicarse, así
+que repetir una carga es inofensivo.
+\end{nota}
+
+\newpage
+% ============================================================================
+\section{La sección de Ayuda}
+
+El signo de interrogación de la barra superior abre una versión resumida de
+esta guía, siempre a la mano y sin salir de la aplicación.
+
+\captura{14-ayuda}{Sección de ayuda}
+
+Contiene tres cosas:
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item \textbf{El manual completo}, para descargar en PDF. Es este mismo
+        documento.
+  \item \textbf{Una guía rápida} de los cinco pasos del flujo de creación, para
+        consultar de un vistazo.
+  \item \textbf{Preguntas frecuentes}, las mismas que encontrará más adelante.
+\end{itemize}
+
+Al pie hay un acceso directo al asistente, por si llegó buscando ayuda y lo que
+necesitaba era empezar un alta.
+
+\newpage
+% ============================================================================
+\section{Preguntas frecuentes}
+
+\subsection*{Busqué un material y no apareció, pero sé que existe en SAP}
+
+GAMMA trabaja sobre una copia del catálogo que se actualiza cada cierto tiempo,
+no sobre SAP en vivo. Un material creado en SAP después de la última
+actualización todavía no se ve. Si tiene dudas, verifique directamente en SAP
+antes de crear.
+
+\subsection*{¿Puedo corregir una solicitud que ya confirmé?}
+
+Sí, mientras no la haya exportado: vuelva a la conversación y ajústela. Si ya la
+exportó y la cargó en SAP, la corrección se hace en SAP.
+
+\subsection*{El asistente me pidió datos que el solicitante no tiene}
+
+Copie la lista que le dio el asistente y devuélvasela al solicitante. Si un dato
+de verdad no existe o no aplica, indíqueselo al asistente en la conversación y
+explique por qué; con eso continúa.
+
+\subsection*{¿Qué tan confiable es la clase que sugiere?}
+
+Acierta en cerca de ocho de cada diez casos en su primera sugerencia, y la clase
+correcta aparece entre las tres primeras en más de nueve de cada diez. Por eso
+la decisión sigue siendo suya: el asistente propone, usted valida.
+
+\subsection*{¿Se pierde mi conversación si cierro el navegador?}
+
+No. Las conversaciones quedan guardadas y las encuentra en la lista de la
+izquierda cuando vuelva a entrar.
+
+\subsection*{¿Puedo trabajar varios materiales a la vez?}
+
+Sí, pero abra una conversación por material. Mezclar varios en la misma
+conversación confunde al asistente y complica el seguimiento.
+
+\begin{nota}[¿Necesita ayuda?]
+Si algo no funciona como esperaba, escriba al área de datos maestros
+describiendo el material y el paso en el que se quedó. Si el asistente le
+mostró un mensaje de error, cópielo tal cual: ayuda mucho a resolverlo.
+\end{nota}
+
+\end{document}
