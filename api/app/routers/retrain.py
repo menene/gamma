@@ -280,7 +280,7 @@ def rollback(body: RollbackRequest, db: Session = Depends(get_db)):
         )
 
     try:
-        retraining.restore_version(body.version)
+        retraining.restore_version(body.version, retraining.active_version_label(db))
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

@@ -159,15 +159,29 @@ def evaluate(pipeline, X_test, y_test) -> dict:
     return metrics
 
 
-def archive_active(version: str) -> str | None:
-    """Aparta el artefacto vigente bajo una marca de tiempo. Devuelve su ruta."""
+def archive_active(etiqueta_vigente: str) -> str | None:
+    """
+    Aparta el artefacto vigente y lo nombra con SU PROPIA version.
+
+    El nombre debe corresponder al modelo que se esta guardando, no al que va a
+    ocupar su lugar. Nombrarlo con la version entrante desplazaria las
+    etiquetas una posicion y haria imposible localizar un modelo para revertir.
+    """
     if not os.path.exists(ACTIVE_PATH):
         return None
     os.makedirs(ARCHIVE_DIR, exist_ok=True)
-    destino = os.path.join(ARCHIVE_DIR, f"model_artifact_{version}.joblib")
+    destino = os.path.join(ARCHIVE_DIR, f"model_artifact_{etiqueta_vigente}.joblib")
     shutil.move(ACTIVE_PATH, destino)
-    logger.info("Artefacto vigente archivado en %s", destino)
+    logger.info("Artefacto de la version %s archivado en %s", etiqueta_vigente, destino)
     return destino
+
+
+def active_version_label(db) -> str:
+    """Version registrada como activa; sirve para nombrar su archivo al apartarlo."""
+    row = db.execute(text(
+        "SELECT version FROM silver.model_versions WHERE is_active LIMIT 1"
+    )).fetchone()
+    return row[0] if row else f"desconocida_{_now_version()}"
 
 
 def prune_archive(keep: int = MAX_ARCHIVADOS) -> list[str]:
@@ -202,17 +216,17 @@ def list_archived() -> list[dict]:
     return out
 
 
-def restore_version(version: str) -> str:
+def restore_version(version: str, etiqueta_vigente: str) -> str:
     """
     Devuelve al servicio un artefacto archivado.
 
-    El vigente se archiva primero, de modo que un rollback tampoco pierde nada y
-    puede deshacerse a su vez.
+    El vigente se archiva primero bajo su propia version, de modo que un
+    rollback tampoco pierde nada y puede deshacerse a su vez.
     """
     origen = os.path.join(ARCHIVE_DIR, f"model_artifact_{version}.joblib")
     if not os.path.exists(origen):
         raise FileNotFoundError(f"No existe el artefacto archivado de la version {version}")
-    archive_active(f"{_now_version()}_previo_rollback")
+    archive_active(etiqueta_vigente)
     shutil.copy2(origen, ACTIVE_PATH)
     logger.info("Restaurada la version %s como artefacto activo", version)
     return ACTIVE_PATH
@@ -271,7 +285,7 @@ def run_retraining(db, job_id: int, user_id: int | None = None) -> None:
 
         version = _now_version()
         step("archivando el artefacto vigente")
-        archive_active(version)
+        archive_active(active_version_label(db))
 
         step("publicando el nuevo artefacto")
         label_to_class = (
