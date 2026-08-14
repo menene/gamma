@@ -1,17 +1,16 @@
 # Fdb version 4
-["bibtex main"] 1786729404.31456 "main.aux" "main.bbl" "main" 1786729516.72835 0
+["bibtex main"] 1786738454.27563 "main.aux" "main.bbl" "main" 1786738456.98118 0
   "./bibliografia.bib" 1786671443.95538 15553 72a6b44bfe37b9acf66b953c765fe9c5 ""
   "/Users/menene/Library/texmf/bibtex/bst/apacite/apacite.bst" 1374530685 141073 9d7b79dbf9d91133318126032cff8c27 ""
-  "main.aux" 1786729516.51519 77137 a8e7a4820b42c4e466b8d93939150491 "pdflatex"
+  "main.aux" 1786738456.70114 78390 387c9e5ad99ec819ccdfb76529c6195a "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1786729514.12852 "/Users/menene/code/www/mbia_gamma/docs/informe/main.tex" "main.pdf" "main" 1786729516.72862 0
+["pdflatex"] 1786738454.32177 "main.tex" "main.pdf" "main" 1786738456.98145 0
   "/Users/menene/Library/texlive/2026basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1786567345 471942 3798b59c59a833e15d8ebc8d4aab9a8a ""
   "/Users/menene/Library/texmf/tex/latex/apacite/apacite.sty" 1374530685 72212 966b0b8d2be774cb1d3a7f97b253b725 ""
   "/Users/menene/Library/texmf/tex/latex/apacite/spanish.apc" 1374530685 9680 288c60a2b42c1bd3c1f1275917444092 ""
-  "/Users/menene/code/www/mbia_gamma/docs/informe/main.tex" 1786724464.4629 11872 c8df7390318de99899141839f517aff4 ""
   "/usr/local/texlive/2026basic/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ecbi0900.tfm" 1136768653 3072 7ff1a6294a418a0283ec56a11878dc2c ""
   "/usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ecbx0900.tfm" 1136768653 3584 1a7de6c99457381c64abc1a7c545505f ""
@@ -182,7 +181,7 @@
   "alcance.tex" 1786671443.94716 3697 39da2f16d836c27a59b9f0456d1df5df ""
   "anexos.tex" 1786725186.50054 11736 a168bc804c5362f52d6679bdf3ecb13c ""
   "antecedentes.tex" 1786671443.94835 5857 06337d99cde2ada0400aee508342d1a5 ""
-  "capitulos.tex" 1786729401.3789 60342 20931ee0a03a42a7c0d9098b05da07c9 ""
+  "capitulos.tex" 1786738438.18034 64080 248d1e35d76039393b6458777fd7ea47 ""
   "conclusiones.tex" 1786729513.92877 7010 0462e8aa2b54e49a9462505f4ad3e9bc ""
   "datos_estudiante.tex" 1786720729.6843 2913 fe5ac5537af28959022f62c294206ba2 ""
   "figuras/encuesta_forms/forms_01_portada.png" 1786725186.50905 69476 fb3a516b933914c6ad3c6de1ec4c6dff ""
@@ -211,13 +210,13 @@
   "glosario.tex" 1786671443.95002 5017 f06222bc843c4668cdb0c963c8102c3b ""
   "introduccion.tex" 1786722634.2236 4092 79afe25f35c827f908a295f7b79e296f ""
   "justificacion.tex" 1786722634.22397 2600 f11c8b91c7ab4f4b5b321fbaa1f10123 ""
-  "main.aux" 1786729516.51519 77137 a8e7a4820b42c4e466b8d93939150491 "pdflatex"
-  "main.bbl" 1786729404.35363 26184 1d9d18bb15a4cacd5d2f8cbc43a13f7c "bibtex main"
-  "main.lof" 1786729516.53015 3828 a4434ac97644f6f8f0badfa0338e61dc "pdflatex"
-  "main.lot" 1786729516.53018 2266 b2935c0f8ce9e4fdbb4f5d839e577d57 "pdflatex"
+  "main.aux" 1786738456.70114 78390 387c9e5ad99ec819ccdfb76529c6195a "pdflatex"
+  "main.bbl" 1786738454.32039 26384 e7be82f234c794d53d09211f78bf10ad "bibtex main"
+  "main.lof" 1786738456.71617 3828 09b27edd4d029a666a1bab15a5f85dda "pdflatex"
+  "main.lot" 1786738456.7162 2398 9dd7b8914641bcf4906092a52c1bfc90 "pdflatex"
   "main.nls" 0 -1 0 ""
-  "main.tex" 1786724464.4629 11872 c8df7390318de99899141839f517aff4 ""
-  "main.toc" 1786729516.53005 10040 d518e0c6e806cc5804810c26aa248809 "pdflatex"
+  "main.tex" 1786737192.32454 11872 c8df7390318de99899141839f517aff4 ""
+  "main.toc" 1786738456.71608 10227 27b08563ca1383b5ded8921cf853774e "pdflatex"
   "marco_teorico.tex" 1786671443.95198 29020 8b287d674ad43434e55b84355f617fa3 ""
   "objetivos.tex" 1786671443.95255 2214 295937a826729290373bf9e0f22fe55b ""
   "opciones_adicionales.tex" 1786671443.95297 1105 b05caa19e040d78cee5b3b284eafa3bf ""

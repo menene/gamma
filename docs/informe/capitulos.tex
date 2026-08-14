@@ -119,7 +119,7 @@ Los indicadores de la línea base —3.3 horas promedio de tiempo efectivo por g
 % ============================================================================
 
 \subsection{Plan de adopción cultural}
-La validación de GAMMA no se limitó a medir su desempeño técnico: se diseñó un plan de adopción dirigido a las dos audiencias cuya aceptación determina si la herramienta se sostiene más allá del período de prueba. La Tabla \ref{tab:plan-cultural} resume el objetivo y la acción concreta dirigida a cada una.
+La validación de GAMMA no se limitó a medir su desempeño técnico: se diseñó un plan de adopción dirigido a las dos audiencias cuya aceptación determina si la herramienta se sostiene más allá del período de prueba. El Cuadro \ref{tab:plan-cultural} resume el objetivo y la acción concreta dirigida a cada una.
 
 \begin{table}[!htb]
 \centering
@@ -390,7 +390,7 @@ El panel izquierdo de la Figura \ref{fig:confianza} muestra que las predicciones
 Los resultados de esta sección se apoyan en dos universos de observación distintos, y conviene precisar la diferencia antes de presentarlos. La plataforma asistió 210 solicitudes durante el período de validación, y sobre ese total se calculan los indicadores del tablero. La medición del tiempo de gestión, en cambio, se realiza sobre 98 solicitudes: la instrumentación que registra las marcas de tiempo de cada etapa se incorporó en una versión posterior de la plataforma, ya iniciado el piloto, de modo que las solicitudes atendidas antes de ese cambio quedaron registradas con su resultado pero sin su duración. La diferencia entre ambas cifras no responde por tanto a criterios de exclusión sino al momento en que cada instrumento entró en operación.
 
 \subsection{Tiempo de gestión}
-La Tabla \ref{tab:tiempos-post} compara el tiempo efectivo de gestión antes y después de la implementación.
+El Cuadro \ref{tab:tiempos-post} compara el tiempo efectivo de gestión antes y después de la implementación.
 
 \begin{table}[!htb]
 \centering
@@ -412,6 +412,43 @@ Solicitudes/día hábil & 4.0 & 5.8 \\
 
 La reducción del tiempo promedio de gestión fue de 58.4\,\% (54.7\,\% en la mediana). Una prueba U de Mann-Whitney confirma que la diferencia es estadísticamente significativa (p \textless\ 0.0001), y los intervalos de confianza al 95\,\% de ambos períodos no se traslapan. El equipo, además, sostuvo un volumen diario mayor en el período post-GAMMA (5.8 frente a 4.0 solicitudes/día hábil), lo que descarta que la reducción de tiempo se explique por una caída en la carga de trabajo atendida.
 
+
+
+\subsection{Duplicados evitados}
+
+El módulo de detección de duplicados registra cada decisión del gestor sobre los candidatos que le presenta. Durante el período de validación se registraron 81 decisiones de este tipo. En 17 de ellas el gestor confirmó que el material solicitado ya existía en el catálogo, con lo que la solicitud se cerró contra el código existente y no derivó en un alta nueva; en las 64 restantes descartó los candidatos y la creación siguió su curso.
+
+Esas 17 son la medida directa del efecto preventivo de la herramienta: son altas que se habrían incorporado al maestro como duplicado y no lo hicieron. Equivalen al 21.0\,\% de los casos en que el sistema encontró candidatos con similitud suficiente para presentarlos, lo que indica que la búsqueda difusa opera en un rango razonable: no señala tantos falsos positivos como para volverse ruido, ni tan pocos como para pasar por alto la duplicidad que el catálogo evidencia en su línea base.
+
+Conviene precisar el alcance de la cifra. Las 17 corresponden a duplicados que el gestor confirmó como tales; no incluyen los que la búsqueda no logró recuperar, que por construcción no quedan registrados. El valor debe leerse entonces como una cota inferior de la duplicidad prevenida y no como una medición de la exhaustividad del módulo.
+
+\subsection{Desglose del tiempo de proceso}
+
+La instrumentación cronometra por separado cada uno de los tres módulos que intervienen en una solicitud. El Cuadro \ref{tab:desglose_maquina} presenta el promedio por paso sobre las solicitudes del período.
+
+\begin{table}[htbp]
+\centering
+\caption{Desglose del tiempo de máquina por paso del proceso}
+\label{tab:desglose_maquina}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Paso} & \textbf{Segundos} & \textbf{\% del total} \\
+\midrule
+Normalización de la descripción (modelo de lenguaje) & 4.37 & 70.5 \\
+Búsqueda de duplicados (similitud de trigramas)      & 1.78 & 28.7 \\
+Clasificación de categoría                            & 0.09 & 1.5 \\
+\midrule
+\textbf{Total de máquina} & \textbf{6.20} & \textbf{100.0} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Dos lecturas se desprenden del desglose. La primera es la distribución interna: la normalización mediante modelo de lenguaje concentra siete de cada diez segundos de cómputo, mientras que el clasificador —el componente que constituye el núcleo analítico del trabajo— consume el 1.5\,\% del tiempo. Ese dato confirma en producción lo que la comparación de algoritmos había establecido en laboratorio: el costo de inferencia de la configuración seleccionada es despreciable frente al resto del flujo, de modo que la elección de un modelo lineal no impone ninguna penalización perceptible al usuario. Una arquitectura de mayor capacidad habría desplazado ese costo sin ofrecer, según la evaluación del capítulo anterior, un desempeño superior.
+
+La segunda lectura concierne a la interpretación de la reducción de tiempo reportada. Los 6.20 segundos de cómputo representan el 0.12\,\% de las 1.39 horas que dura en promedio una gestión asistida. La mejora observada no proviene, por lo tanto, de que la máquina ejecute rápido tareas que antes eran lentas: proviene de que el gestor recibe la descripción normalizada, los candidatos a duplicado y la categoría sugerida ya resueltos en el momento de decidir, en lugar de construir esa información mediante consultas manuales sucesivas sobre SAP. Lo que la herramienta reduce es el trabajo de búsqueda y verificación que precedía a la decisión, no el tiempo de la decisión misma.
+
+El tiempo de deliberación del gestor sobre cada paso no se reporta aquí. La instrumentación lo obtiene como diferencia entre marcas de tiempo, procedimiento que sobreestima la duración en las sesiones que el gestor deja abiertas y retoma más tarde: en algunas semanas el promedio resultante supera las veinte horas por decisión, valor que corresponde a la interrupción de la sesión y no al esfuerzo dedicado. Aislar el tiempo efectivo de deliberación exigiría una regla de expiración de sesión que la instrumentación actual no implementa, y se plantea como mejora del sistema de medición.
+
 \subsection{Percepción de los usuarios}
 La encuesta de satisfacción aplicada al cierre del período de prueba recoge la valoración de gestores y jefatura sobre la herramienta (Figura \ref{fig:encuesta-gestores}).
 
@@ -425,7 +462,7 @@ La encuesta de satisfacción aplicada al cierre del período de prueba recoge la
 Entre los gestores que usaron la herramienta activamente, la facilidad de uso en el primer contacto obtuvo la calificación más alta (5.0/5), seguida de la satisfacción general y la utilidad de la sugerencia de descripción (4.33/5 ambas). La reducción de tiempo percibida promedió 4.0/5, en la misma dirección que la reducción medida en el tablero de indicadores. La precisión percibida de la clasificación de categoría obtuvo la calificación más baja del grupo (3.67/5), aunque por encima del punto medio de la escala coherente con que el modelo de clasificación evaluado alcanza una exactitud del 84.9\,\% en su primera sugerencia, es decir, en aproximadamente uno de cada seis casos la sugerencia inicial no es la correcta. Jefatura y coordinación, por su parte, calificaron la alineación de GAMMA con los objetivos de calidad del área en 4.5/5 en promedio.
 
 \subsection{Impacto financiero}
-La Tabla \ref{tab:roi} resume el retorno de inversión del proyecto, calculado sobre el costo real de despliegue —incluyendo el hospedaje del servidor durante el período de construcción, pruebas y puesta en producción, y las horas de capacitación de los gestores frente al ahorro anual proyectado a partir de la reducción de tiempo medida.
+El Cuadro \ref{tab:roi} resume el retorno de inversión del proyecto, calculado sobre el costo real de despliegue —incluyendo el hospedaje del servidor durante el período de construcción, pruebas y puesta en producción, y las horas de capacitación de los gestores frente al ahorro anual proyectado a partir de la reducción de tiempo medida.
 
 \begin{table}[!htb]
 \centering
@@ -511,20 +548,6 @@ Gráfico de dona con tres estados: confirmadas (161, 48.79\%), descartadas (160,
 Estos estados siguen el ciclo de vida de una solicitud dentro del chatbot: se confirma, se descarta (el gestor decide no continuar) o se exporta (llega al archivo XLSX para carga en SAP). Los estados no son mutuamente excluyentes en el tiempo --- una misma solicitud puede pasar por más de uno en su recorrido. Una proporción alta de descartadas frente a exportadas puede indicar que el agente presenta sugerencias que no convencen al gestor, o que hay fricción en el flujo conversacional.
 
 
-% ============================================================================
-% PENDIENTE — Rudy: extraer de gold.kpi_quality, gold.kpi_duplicates y
-% gold.kpi_requests_by_user:
-%   · Tasa de corrección real (veces que el gestor cambió la clase sugerida)
-%   · Duplicados detectados y evitados antes de la creación
-%   · Desglose máquina vs. deliberación del gestor (gold.kpi_step_breakdown)
-%   · Volumen por gestor — nota: en el export de tiempos, 184 de 187
-%     solicitudes post-GAMMA corresponden a un solo gestor; los otros dos
-%     gestores activos solo procesaron 1 y 2 solicitudes respectivamente.
-%     Esto es una limitación real de la muestra que debe declararse en
-%     Discusión/Limitaciones, no solo un dato a completar aquí.
-% ============================================================================
-
-
 \chapter{Discusión}
 
 \section{Selección del algoritmo}
@@ -593,6 +616,6 @@ La primera concierne a la evaluación del modelo. La convención de nomenclatura
 
 La segunda es que el modelo se entrena sobre etiquetas producidas por los propios gestores, que constituyen la mejor referencia disponible pero no una verdad de campo independiente. El techo de desempeño alcanzable está determinado por la consistencia de esas decisiones históricas.
 
-La tercera se refiere al alcance de la validación. El período de uso productivo abarca cinco semanas y una sola unidad de negocio, frente a una línea base levantada durante cuatro meses. La asimetría entre ambos períodos y el tamaño de la muestra acumulada aconsejan tratar las cifras de la operación como indicativas de una tendencia y no como estimaciones de precisión estadística.
+La tercera se refiere al alcance de la validación. El período de uso productivo abarca cinco semanas y una sola unidad de negocio, frente a una línea base levantada durante cuatro meses. La asimetría entre ambos períodos y el tamaño de la muestra acumulada aconsejan tratar las cifras de la operación como indicativas de una tendencia y no como estimaciones de precisión estadística. A ello se suma que las solicitudes atendidas se concentran fuertemente en un gestor, que procesó 195 de las 210 del período. Esa concentración no expresa una adopción parcial de la herramienta sino el tamaño real del equipo, pero implica que los indicadores de operación reflejan de manera predominante el criterio de una sola persona y no un promedio entre gestores.
 
 Finalmente, los resultados de clasificación se obtuvieron sobre una fotografía del catálogo correspondiente a una fecha determinada. El desempeño del modelo sobre materiales de familias que no estaban representadas en esa extracción no puede inferirse de las mediciones presentadas.

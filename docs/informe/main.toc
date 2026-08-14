@@ -83,32 +83,34 @@
 \contentsline {section}{\numberline {9.4}Exactitud y cobertura según el umbral de confianza}{31}{section.105}%
 \contentsline {section}{\numberline {9.5}Resultados de la operación en producción}{33}{section.108}%
 \contentsline {subsection}{\numberline {9.5.1}Tiempo de gestión}{33}{subsection.109}%
-\contentsline {subsection}{\numberline {9.5.2}Percepción de los usuarios}{34}{subsection.111}%
-\contentsline {subsection}{\numberline {9.5.3}Impacto financiero}{34}{subsection.113}%
-\contentsline {section}{\numberline {9.6}Visualizacion de resultados}{35}{section.115}%
-\contentsline {subsection}{\numberline {9.6.1}Por qué Power BI}{35}{subsection.116}%
-\contentsline {subsection}{\numberline {9.6.2}Tablero operativo}{35}{subsection.117}%
-\contentsline {subsubsection}{Tarjetas KPI}{35}{section*.118}%
-\contentsline {subsubsection}{Tiempo de máquina por tipo}{36}{section*.119}%
-\contentsline {subsubsection}{Desempeño por gestor}{36}{section*.120}%
-\contentsline {subsubsection}{Confirmadas, Descartadas y Exportadas}{37}{section*.121}%
-\contentsline {chapter}{\numberline {10}Discusión}{38}{chapter.122}%
-\contentsline {section}{\numberline {10.1}Selección del algoritmo}{38}{section.123}%
-\contentsline {section}{\numberline {10.2}Efecto del desbalance de clases}{38}{section.124}%
-\contentsline {section}{\numberline {10.3}Desempeño del transformador}{39}{section.125}%
-\contentsline {section}{\numberline {10.4}Naturaleza de los errores del modelo}{39}{section.126}%
-\contentsline {section}{\numberline {10.5}Punto de operación seleccionado}{40}{section.127}%
-\contentsline {section}{\numberline {10.6}Comparación con los antecedentes}{40}{section.128}%
-\contentsline {section}{\numberline {10.7}Percepción de los usuarios}{41}{section.129}%
-\contentsline {section}{\numberline {10.8}Retorno de inversión}{41}{section.130}%
-\contentsline {section}{\numberline {10.9}Limitaciones del estudio}{42}{section.131}%
-\contentsline {chapter}{\numberline {11}Conclusiones}{43}{chapter.132}%
-\contentsline {chapter}{\numberline {12}Recomendaciones}{45}{chapter.138}%
-\contentsline {chapter}{Referencias}{47}{section*.141}%
-\contentsline {chapter}{Anexos}{50}{section*.142}%
+\contentsline {subsection}{\numberline {9.5.2}Duplicados evitados}{34}{subsection.111}%
+\contentsline {subsection}{\numberline {9.5.3}Desglose del tiempo de proceso}{34}{subsection.112}%
+\contentsline {subsection}{\numberline {9.5.4}Percepción de los usuarios}{35}{subsection.114}%
+\contentsline {subsection}{\numberline {9.5.5}Impacto financiero}{35}{subsection.116}%
+\contentsline {section}{\numberline {9.6}Visualizacion de resultados}{36}{section.118}%
+\contentsline {subsection}{\numberline {9.6.1}Por qué Power BI}{36}{subsection.119}%
+\contentsline {subsection}{\numberline {9.6.2}Tablero operativo}{36}{subsection.120}%
+\contentsline {subsubsection}{Tarjetas KPI}{36}{section*.121}%
+\contentsline {subsubsection}{Tiempo de máquina por tipo}{37}{section*.122}%
+\contentsline {subsubsection}{Desempeño por gestor}{37}{section*.123}%
+\contentsline {subsubsection}{Confirmadas, Descartadas y Exportadas}{38}{section*.124}%
+\contentsline {chapter}{\numberline {10}Discusión}{39}{chapter.125}%
+\contentsline {section}{\numberline {10.1}Selección del algoritmo}{39}{section.126}%
+\contentsline {section}{\numberline {10.2}Efecto del desbalance de clases}{39}{section.127}%
+\contentsline {section}{\numberline {10.3}Desempeño del transformador}{40}{section.128}%
+\contentsline {section}{\numberline {10.4}Naturaleza de los errores del modelo}{40}{section.129}%
+\contentsline {section}{\numberline {10.5}Punto de operación seleccionado}{41}{section.130}%
+\contentsline {section}{\numberline {10.6}Comparación con los antecedentes}{41}{section.131}%
+\contentsline {section}{\numberline {10.7}Percepción de los usuarios}{42}{section.132}%
+\contentsline {section}{\numberline {10.8}Retorno de inversión}{42}{section.133}%
+\contentsline {section}{\numberline {10.9}Limitaciones del estudio}{43}{section.134}%
+\contentsline {chapter}{\numberline {11}Conclusiones}{44}{chapter.135}%
+\contentsline {chapter}{\numberline {12}Recomendaciones}{46}{chapter.141}%
+\contentsline {chapter}{Referencias}{48}{section*.144}%
+\contentsline {chapter}{Anexos}{51}{section*.145}%
 \GammaTocAnexosOn 
-\contentsline {chapter}{\numberline {A}Registro de asistencia}{50}{chapter.143}%
-\contentsline {chapter}{\numberline {B}Instrumento y respuestas de la encuesta de satisfacción}{51}{chapter.145}%
-\contentsline {chapter}{\numberline {C}Descriptor del sistema y accesos para revisión}{62}{chapter.163}%
+\contentsline {chapter}{\numberline {A}Registro de asistencia}{51}{chapter.146}%
+\contentsline {chapter}{\numberline {B}Instrumento y respuestas de la encuesta de satisfacción}{52}{chapter.148}%
+\contentsline {chapter}{\numberline {C}Descriptor del sistema y accesos para revisión}{63}{chapter.166}%
 \GammaTocAnexosOff 
-\contentsline {chapter}{Glosario}{65}{section*.181}%
+\contentsline {chapter}{Glosario}{66}{section*.184}%
