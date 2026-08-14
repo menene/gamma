@@ -8,13 +8,24 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {1}{\ignorespaces Plan de adopción cultural ejecutado durante el período de validación}}{25}{table.caption.83}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {1}{\ignorespaces Distribución de las clases del maestro según su cantidad de materiales}}{26}{table.caption.84}%
-\contentsline {table}{\numberline {2}{\ignorespaces Construcción del conjunto de modelado a partir del maestro exportado}}{27}{table.caption.88}%
-\contentsline {table}{\numberline {3}{\ignorespaces Resultados de la competencia de algoritmos sobre la partición de prueba de 7,915 materiales y 1,234 clases}}{27}{table.caption.90}%
-\contentsline {table}{\numberline {4}{\ignorespaces Confusiones más frecuentes del modelo seleccionado sobre la partición de prueba}}{28}{table.caption.94}%
-\contentsline {table}{\numberline {5}{\ignorespaces Exactitud y cobertura del modelo seleccionado según el umbral de confianza aplicado}}{28}{table.caption.96}%
+\contentsline {table}{\numberline {2}{\ignorespaces Distribución de las clases del maestro según su cantidad de materiales}}{27}{table.caption.88}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3}{\ignorespaces Construcción del conjunto de modelado a partir del maestro exportado}}{30}{table.caption.98}%
+\contentsline {table}{\numberline {4}{\ignorespaces Resultados de la competencia de algoritmos sobre la partición de prueba de 7,915 materiales y 1,234 clases}}{31}{table.caption.100}%
+\contentsline {table}{\numberline {5}{\ignorespaces Confusiones más frecuentes del modelo seleccionado sobre la partición de prueba}}{32}{table.caption.104}%
+\contentsline {table}{\numberline {6}{\ignorespaces Exactitud y cobertura del modelo seleccionado según el umbral de confianza aplicado}}{33}{table.caption.106}%
+\contentsline {table}{\numberline {7}{\ignorespaces Tiempo efectivo de gestión antes y después de GAMMA}}{33}{table.caption.110}%
+\contentsline {table}{\numberline {8}{\ignorespaces Retorno de inversión del proyecto}}{35}{table.caption.114}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {table}{\numberline {9}{\ignorespaces Asistencia registrada por rol en las sesiones de capacitación y seguimiento}}{50}{table.caption.144}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10}{\ignorespaces Respuestas de los gestores que utilizaron GAMMA}}{51}{table.caption.147}%
+\contentsline {table}{\numberline {11}{\ignorespaces Respuestas de jefatura y coordinación}}{52}{table.caption.149}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {12}{\ignorespaces Secciones de la plataforma habilitadas según el perfil de acceso}}{63}{table.caption.166}%
+\contentsline {table}{\numberline {13}{\ignorespaces Credenciales dispuestas para el tribunal examinador}}{63}{table.caption.168}%

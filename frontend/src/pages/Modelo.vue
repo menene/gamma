@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import MermaidDiagram from '@/components/MermaidDiagram.vue'
 import { API_BASE } from '@/config'
 import { authFetch } from '@/composables/useAuth'
 
@@ -37,6 +39,41 @@ interface Version {
   created_at: string | null
   notes: string | null
 }
+
+const activeTab = ref('operacion')
+
+// Competencia de modelos. Ordenados por accuracy descendente.
+const modelos = [
+  { nombre: 'LinearSVC + CharTFIDF', accuracy: 0.8491, f1Macro: 0.7523, f1Weighted: 0.8380, precision: 0.8419, recall: 0.8491, top3: 0.9404, tiempo: 62.9, ganador: true },
+  { nombre: 'RandomForest + WordTFIDF', accuracy: 0.8334, f1Macro: 0.7360, f1Weighted: 0.8254, precision: 0.8354, recall: 0.8334, top3: 0.9263, tiempo: 46.7 },
+  { nombre: 'LogReg + CharTFIDF', accuracy: 0.8293, f1Macro: 0.6713, f1Weighted: 0.8126, precision: 0.8158, recall: 0.8293, top3: 0.9359, tiempo: 1071.2 },
+  { nombre: 'LogReg + WordTFIDF', accuracy: 0.8291, f1Macro: 0.6949, f1Weighted: 0.8178, precision: 0.8265, recall: 0.8291, top3: 0.9275, tiempo: 29.1 },
+  { nombre: 'XGBoost + CharTFIDF', accuracy: 0.8145, f1Macro: 0.6821, f1Weighted: 0.8063, precision: 0.8136, recall: 0.8145, top3: 0.9200, tiempo: 11025.2 },
+  { nombre: 'fastText', accuracy: 0.8077, f1Macro: 0.6897, f1Weighted: 0.8001, precision: 0.8071, recall: 0.8075, top3: 0.9075, tiempo: 43.0 },
+  { nombre: 'Transformer (MiniLM)', accuracy: 0.7479, f1Macro: 0.4010, f1Weighted: 0.7012, precision: 0.6855, recall: 0.7479, top3: 0.8710, tiempo: 3147.4 },
+]
+
+const series = [
+  { key: 'accuracy' as const, label: 'Accuracy', color: 'var(--series-1)' },
+  { key: 'f1Macro' as const, label: 'F1 macro', color: 'var(--series-2)' },
+  { key: 'top3' as const, label: 'Top-3', color: 'var(--series-3)' },
+]
+
+const fmtTiempo = (s: number) => (s >= 1000 ? `${(s / 60).toFixed(0)} min` : `${s.toFixed(1)} s`)
+
+const pipeline = `flowchart LR
+    A["short_text<br/>(SAP, 40 caracteres)"] --> B["Normalizacion<br/>mayusculas, sin acentos,<br/>separadores a espacio"]
+    B --> C["TF-IDF<br/>n-gramas de caracter 2-5<br/>50,000 dimensiones"]
+    C --> D["LinearSVC<br/>one-vs-rest<br/>1,234 hiperplanos"]
+    D --> E["Calibracion de Platt<br/>margen a probabilidad"]
+    E --> F["Top-3 clases<br/>+ confianza"]
+    F --> G{"Supera el<br/>umbral?"}
+    G -->|Si| H["Sugerencia automatica"]
+    G -->|No| I["Revision del gestor"]
+    style A fill:#e8f0fb,stroke:#2a78d6,color:#0b0b0b
+    style F fill:#e6f6f0,stroke:#1baf7a,color:#0b0b0b
+    style H fill:#e6f6f0,stroke:#1baf7a,color:#0b0b0b
+    style I fill:#fdeee7,stroke:#eb6834,color:#0b0b0b`
 
 const versiones = ref<Version[]>([])
 const jobs = ref<Job[]>([])
@@ -174,7 +211,7 @@ onUnmounted(detenerSondeo)
     <div class="mb-8">
       <h1 class="text-2xl font-bold tracking-tight">Modelo</h1>
       <p class="text-sm text-muted-foreground mt-1">
-        Reentrenamiento y versiones del clasificador de categoria
+        Operacion, arquitectura y evaluacion del clasificador de categoria
       </p>
     </div>
 
@@ -185,6 +222,23 @@ onUnmounted(detenerSondeo)
       <i class="fa-solid fa-circle-info mr-2"></i>{{ aviso }}
     </div>
 
+    <Tabs v-model="activeTab">
+      <TabsList class="mb-6 flex-wrap h-auto gap-1">
+        <TabsTrigger value="operacion" class="gap-2">
+          <i class="fa-solid fa-arrows-rotate text-xs"></i>
+          Operacion
+        </TabsTrigger>
+        <TabsTrigger value="arquitectura" class="gap-2">
+          <i class="fa-solid fa-diagram-project text-xs"></i>
+          Como funciona
+        </TabsTrigger>
+        <TabsTrigger value="evaluacion" class="gap-2">
+          <i class="fa-solid fa-chart-simple text-xs"></i>
+          Evaluacion
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="operacion">
     <!-- Reentrenamiento -->
     <Card class="mb-8">
       <CardHeader class="pb-3">
@@ -357,5 +411,364 @@ onUnmounted(detenerSondeo)
         </div>
       </CardContent>
     </Card>
+      </TabsContent>
+
+      <TabsContent value="arquitectura">
+        <div class="max-w-4xl space-y-6 text-sm text-muted-foreground">
+        <div class="max-w-4xl space-y-6 text-sm text-muted-foreground">
+          <p>
+            El sistema predice la <strong class="text-foreground">clase de material</strong> (denominacion estandar)
+            a partir del <code>short_text</code> de SAP. El modelo fue entrenado con <strong class="text-foreground">39,571 materiales</strong>
+            distribuidos en <strong class="text-foreground">1,234 clases</strong>, extraidos de 13 archivos Excel de distintos
+            tipos de material (ZCON, ZQUI, ZRPI, ZSUM, etc.).
+          </p>
+
+          <Separator />
+
+
+          <div>
+            <h4 class="text-foreground font-medium mb-3">Pipeline</h4>
+            <MermaidDiagram :chart="pipeline" />
+            <p class="mt-3">
+              El modelo no impone una categoria: devuelve las tres mas probables con su confianza.
+              Cuando la confianza supera el umbral configurado la sugerencia se acepta de forma automatica;
+              cuando no, la solicitud pasa a revision del gestor. El umbral es el parametro que traduce
+              tolerancia al error en cobertura de automatizacion.
+            </p>
+          </div>
+
+          <Separator />
+
+
+          <div>
+            <h4 class="text-foreground font-medium mb-3">Analisis de confianza</h4>
+            <p class="mb-3">
+              El modelo sabe cuando esta inseguro. Filtrando por umbral de confianza se puede aumentar la accuracy
+              a cambio de cubrir menos materiales automaticamente.
+            </p>
+            <div class="overflow-x-auto mb-3">
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="border-b">
+                    <th class="text-left py-2 pr-3 text-foreground">Umbral</th>
+                    <th class="text-right py-2 px-2 text-foreground">Accuracy</th>
+                    <th class="text-right py-2 px-2 text-foreground">Cobertura</th>
+                    <th class="text-right py-2 pl-2 text-foreground">Materiales</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b"><td class="py-1.5 pr-3">0.50</td><td class="text-right px-2">92.80%</td><td class="text-right px-2">78.81%</td><td class="text-right pl-2">6,238</td></tr>
+                  <tr class="border-b"><td class="py-1.5 pr-3">0.60</td><td class="text-right px-2">94.84%</td><td class="text-right px-2">70.50%</td><td class="text-right pl-2">5,580</td></tr>
+                  <tr class="border-b"><td class="py-1.5 pr-3">0.70</td><td class="text-right px-2">96.74%</td><td class="text-right px-2">60.52%</td><td class="text-right pl-2">4,790</td></tr>
+                  <tr><td class="py-1.5 pr-3">0.80</td><td class="text-right px-2">98.62%</td><td class="text-right px-2">42.25%</td><td class="text-right pl-2">3,344</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Esto habilita un flujo de <strong class="text-foreground">auto-aprobacion</strong>: predicciones por
+              encima del umbral se aceptan automaticamente, las demas pasan a
+              <strong class="text-foreground">revision humana</strong>. El umbral es un parametro configurable en
+              <code>gold.parameters</code>.
+            </p>
+          </div>
+        </div>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="evaluacion">
+        <div class="max-w-4xl space-y-6 text-sm text-muted-foreground">
+
+          <div>
+            <h4 class="text-foreground font-medium mb-3">Modelos evaluados</h4>
+            <div class="space-y-4">
+
+              <div class="p-4 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-foreground font-medium">1. Logistic Regression + Character TF-IDF</span>
+                </div>
+                <p class="mb-2">
+                  Regresion logistica multinomial (<code>solver='saga'</code>, <code>C=5.0</code>) sobre vectores TF-IDF
+                  de character n-grams (2-5, 50k features). Modela la probabilidad de cada clase como una funcion softmax
+                  sobre combinaciones lineales de los features. Produce probabilidades calibradas de forma nativa y es
+                  interpretable, pero la convergencia fue extremadamente lenta — <strong class="text-foreground">1,071 segundos</strong>
+                  (17 minutos) con 50k character features.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-foreground font-medium">2. Logistic Regression + Word TF-IDF</span>
+                </div>
+                <p class="mb-2">
+                  Misma regresion logistica pero tokenizando por <strong class="text-foreground">palabras completas</strong>
+                  (unigramas y bigramas, 30k features). Captura terminos exactos como "CABLE ELECTRICO", pero pierde la
+                  capacidad de reconocer subpalabras. Esto lo hace vulnerable a las abreviaciones y typos comunes en textos
+                  SAP. Rapido de entrenar (29s) y con buenas probabilidades nativas.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-md border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-foreground font-medium">3. LinearSVC + Character TF-IDF</span>
+                  <Badge class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-100">Ganador</Badge>
+                </div>
+                <p class="mb-2">
+                  Support Vector Machine lineal (<code>LinearSVC</code>, <code>C=1.0</code>) envuelto en
+                  <code>CalibratedClassifierCV</code> para obtener probabilidades. Encuentra hiperplanos que maximizan
+                  el margen de separacion entre clases en un espacio de 50k dimensiones de character n-grams. A diferencia
+                  de la regresion logistica que optimiza log-likelihood, SVM optimiza directamente el margen de decision,
+                  lo que suele generalizar mejor.
+                </p>
+                <p class="mb-2">
+                  El uso de <strong class="text-foreground">character n-grams</strong> (2-5 caracteres) es clave para textos SAP:
+                  captura subpalabras ("TORNI", "ORNIL" de "TORNILLO"), es robusto a abreviaciones ("ELECTR" matchea tanto
+                  "ELECTRICO" como "ELECTRONICO"), tolerante a typos, y <code>char_wb</code> respeta limites de palabra
+                  evitando n-grams espurios.
+                </p>
+                <p>
+                  Mejor accuracy y F1 de todos los modelos con un tiempo de entrenamiento razonable (63s). Las probabilidades
+                  son aproximadas (calibradas post-hoc via Platt scaling), no nativas.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-foreground font-medium">4. Random Forest + Word TF-IDF</span>
+                </div>
+                <p class="mb-2">
+                  Ensemble de 300 arboles de decision, cada uno entrenado sobre un subconjunto aleatorio de datos y features.
+                  La prediccion es el voto mayoritario. Cada arbol aprende reglas como "si TF-IDF de TORNILLO &gt; 0.3 y
+                  TF-IDF de HEXAGONAL &gt; 0.1, entonces clase X". Robusto a overfitting y no requiere calibracion para
+                  probabilidades. Buen F1 macro pero no captura patrones sub-palabra y es mas lento en inferencia (300 arboles).
+                </p>
+              </div>
+
+              <div class="p-4 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-foreground font-medium">5. XGBoost + Character TF-IDF</span>
+                </div>
+                <p class="mb-2">
+                  Gradient boosting (<code>XGBClassifier</code>, 500 arboles, <code>max_depth=6</code>, <code>lr=0.1</code>)
+                  sobre los mismos vectores CharTFIDF de 50k features. XGBoost construye arboles secuencialmente, donde cada
+                  arbol nuevo corrige los errores del anterior. Usa <code>multi:softprob</code> para clasificacion multiclase
+                  y produce probabilidades nativas. A pesar de ser el metodo dominante en datos tabulares, no supero al LinearSVC
+                  en este problema — los vectores TF-IDF sparse de alta dimensionalidad favorecen a modelos lineales.
+                  Extremadamente lento: <strong class="text-foreground">11,025 segundos</strong> (~3 horas) por la combinacion
+                  de 500 arboles x 1,234 clases.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-foreground font-medium">6. fastText</span>
+                </div>
+                <p class="mb-2">
+                  Modelo de Facebook Research que aprende embeddings de subpalabras de forma nativa — no necesita TF-IDF externo.
+                  Cada palabra se descompone en character n-grams (2-5) y el embedding final es la suma de sus componentes.
+                  Configurado con <code>epoch=50</code>, <code>lr=0.5</code>, <code>dim=100</code>, <code>wordNgrams=2</code>
+                  y loss <code>softmax</code>. Extremadamente rapido de entrenar (<strong class="text-foreground">43 segundos</strong>),
+                  lo que lo hace ideal para iteracion rapida. Rendimiento competitivo (accuracy 80.8%) pero por debajo del
+                  LinearSVC, probablemente porque los embeddings de 100 dimensiones comprimen demasiado la informacion que
+                  el espacio sparse de 50k dimensiones preserva.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-md border bg-card">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-foreground font-medium">7. Transformer fine-tuned (Multilingual-MiniLM)</span>
+                </div>
+                <p class="mb-2">
+                  Transformer pre-entrenado de Microsoft (<code>Multilingual-MiniLM-L12-H384</code>, 118M parametros, 12 capas,
+                  384 dimensiones hidden) sometido a ajuste fino sobre los <code>short_text</code> normalizados, con
+                  <code>batch_size=64</code> y 15 epochs. Es el unico candidato que modela el texto de forma contextual en
+                  lugar de tratarlo como una bolsa de rasgos.
+                </p>
+                <p class="mb-2">
+                  Alcanza <strong class="text-foreground">accuracy 74.8%</strong>, por debajo de las seis configuraciones
+                  clasicas y con 50 veces el tiempo de entrenamiento del ganador —ademas sobre GPU, mientras que el ganador
+                  se entrena en CPU. La brecha mas grande esta en el
+                  <strong class="text-foreground">F1 macro: 0.4010 frente a 0.7523</strong>. Con 118M de parametros y una
+                  mediana de 9 materiales por clase, el modelo aprende las categorias pobladas y se desploma en la cola larga,
+                  que es donde vive mas de la mitad de la taxonomia.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+
+          <div>
+            <h4 class="text-foreground font-medium mb-3">Comparacion de metricas</h4>
+
+            <!-- Grafica: barras agrupadas, una fila por modelo -->
+            <div class="viz-root rounded-md border bg-card p-4 mb-4">
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mb-4">
+                <div v-for="s in series" :key="s.key" class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-[2px] shrink-0" :style="{ background: s.color }"></span>
+                  <span class="text-xs text-foreground">{{ s.label }}</span>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div v-for="m in modelos" :key="m.nombre">
+                  <div class="flex items-baseline gap-2 mb-1">
+                    <span class="text-xs" :class="m.ganador ? 'text-foreground font-medium' : 'text-muted-foreground'">
+                      {{ m.nombre }}
+                    </span>
+                    <span v-if="m.ganador" class="text-[10px] uppercase tracking-wide text-muted-foreground">ganador</span>
+                  </div>
+                  <div class="space-y-[2px]">
+                    <div
+                      v-for="s in series"
+                      :key="s.key"
+                      class="flex items-center gap-2"
+                      :title="`${m.nombre} — ${s.label}: ${m[s.key].toFixed(4)}`"
+                    >
+                      <div class="viz-track relative h-3 flex-1 rounded-[2px]">
+                        <div
+                          class="absolute inset-y-0 left-0 rounded-r-[4px]"
+                          :style="{ width: `${m[s.key] * 100}%`, background: s.color }"
+                        ></div>
+                      </div>
+                      <span class="w-9 shrink-0 text-right text-[10px] tabular-nums text-muted-foreground">
+                        {{ m[s.key].toFixed(3) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Eje: alineado con la pista, no con la fila completa. -->
+              <div class="flex items-center gap-2 mt-2 pt-2 border-t">
+                <div class="flex-1 flex justify-between text-[10px] text-muted-foreground">
+                  <span>0</span><span>0.25</span><span>0.50</span><span>0.75</span><span>1.0</span>
+                </div>
+                <span class="w-9 shrink-0"></span>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="border-b">
+                    <th class="text-left py-2 pr-3 text-foreground">Modelo</th>
+                    <th class="text-right py-2 px-2 text-foreground">Accuracy</th>
+                    <th class="text-right py-2 px-2 text-foreground">F1 Macro</th>
+                    <th class="text-right py-2 px-2 text-foreground">F1 Weighted</th>
+                    <th class="text-right py-2 px-2 text-foreground">Precision</th>
+                    <th class="text-right py-2 px-2 text-foreground">Recall</th>
+                    <th class="text-right py-2 px-2 text-foreground">Top-3 Acc</th>
+                    <th class="text-right py-2 pl-2 text-foreground">Tiempo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="m in modelos"
+                    :key="m.nombre"
+                    class="border-b last:border-0"
+                    :class="m.ganador ? 'bg-green-50 dark:bg-green-950 font-medium text-foreground' : ''"
+                  >
+                    <td class="py-2 pr-3">{{ m.nombre }}</td>
+                    <td class="text-right py-2 px-2 tabular-nums">{{ m.accuracy.toFixed(4) }}</td>
+                    <td class="text-right py-2 px-2 tabular-nums">{{ m.f1Macro.toFixed(4) }}</td>
+                    <td class="text-right py-2 px-2 tabular-nums">{{ m.f1Weighted.toFixed(4) }}</td>
+                    <td class="text-right py-2 px-2 tabular-nums">{{ m.precision.toFixed(4) }}</td>
+                    <td class="text-right py-2 px-2 tabular-nums">{{ m.recall.toFixed(4) }}</td>
+                    <td class="text-right py-2 px-2 tabular-nums">{{ m.top3.toFixed(4) }}</td>
+                    <td class="text-right py-2 pl-2 tabular-nums">{{ fmtTiempo(m.tiempo) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <Separator />
+
+
+          <div>
+            <h4 class="text-foreground font-medium mb-2">Por que LinearSVC + CharTFIDF</h4>
+            <p class="mb-3">
+              Los siete modelos se evaluaron sobre la misma particion, con la misma semilla y las mismas metricas.
+              El mas simple resulto tambien el mejor.
+            </p>
+            <ul class="space-y-2 list-disc list-inside">
+              <li>
+                <strong class="text-foreground">Mejor en todas las metricas:</strong> accuracy (84.9%), F1 weighted (83.8%),
+                F1 macro (75.2%) y Top-3 (94.0%) — superior en cada dimension frente a los 6 modelos restantes.
+              </li>
+              <li>
+                <strong class="text-foreground">F1 macro significativamente mayor:</strong> 0.7523 contra 0.4010-0.7360 del resto.
+                Es la metrica que pesa igual a todas las clases, y por lo tanto la que mide el desempeno sobre la cola larga:
+                mas de la mitad de las 1,234 clases tiene diez materiales o menos.
+              </li>
+              <li>
+                <strong class="text-foreground">Top-3 del 94%:</strong> en el 94% de los casos la clase correcta esta entre
+                las tres primeras. Es la metrica alineada con el uso real, donde el gestor confirma sobre una lista corta.
+              </li>
+              <li>
+                <strong class="text-foreground">Costo de entrenamiento:</strong> 63 segundos en CPU. XGBoost tardo tres horas
+                para quedar 3.5 puntos por debajo; el transformer tardo 52 minutos en GPU para quedar 10 puntos por debajo.
+                En un sistema que se reentrena desde la propia aplicacion, esa diferencia define si el reentrenamiento es un
+                boton o es infraestructura aparte.
+              </li>
+              <li>
+                <strong class="text-foreground">Los n-gramas de caracter son el sesgo correcto:</strong> capturan subpalabras,
+                toleran abreviaturas y errores de digitacion, y mantienen informativo un texto con tokens nunca vistos —
+                requisito para clasificar materiales que aun no existen en el maestro. Los modelos que comprimen esa
+                representacion a un espacio denso (fastText 100d, MiniLM 384d) pierden capacidad discriminativa.
+              </li>
+              <li>
+                <strong class="text-foreground">La capacidad adicional no tiene datos con que estimarse:</strong> ni el
+                gradient boosting, ni los embeddings de subpalabras, ni un transformer preentrenado con 118M de parametros
+                superaron a un SVM lineal. Con una mediana de nueve materiales por clase, mas capacidad no compensa la
+                escasez de datos: la amplifica.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
   </section>
 </template>
+
+<style scoped>
+/*
+  Paleta categorica de la grafica de metricas. Tres series (blue, orange, aqua),
+  validadas para deficiencia de vision cromatica en ambos modos. Se declaran como
+  variables locales porque los tokens --chart-* del tema son escala de grises y no
+  distinguen series.
+*/
+.viz-root {
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --viz-grid: rgb(0 0 0 / 0.06);
+}
+
+/* Pista con lineas de referencia cada 25 %, recesivas frente a las barras. */
+.viz-track {
+  background:
+    linear-gradient(to right, var(--viz-grid) 1px, transparent 1px) 25% 0 / 25% 100% repeat-x,
+    rgb(0 0 0 / 0.04);
+}
+
+/*
+  No hace falta una media query de `prefers-color-scheme`: useTheme.ts resuelve la
+  preferencia del sistema y la escribe siempre como clase `dark` sobre <html>, de
+  modo que esta clase es la unica fuente de verdad. Agregar la media query
+  romperia el caso "sistema oscuro con tema claro elegido por el usuario".
+*/
+:root.dark .viz-root {
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --viz-grid: rgb(255 255 255 / 0.10);
+}
+
+:root.dark .viz-track {
+  background:
+    linear-gradient(to right, var(--viz-grid) 1px, transparent 1px) 25% 0 / 25% 100% repeat-x,
+    rgb(255 255 255 / 0.06);
+}
+</style>

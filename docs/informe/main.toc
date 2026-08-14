@@ -70,24 +70,45 @@
 \contentsline {subsection}{\numberline {7.6.2}Ciclo de vida de una solicitud}{23}{subsection.78}%
 \contentsline {section}{\numberline {7.7}Instrumentación y medición}{24}{section.79}%
 \contentsline {section}{\numberline {7.8}Protocolo de validación en producción}{24}{section.80}%
-\contentsline {chapter}{\numberline {8}Resultados}{25}{chapter.81}%
-\contentsline {section}{\numberline {8.1}Caracterización del maestro de materiales}{25}{section.82}%
-\contentsline {section}{\numberline {8.2}Conjunto de modelado resultante}{27}{section.87}%
-\contentsline {section}{\numberline {8.3}Desempeño comparado de los algoritmos}{27}{section.89}%
-\contentsline {section}{\numberline {8.4}Desempeño del modelo seleccionado}{27}{section.92}%
-\contentsline {section}{\numberline {8.5}Exactitud y cobertura según el umbral de confianza}{28}{section.95}%
-\contentsline {section}{\numberline {8.6}Resultados de la operación en producción}{29}{section.98}%
-\contentsline {chapter}{\numberline {9}Discusión}{30}{chapter.99}%
-\contentsline {section}{\numberline {9.1}Sobre la selección del algoritmo}{30}{section.100}%
-\contentsline {section}{\numberline {9.2}Sobre el efecto del desbalance de clases}{30}{section.101}%
-\contentsline {section}{\numberline {9.3}Sobre el transformador que no convergió}{31}{section.102}%
-\contentsline {section}{\numberline {9.4}Sobre la naturaleza de los errores del modelo}{31}{section.103}%
-\contentsline {section}{\numberline {9.5}Sobre el punto de operación seleccionado}{32}{section.104}%
-\contentsline {section}{\numberline {9.6}Comparación con los antecedentes}{32}{section.105}%
-\contentsline {section}{\numberline {9.7}Limitaciones del estudio}{32}{section.106}%
-\contentsline {chapter}{\numberline {10}Conclusiones}{34}{chapter.107}%
-\contentsline {chapter}{\numberline {11}Recomendaciones}{35}{chapter.108}%
-\contentsline {section}{Referencias}{36}{section*.110}%
-\contentsline {chapter}{Bibliografía}{37}{section*.110}%
-\contentsline {chapter}{Anexos}{38}{section*.111}%
-\contentsline {chapter}{\numberline {A}xxx}{38}{chapter.112}%
+\contentsline {subsection}{\numberline {7.8.1}Medición de la línea base}{24}{subsection.81}%
+\contentsline {subsection}{\numberline {7.8.2}Plan de adopción cultural}{25}{subsection.82}%
+\contentsline {subsection}{\numberline {7.8.3}Encuesta de satisfacción}{25}{subsection.84}%
+\contentsline {chapter}{\numberline {8}Análisis Exploratorio de Datos}{26}{chapter.85}%
+\contentsline {section}{\numberline {8.1}Caracterización del maestro de materiales}{26}{section.86}%
+\contentsline {section}{\numberline {8.2}Calidad de la información}{28}{section.91}%
+\contentsline {chapter}{\numberline {9}Resultados}{30}{chapter.96}%
+\contentsline {section}{\numberline {9.1}Conjunto de modelado resultante}{30}{section.97}%
+\contentsline {section}{\numberline {9.2}Desempeño comparado de los algoritmos}{30}{section.99}%
+\contentsline {section}{\numberline {9.3}Desempeño del modelo seleccionado}{31}{section.102}%
+\contentsline {section}{\numberline {9.4}Exactitud y cobertura según el umbral de confianza}{31}{section.105}%
+\contentsline {section}{\numberline {9.5}Resultados de la operación en producción}{33}{section.108}%
+\contentsline {subsection}{\numberline {9.5.1}Tiempo de gestión}{33}{subsection.109}%
+\contentsline {subsection}{\numberline {9.5.2}Percepción de los usuarios}{34}{subsection.111}%
+\contentsline {subsection}{\numberline {9.5.3}Impacto financiero}{34}{subsection.113}%
+\contentsline {section}{\numberline {9.6}Visualizacion de resultados}{35}{section.115}%
+\contentsline {subsection}{\numberline {9.6.1}Por qué Power BI}{35}{subsection.116}%
+\contentsline {subsection}{\numberline {9.6.2}Tablero operativo}{35}{subsection.117}%
+\contentsline {subsubsection}{Tarjetas KPI}{35}{section*.118}%
+\contentsline {subsubsection}{Tiempo de máquina por tipo}{36}{section*.119}%
+\contentsline {subsubsection}{Desempeño por gestor}{36}{section*.120}%
+\contentsline {subsubsection}{Confirmadas, Descartadas y Exportadas}{37}{section*.121}%
+\contentsline {chapter}{\numberline {10}Discusión}{38}{chapter.122}%
+\contentsline {section}{\numberline {10.1}Selección del algoritmo}{38}{section.123}%
+\contentsline {section}{\numberline {10.2}Efecto del desbalance de clases}{38}{section.124}%
+\contentsline {section}{\numberline {10.3}Desempeño del transformador}{39}{section.125}%
+\contentsline {section}{\numberline {10.4}Naturaleza de los errores del modelo}{39}{section.126}%
+\contentsline {section}{\numberline {10.5}Punto de operación seleccionado}{40}{section.127}%
+\contentsline {section}{\numberline {10.6}Comparación con los antecedentes}{40}{section.128}%
+\contentsline {section}{\numberline {10.7}Percepción de los usuarios}{41}{section.129}%
+\contentsline {section}{\numberline {10.8}Retorno de inversión}{41}{section.130}%
+\contentsline {section}{\numberline {10.9}Limitaciones del estudio}{42}{section.131}%
+\contentsline {chapter}{\numberline {11}Conclusiones}{43}{chapter.132}%
+\contentsline {chapter}{\numberline {12}Recomendaciones}{45}{chapter.138}%
+\contentsline {chapter}{Referencias}{47}{section*.141}%
+\contentsline {chapter}{Anexos}{50}{section*.142}%
+\GammaTocAnexosOn 
+\contentsline {chapter}{\numberline {A}Registro de asistencia}{50}{chapter.143}%
+\contentsline {chapter}{\numberline {B}Instrumento y respuestas de la encuesta de satisfacción}{51}{chapter.145}%
+\contentsline {chapter}{\numberline {C}Descriptor del sistema y accesos para revisión}{62}{chapter.163}%
+\GammaTocAnexosOff 
+\contentsline {chapter}{Glosario}{65}{section*.181}%

@@ -9,13 +9,33 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {1}{\ignorespaces Cantidad de materiales aportados por cada archivo de exportación del maestro}}{25}{figure.caption.83}%
-\contentsline {figure}{\numberline {2}{\ignorespaces Veinte clases con mayor cantidad de materiales en el maestro}}{26}{figure.caption.85}%
-\contentsline {figure}{\numberline {3}{\ignorespaces Distribución de la longitud, cantidad de tokens y número de separadores de las descripciones del maestro}}{26}{figure.caption.86}%
-\contentsline {figure}{\numberline {4}{\ignorespaces Comparación de métricas entre las configuraciones evaluadas en la primera ronda}}{28}{figure.caption.91}%
-\contentsline {figure}{\numberline {5}{\ignorespaces Matriz de confusión del modelo seleccionado sobre las veinte clases de mayor volumen}}{29}{figure.caption.93}%
-\contentsline {figure}{\numberline {6}{\ignorespaces Distribución de la confianza del modelo y compromiso entre exactitud y cobertura según el umbral}}{29}{figure.caption.97}%
+\contentsline {figure}{\numberline {1}{\ignorespaces Cantidad de materiales aportados por cada archivo de exportación del maestro}}{26}{figure.caption.87}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Veinte clases con mayor cantidad de materiales en el maestro}}{27}{figure.caption.89}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Distribución de la longitud, cantidad de tokens y número de separadores de las descripciones del maestro}}{27}{figure.caption.90}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Distribución de registros por tipo de material, catálogo completo (corte 29 mayo 2026)}}{28}{figure.caption.92}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Duplicados exactos por tipo de material, en número absoluto y como porcentaje del total}}{28}{figure.caption.93}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Mapa de calidad del catálogo: duplicados, materiales bloqueados, descripciones sin separador estándar y registros sin clase, por tipo de material}}{29}{figure.caption.94}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Longitud promedio del texto breve por tipo de material}}{29}{figure.caption.95}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {8}{\ignorespaces Comparación de métricas entre las configuraciones evaluadas en la primera ronda}}{31}{figure.caption.101}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Matriz de confusión del modelo seleccionado sobre las veinte clases de mayor volumen}}{32}{figure.caption.103}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Distribución de la confianza del modelo y compromiso entre exactitud y cobertura según el umbral}}{33}{figure.caption.107}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Percepción promedio de los gestores sobre GAMMA en la encuesta de satisfacción (n=3)}}{34}{figure.caption.112}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {12}{\ignorespaces Portada del formulario de encuesta}}{52}{figure.caption.151}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Pregunta de bifurcación según uso de GAMMA}}{53}{figure.caption.152}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Sección de experiencia de uso (parte 1)}}{54}{figure.caption.153}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Sección de experiencia de uso (parte 2)}}{55}{figure.caption.154}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Preguntas sobre reducción de tiempo y valor percibido}}{56}{figure.caption.155}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Preguntas de errores encontrados y satisfacción general}}{57}{figure.caption.156}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Sección de adopción y continuidad (información sensible cubierta)}}{58}{figure.caption.157}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Pregunta abierta de mejoras}}{58}{figure.caption.158}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Sección de percepción y expectativas para no usuarios}}{59}{figure.caption.159}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Pregunta de beneficios percibidos por no usuarios}}{59}{figure.caption.160}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Sección dirigida a jefatura y coordinación}}{60}{figure.caption.161}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Condiciones para permanencia y comentarios adicionales (información sensible cubierta)}}{61}{figure.caption.162}%
 \addvspace {10\p@ }

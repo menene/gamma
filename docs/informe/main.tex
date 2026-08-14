@@ -32,19 +32,33 @@
 \usepackage{float}
 \usepackage{mathtools}
 \usepackage[hypertexnames=false]{hyperref}
-% \usepackage{bookmark}
+% Permite fijar el nivel de cada marcador del PDF con independencia del nivel de
+% seccion, necesario para anidar los anexos bajo «Anexos» en el panel de navegacion.
+\usepackage{bookmark}
 \usepackage{subcaption}
 \usepackage{babelbib}
 \ifdefined\usarAPA 
-	\usepackage{apacite} 
+	\usepackage[nosectionbib,tocbib]{apacite}
+	\renewcommand{\bibname}{Referencias}
 \fi
 \usepackage[percent]{overpic}
 
+% Las entradas de los anexos deben aparecer sangradas bajo «Anexos» en el indice,
+% no al mismo nivel. Se logra intercambiando el formato de entrada de capitulo por
+% el de seccion mientras dura el bloque de anexos. Los nombres evitan '@' porque el
+% .toc se lee fuera de \makeatletter.
+\makeatletter
+\let\GammaTocChapterOrig\l@chapter
+\newcommand{\GammaTocAnexosOn}{\let\l@chapter\l@section}
+\newcommand{\GammaTocAnexosOff}{\let\l@chapter\GammaTocChapterOrig}
+\makeatother
+
 \ifdefined\CAPglosario
-	\usepackage[toc]{glossaries}
-	\makeglossaries
+	\usepackage[toc,nonumberlist]{glossaries}
+	\makenoidxglossaries
     \input{glosario}
 \fi
+
 \ifdefined\CAPsimbolos
 	\usepackage[intoc, spanish]{nomencl}
 	\makenomenclature
@@ -368,7 +382,6 @@
 		\bibliographystyle{babplain}
 	\fi
 	\bibliography{bibliografia.bib}
-	\addcontentsline{toc}{chapter}{Bibliografía}
 \fi
 
 % ANEXOS
@@ -381,7 +394,9 @@
 %     	\Huge Anexos
 %     	\vspace*{\fill}
 %     \end{center}
+    \bookmarksetupnext{level=part}
     \addcontentsline{toc}{chapter}{Anexos}
+    \addtocontents{toc}{\protect\GammaTocAnexosOn}
     \renewcommand{\chaptername}{Anexo}
     \setcounter{chapter}{0}
 	\renewcommand{\thechapter}{\Alph{chapter}}
@@ -390,13 +405,16 @@
     \else
     	\input{anexos}
     \fi
+    \addtocontents{toc}{\protect\GammaTocAnexosOff}
+    \bookmarksetup{startatroot}
 \fi
 
 % GLOSARIO
 % --------------------------------------------------------------------------------
 \ifdefined\CAPglosario
-	\newpage
-	\printglossary
+	\small
+	\glsaddall
+	\printnoidxglossary
 \fi
 
 % LISTADO DE SÍMBOLOS

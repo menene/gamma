@@ -1,0 +1,63 @@
+Device: mps
+Cargando datos...
+Dataset: 39,570 materiales, 1234 clases
+Train: 31,656 | Test: 7,914
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Tokenizer: XLMRobertaTokenizer
+max_len derivado de los datos: 28
+Tokenizando (una sola vez)...
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 39413.82it/s]
+[transformers] [1mBertForSequenceClassification LOAD REPORT[0m from: microsoft/Multilingual-MiniLM-L12-H384
+Key               | Status  | 
+------------------+---------+-
+classifier.bias   | MISSING | 
+classifier.weight | MISSING | 
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Parametros: backbone=117,653,760 cabeza=475,090
+
+Perdida de un clasificador aleatorio: ln(1234) = 7.1180
+Entrenando 15 epocas (backbone_lr=5e-05, head_lr=0.001)...
+
+  Epoca  1/15: loss=6.5437 train_acc=0.0156 test_acc=0.0253 (216s)
+  Epoca  2/15: loss=5.7166 train_acc=0.0387 test_acc=0.0629 (428s)
+  Epoca  3/15: loss=4.8556 train_acc=0.1319 test_acc=0.2095 (640s)
+  Epoca  4/15: loss=3.9206 train_acc=0.2922 test_acc=0.3599 (850s)
+  Epoca  5/15: loss=3.1841 train_acc=0.4144 test_acc=0.4695 (1059s)
+  Epoca  6/15: loss=2.6521 train_acc=0.4928 test_acc=0.5402 (1269s)
+  Epoca  7/15: loss=2.2798 train_acc=0.5536 test_acc=0.5940 (1478s)
+  Epoca  8/15: loss=2.0081 train_acc=0.5984 test_acc=0.6222 (1686s)
+  Epoca  9/15: loss=1.8041 train_acc=0.6336 test_acc=0.6543 (1893s)
+  Epoca 10/15: loss=1.6325 train_acc=0.6663 test_acc=0.6804 (2103s)
+  Epoca 11/15: loss=1.4862 train_acc=0.6942 test_acc=0.7003 (2313s)
+  Epoca 12/15: loss=1.3693 train_acc=0.7148 test_acc=0.7209 (2523s)
+  Epoca 13/15: loss=1.2837 train_acc=0.7325 test_acc=0.7408 (2731s)
+  Epoca 14/15: loss=1.2145 train_acc=0.7450 test_acc=0.7453 (2939s)
+  Epoca 15/15: loss=1.1610 train_acc=0.7577 test_acc=0.7479 (3147s)
+
+Entrenamiento completo: 3147.4s
+
+==============================================================
+TRANSFORMER (multilingual-MiniLM) - CORRIDA CORREGIDA
+==============================================================
+  accuracy               0.7479
+  f1_macro               0.4010
+  f1_weighted            0.7012
+  precision_weighted     0.6855
+  recall_weighted        0.7479
+  top3_accuracy          0.8710
+  train_seconds          3147.4000
+
+  Analisis de umbral de confianza:
+    Umbral 0.5: accuracy=0.8853 cobertura=70.08% (5,546)
+    Umbral 0.6: accuracy=0.9107 cobertura=62.38% (4,937)
+    Umbral 0.7: accuracy=0.9349 cobertura=54.12% (4,283)
+    Umbral 0.8: accuracy=0.9544 cobertura=44.06% (3,487)
+    Umbral 0.9: accuracy=0.9768 cobertura=26.12% (2,067)
+
+  Comparacion con el modelo desplegado (LinearSVC + CharTFIDF):
+    LinearSVC   accuracy=0.8491 f1_macro=0.7523 top3=0.9404 tiempo=62.9s
+    Transformer accuracy=0.7479 f1_macro=0.4010 top3=0.8710 tiempo=3147.4s
+
+Resultados guardados en /Users/menene/code/www/mbia_gamma/lab/results/transformer_minilm_fixed_20260813T235234.json

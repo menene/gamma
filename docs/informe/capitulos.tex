@@ -72,6 +72,8 @@ La máquina de vectores de soporte se envolvió en un procedimiento de calibraci
 
 La comparación se realizó sobre exactitud global, ambos promedios de F1, exactitud sobre las tres primeras sugerencias y tiempo de entrenamiento; este último se incorporó como criterio porque un modelo que exige horas de cómputo para reentrenarse resulta inviable de mantener en la operación. La configuración ganadora se reentrenó sobre la totalidad del conjunto para su despliegue, por lo que las métricas que se reportan corresponden a la partición retenida y no al artefacto en producción.
 
+El ajuste fino del transformador se realizó sobre las mismas descripciones normalizadas y la misma partición, con un presupuesto de quince épocas y planificación lineal de la tasa de aprendizaje con calentamiento inicial. La longitud de secuencia se derivó de los propios datos en lugar de fijarse por convención, dado que las descripciones no exceden los cuarenta caracteres.
+
 Para determinar el punto de operación del sistema se caracterizó adicionalmente el compromiso entre exactitud y cobertura a distintos umbrales de confianza, siguiendo el planteamiento de clasificación con opción de rechazo \cite{chow1970}.
 
 \section{Arquitectura tecnológica e implementación}
@@ -91,6 +93,8 @@ La medición del efecto de la herramienta no se resolvió de forma retrospectiva
 
 Cada solicitud almacena marcas de tiempo diferenciadas para su creación, la finalización de la normalización, la finalización de la búsqueda de duplicados, la decisión del gestor sobre los duplicados presentados, la finalización de la predicción de categoría, y su confirmación, descarte o exportación. Junto a ellas se registran las duraciones de cada etapa automática y su suma. Esta granularidad permite separar dos magnitudes que de otro modo quedarían confundidas: el tiempo que consume la máquina y el tiempo que consume la deliberación del gestor.
 
+Esta instrumentación temporal no estuvo disponible desde el primer día del piloto: la versión inicial de la plataforma registraba el resultado de cada solicitud —la categoría sugerida, la decisión del gestor y las coincidencias encontradas— pero no la duración de sus etapas, que se incorporó en una versión posterior ya iniciado el período de validación. La consecuencia se traslada a los resultados: los indicadores de calidad y volumen cubren la totalidad de las solicitudes atendidas, mientras que los de tiempo se calculan únicamente sobre las posteriores a esa incorporación.
+
 Se registra asimismo la calidad de la sugerencia. Cuando la clase que el gestor selecciona difiere de la que el modelo propuso, la solicitud queda marcada como corregida, lo que permite estimar la exactitud del modelo en operación real sobre datos que no formaron parte de su evaluación. Se registra también si la sugerencia superó el umbral de confianza y la confianza efectivamente obtenida.
 
 Sobre esta base se construyó la capa de indicadores del esquema \texttt{gold}, materializada como vistas que agregan por semana los tiempos de procesamiento, la calidad de las predicciones, las decisiones sobre duplicados, el desglose por etapa del proceso, la actividad por usuario y el ahorro estimado. El cálculo del ahorro se parametriza mediante una tabla de configuración que almacena el tiempo de referencia del proceso manual y el costo por hora del gestor, de modo que el indicador pueda recalcularse ante un cambio de supuestos sin modificar la definición de la vista.
@@ -98,29 +102,47 @@ Sobre esta base se construyó la capa de indicadores del esquema \texttt{gold}, 
 Todas las vistas de indicadores excluyen sistemáticamente la actividad de las cuentas administrativas. Esta exclusión es deliberada: el tráfico generado durante el desarrollo, las pruebas y las demostraciones contaminaría las mediciones de tiempo y de calidad si se agregara junto al uso productivo del equipo de gestores.
 
 \section{Protocolo de validación en producción}
-La validación de la herramienta se realizó mediante su uso efectivo por parte del equipo de gestores sobre solicitudes reales de la operación, durante el período comprendido entre el 18 de junio y el 21 de julio de 2026. La medición del efecto se construye por comparación contra una línea base del proceso manual levantada con anterioridad a la implementación, entre el 15 de febrero y el 17 de junio de 2026.
+La validación de la herramienta se realizó mediante su uso efectivo por parte del equipo de gestores sobre solicitudes de la operación, durante el período comprendido entre el 18 de junio y el 21 de julio de 2026. La medición del efecto se construye por comparación contra una línea base del proceso manual levantada con anterioridad a la implementación, entre el 15 de febrero y el 17 de junio de 2026.
+
+\subsection{Medición de la línea base}
+Los indicadores de la línea base —3.3 horas promedio de tiempo efectivo por gestión y 4.0 solicitudes procesadas por día hábil se extrajeron directamente del tablero de indicadores que la organización ya operaba sobre el proceso de creación de materiales, con marcas de tiempo capturadas por el propio flujo de trabajo entre el 15 de febrero y el 17 de junio de 2026. La cifra de 5 a 10 minutos de búsqueda manual en SAP, en cambio, no proviene de ese tablero: es una estimación cualitativa declarada por el equipo de gestores sobre la porción específica del proceso que GAMMA automatiza, y se reporta como tal.
 
 % ============================================================================
-% PENDIENTE — completar con información que no está en el repositorio:
-%
-% 1. LÍNEA BASE. Cómo se midieron las 3.3 h por gestión, las 4.4 solicitudes
-%    diarias y los 5–10 min de búsqueda manual: ¿registros de SAP, cronometraje,
-%    entrevista con los gestores? Es el dato del que depende todo el ROI.
-%
-% 2. AUDITORÍA RETROACTIVA. Método con el que se obtuvieron los 456 duplicados
-%    exactos, los 246 materiales mal categorizados, los 94 repuestos bajo
-%    "suministros" y el 94 % de similitud parcial. Declarar el umbral usado
-%    (el sistema opera con 0.45) y si el 94 % se midió a ese mismo valor.
-%
-% 3. CAPACITACIÓN. Número de gestores que usaron la herramienta, y si hubo
-%    sesión inicial y sesión de seguimiento como se comprometió en Objetivos.
-%
-% 4. ENCUESTA. Si se aplicó, a quiénes, cuántos respondieron y con qué
-%    instrumento. Si no se aplicó, hay que ajustar el objetivo correspondiente.
+% RESUELTO — AUDITORÍA RETROACTIVA.
+% Las cifras del diagnóstico inicial que no tenían metodología verificable
+% (456 duplicados exactos, 246 mal categorizados, 94% de similitud parcial)
+% se retiraron de Introducción y Justificación y se sustituyeron por las del
+% análisis exploratorio del Capítulo 8, que sí declara método y base:
+% 2,089 duplicados exactos (4.8%) y 3,649 registros sin separador (8.5%).
+% Se conservan los 94 repuestos bajo "suministros", único dato del bloque
+% original que el cruce tipo-vs-clase reprodujo (caso ZSUM).
 % ============================================================================
 
+\subsection{Plan de adopción cultural}
+La validación de GAMMA no se limitó a medir su desempeño técnico: se diseñó un plan de adopción dirigido a las dos audiencias cuya aceptación determina si la herramienta se sostiene más allá del período de prueba. La Tabla \ref{tab:plan-cultural} resume el objetivo y la acción concreta dirigida a cada una.
 
-\chapter{Resultados}
+\begin{table}[!htb]
+\centering
+\caption{Plan de adopción cultural ejecutado durante el período de validación}
+\label{tab:plan-cultural}
+\small
+\begin{tabular}{p{2.8cm}p{4.5cm}p{5.5cm}}
+\toprule
+\textbf{Audiencia} & \textbf{Objetivo} & \textbf{Acción ejecutada} \\
+\midrule
+Gestores de datos maestros & Adopción operativa diaria de la herramienta & Capacitación en vivo el 18 de junio de 2026, con la plataforma funcionando sobre el catálogo real, más un manual de usuario entregado como referencia permanente \\
+\addlinespace
+Jefatura y coordinación del área & Visibilidad del impacto y respaldo para la continuidad de uso & Sesión de seguimiento de resultados el 16 de julio de 2026, con las métricas acumuladas hasta esa fecha presentadas al equipo completo \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ambas sesiones ocurrieron durante el mismo período en que se midió el efecto de la herramienta, por lo que el acompañamiento y la medición no fueron procesos separados: la sesión de seguimiento del 16 de julio fue, en sí misma, parte de la instancia de acompañamiento al equipo. El registro de asistencia de ambas sesiones se incluye en anexos.
+
+\subsection{Encuesta de satisfacción}
+Al cierre del período de prueba se aplicó una encuesta de satisfacción a los usuarios y a la jefatura del área, obteniendo 5 respuestas: 3 de gestores que utilizaron GAMMA activamente y 2 de jefatura y coordinación del área, quienes evaluaron la herramienta sin haberla operado directamente. Dado el tamaño reducido de la muestra, sus resultados se interpretan como retroalimentación cualitativa dirigida y no como una medición estadísticamente representativa del equipo. El instrumento completo se incluye en anexos.
+
+\chapter{Análisis Exploratorio de Datos}
 
 \section{Caracterización del maestro de materiales}
 La consolidación de los trece archivos de exportación produjo un total de 45,397 registros. La Figura \ref{fig:fuentes} muestra la composición del maestro según el archivo de origen: la distribución es marcadamente desigual, con dos tipos de material —repuestos industriales y suministros— que concentran por sí solos más del sesenta por ciento de los registros, mientras que varios tipos aportan menos de cien materiales cada uno.
@@ -171,6 +193,78 @@ En cuanto a la estructura del texto, las descripciones tienen una longitud media
 \label{fig:textostats}
 \end{figure}
 
+\section{Calidad de la información}
+
+
+Se midieron cuatro dimensiones sobre cada tipo de material: el porcentaje de
+duplicados exactos en el texto breve, el porcentaje de materiales marcados
+como bloqueados en el sistema, el porcentaje de descripciones que no siguen
+la convención de separadores (dos puntos o punto y coma) y el porcentaje de
+registros sin clase asignada. La Figura \ref{fig:eda_distribucion} muestra la composición del
+catálogo por tipo: dos tipos, ZRPI y ZSUM, concentran por sí solos casi dos
+tercios de los 43,177 registros.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figuras/modelos/fig_global_distribucion.png}
+    \caption{Distribución de registros por tipo de material, catálogo completo (corte 29 mayo 2026)}
+    \label{fig:eda_distribucion}
+\end{figure}
+
+
+El análisis de duplicados exactos identificó 2,089 registros duplicados en
+el catálogo completo, equivalentes al 4.8\% del total. La Figura \ref{fig:eda_duplicados} muestra
+que este problema no se distribuye de forma pareja: ZEQU presenta la mayor
+tasa relativa, con 35.2\% de sus registros duplicados, mientras que ZRPI
+concentra el mayor volumen absoluto, con 973 casos.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figuras/modelos/fig_global_duplicados.png}
+    \caption{Duplicados exactos por tipo de material, en número absoluto y como porcentaje del total}
+    \label{fig:eda_duplicados}
+\end{figure}
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figuras/modelos/fig_global_calidad_heatmap.png}
+    \caption{Mapa de calidad del catálogo: duplicados, materiales bloqueados, descripciones sin separador estándar y registros sin clase, por tipo de material}
+    \label{fig:eda_calidad}
+\end{figure}
+
+El mapa de calidad de la Figura \ref{fig:eda_calidad} resume las cuatro dimensiones evaluadas
+en conjunto. ZRPA presenta el mayor porcentaje de materiales bloqueados
+(46.0\%), y ZHER concentra el mayor porcentaje de descripciones sin
+separador estándar (31.8\%). Este último hallazgo es el que más pesa en el
+diseño de GAMMA: una descripción sin separador es indistinguible de otra
+similar mediante una búsqueda exacta en SAP, por lo que los 3,649 registros
+del catálogo completo que carecen de esta estructura (8.5\%) representan el
+riesgo de duplicidad no detectada más alto de todo el conjunto.
+
+Finalmente, la Figura \ref{fig:eda_longitud} muestra que las descripciones se concentran contra
+el límite de cuarenta caracteres que impone SAP, con un promedio de 32.2
+caracteres por tipo, lo que confirma la restricción estructural descrita en
+el Capítulo 4 como causa directa de las abreviaturas inconsistentes entre
+gestores.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figuras/modelos/fig_global_longitud.png}
+    \caption{Longitud promedio del texto breve por tipo de material}
+    \label{fig:eda_longitud}
+\end{figure}
+
+Un segundo corte, que incorpora el tipo ZCON, elevó el total analizado a
+44,869 registros en doce tipos y confirmó el mismo patrón: ZEQU se mantiene
+como el tipo con mayor tasa de duplicados (35.2\%) y ZCON se ubica en un
+rango intermedio (4.8\%), consistente con el resto del catálogo. Este
+análisis preliminar sobre el catálogo completo es el que motivó extender la
+extracción a los trece archivos y 45,397 registros descritos en el Capítulo
+9, y sustentó la decisión de resolver la detección de duplicados mediante
+similitud difusa y no mediante coincidencia exacta de cadenas.
+
+\chapter{Resultados}
+
 \section{Conjunto de modelado resultante}
 La aplicación de los criterios de exclusión definidos en la metodología produjo el conjunto que resume el Cuadro \ref{cuadro:embudo}. El descarte de los materiales sin categoría en la fuente eliminó 5,368 registros, y el de las clases con menos de tres ejemplos, 458 adicionales, para un conjunto final de 39,571 materiales distribuidos en 1,234 clases.
 
@@ -211,7 +305,7 @@ Reg. logística + TF-IDF carácter & 0.8293 & 0.6713 & 0.8126 & 0.9359 & 1,071.2
 Reg. logística + TF-IDF palabra  & 0.8291 & 0.6949 & 0.8178 & 0.9275 & 29.1 \\
 XGBoost + TF-IDF carácter      & 0.8145 & 0.6821 & 0.8063 & 0.9200 & 11,025.2 \\
 fastText                       & 0.8077 & 0.6897 & 0.8001 & 0.9075 & 43.0 \\
-Transformer (MiniLM)           & 0.0395 & 0.0003 & 0.0050 & 0.0714 & 1,460.0 \\
+Transformer (MiniLM)           & 0.7479 & 0.4010 & 0.7012 & 0.8710 & 3,147.4 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -289,43 +383,172 @@ Sin umbral & 0.8491 & 100.00\,\% & 7,915 \\
 
 El panel izquierdo de la Figura \ref{fig:confianza} muestra que las predicciones correctas se concentran en la región de confianza alta mientras que las incorrectas se distribuyen hacia valores bajos. Al umbral adoptado por la plataforma, el modelo alcanza una exactitud de 0.9862 sobre el 42.25\,\% de los casos.
 
+
+
 \section{Resultados de la operación en producción}
 
+Los resultados de esta sección se apoyan en dos universos de observación distintos, y conviene precisar la diferencia antes de presentarlos. La plataforma asistió 210 solicitudes durante el período de validación, y sobre ese total se calculan los indicadores del tablero. La medición del tiempo de gestión, en cambio, se realiza sobre 98 solicitudes: la instrumentación que registra las marcas de tiempo de cada etapa se incorporó en una versión posterior de la plataforma, ya iniciado el piloto, de modo que las solicitudes atendidas antes de ese cambio quedaron registradas con su resultado pero sin su duración. La diferencia entre ambas cifras no responde por tanto a criterios de exclusión sino al momento en que cada instrumento entró en operación.
+
+\subsection{Tiempo de gestión}
+La Tabla \ref{tab:tiempos-post} compara el tiempo efectivo de gestión antes y después de la implementación.
+
+\begin{table}[!htb]
+\centering
+\caption{Tiempo efectivo de gestión antes y después de GAMMA}
+\label{tab:tiempos-post}
+\begin{tabular}{lrr}
+\toprule
+ & \textbf{Pre-GAMMA} & \textbf{Post-GAMMA} \\
+\midrule
+Período & 15 feb–17 jun 2026 & 18 jun–21 jul 2026 \\
+n & 353 & 98 \\
+Media (horas) & 3.34 & 1.39 \\
+Mediana (horas) & 2.82 & 1.28 \\
+IC 95\% & (3.08, 3.61) & (1.19, 1.59) \\
+Solicitudes/día hábil & 4.0 & 5.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La reducción del tiempo promedio de gestión fue de 58.4\,\% (54.7\,\% en la mediana). Una prueba U de Mann-Whitney confirma que la diferencia es estadísticamente significativa (p \textless\ 0.0001), y los intervalos de confianza al 95\,\% de ambos períodos no se traslapan. El equipo, además, sostuvo un volumen diario mayor en el período post-GAMMA (5.8 frente a 4.0 solicitudes/día hábil), lo que descarta que la reducción de tiempo se explique por una caída en la carga de trabajo atendida.
+
+\subsection{Percepción de los usuarios}
+La encuesta de satisfacción aplicada al cierre del período de prueba recoge la valoración de gestores y jefatura sobre la herramienta (Figura \ref{fig:encuesta-gestores}).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=0.75\textwidth]{figuras/encuesta_gestores.pdf}
+\caption{Percepción promedio de los gestores sobre GAMMA en la encuesta de satisfacción (n=3)}
+\label{fig:encuesta-gestores}
+\end{figure}
+
+Entre los gestores que usaron la herramienta activamente, la facilidad de uso en el primer contacto obtuvo la calificación más alta (5.0/5), seguida de la satisfacción general y la utilidad de la sugerencia de descripción (4.33/5 ambas). La reducción de tiempo percibida promedió 4.0/5, en la misma dirección que la reducción medida en el tablero de indicadores. La precisión percibida de la clasificación de categoría obtuvo la calificación más baja del grupo (3.67/5), aunque por encima del punto medio de la escala coherente con que el modelo de clasificación evaluado alcanza una exactitud del 84.9\,\% en su primera sugerencia, es decir, en aproximadamente uno de cada seis casos la sugerencia inicial no es la correcta. Jefatura y coordinación, por su parte, calificaron la alineación de GAMMA con los objetivos de calidad del área en 4.5/5 en promedio.
+
+\subsection{Impacto financiero}
+La Tabla \ref{tab:roi} resume el retorno de inversión del proyecto, calculado sobre el costo real de despliegue —incluyendo el hospedaje del servidor durante el período de construcción, pruebas y puesta en producción, y las horas de capacitación de los gestores frente al ahorro anual proyectado a partir de la reducción de tiempo medida.
+
+\begin{table}[!htb]
+\centering
+\caption{Retorno de inversión del proyecto}
+\label{tab:roi}
+\begin{tabular}{lrr}
+\toprule
+ & \textbf{Basado en promedio} & \textbf{Basado en mediana} \\
+\midrule
+Ahorro anual & Q507,310 & Q400,491 \\
+Costo total del proyecto & Q1,641.65 & Q1,641.65 \\
+\midrule
+ROI año 1 & 308x & 243x \\
+Período de recuperación & 1.2 días & 1.5 días \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Visualizacion de resultados}
+
+
+Un reporte de visualización convierte cada pregunta operativa en una medida con una fuente identificable en el modelo de datos: \texttt{user\_id}, \texttt{type\_description}, \texttt{week}. Eso permite comparar un periodo contra otro con la misma definición de métrica, y separar lo que hace el agente (tiempo de máquina, cobertura de tipos) de lo que decide el gestor (acuerdo modelo-gestor, tasa de descarte). Sin esa separación, cualquier conversación sobre el desempeño del piloto termina mezclando el trabajo de la herramienta con el criterio de quien la usa.
+
+\subsection{Por qué Power BI}
+
+Se eligió Power BI por dos razones concretas.
+
+La primera es que conecta de forma directa a las tablas del modelo (\texttt{materials\_by\_type}, \texttt{requests\_users}, \texttt{kpi\_duplicates}, \texttt{kpi\_step\_breakdown}) sin una capa intermedia, y permite programar la actualización de los datos según la cadencia del pipeline en la capa Gold. Esto importa porque el modelo de datos de GAMMA todavía cambia semana a semana mientras se homologan las fechas de las tablas de duplicados y de desglose de tiempo con el resto del modelo. Un archivo .pbix con el modelo semántico documentado se puede ajustar cuando una tabla nueva se integra, sin reconstruir el reporte desde cero.
+
+La segunda es que la empresa ya tiene licencia Premium completa. No hay costo adicional de herramienta, no hay que capacitar a jefatura en una herramienta nueva, y los workspaces, permisos y flujos de publicación que ya usan para otros reportes aplican directamente a este.
+
+Por eso el archivo .pbix con el modelo semántico y los tableros descritos en este documento es uno de los entregables del proyecto, junto con esta guía de interpretación. El archivo queda editable, lo que permite ampliar el reporte conforme el modelo de datos madure, sin depender de que el equipo original lo reconstruya.
+\subsection{Tablero operativo}
+
+El tablero operativo responde a dos slicers, "categoría de material" y "gestor", salvo donde se indique lo contrario.
+
+\subsubsection{Tarjetas KPI}
+
+Seis tarjetas resumen el periodo del piloto de un vistazo.
+
+\begin{itemize}
+  \item \textbf{Códigos por gestor} (80.0): conteo de códigos de material procesados por gestor.
+  \item \textbf{Solicitudes asistidas} (210): total de solicitudes asistidas en el periodo (OP-01).
+  \item \textbf{Confianza del modelo} (0.61): certeza interna del modelo de clasificación. No es una medida de exactitud --- refleja qué tan seguro está el modelo, no si acierta.
+  \item \textbf{Cobertura de tipos} (82.4\%): proporción de tipos de material del M402 que el agente ha procesado al menos una vez (EJ-08). No dice qué tan bien se procesan esos tipos, solo si ya fueron tocados.
+  \item \textbf{Acuerdo modelo-gestor} (89.0\%): con qué frecuencia el gestor conserva la sugerencia del modelo en lugar de corregirla (OP-11). Un valor alto significa que el gestor rara vez la anula, no que la sugerencia sea correcta.
+  \item \textbf{Completitud de clase} (76.7\%): proporción de registros procesados que terminan con una clase asignada.
+\end{itemize}
+
+Confianza del modelo y acuerdo modelo-gestor responden preguntas distintas y no deben leerse como confirmación mutua. En este periodo divergen: 89.0\% de acuerdo frente a solo 0.61 de confianza del modelo. Esa brecha se debe revisar en la auditoría mensual de exactitud, no tratarse como una contradicción --- significa que el modelo duda de sí mismo más de lo que los gestores lo corrigen.
+
+\subsubsection{Tiempo de máquina por tipo}
+
+Gráfico de barras horizontales, una barra por \texttt{type\_description}, valores en segundos. Mide el tiempo que tardan los tres módulos del agente (normalización, búsqueda de duplicados, clasificación) en procesar una solicitud, promediado por tipo. Excluye el tiempo de revisión del gestor.
+
+Los tipos con un catálogo original más sucio (ZEQU, ZQUI) tienden a tardar más porque el módulo de duplicados encuentra más candidatos que comparar. Un pico aislado en un solo tipo apunta a un problema de calidad de datos en ese tipo, no a una degradación general del agente.
+
+\subsubsection{Desempeño por gestor}
+
+Tabla matricial, una fila por \texttt{user\_id}, columnas: solicitudes asistidas, tiempo de máquina, acuerdo modelo-gestor, completitud de clase.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{user\_id} & \textbf{Solicitudes} & \textbf{Tiempo máquina (s)} & \textbf{Acuerdo} & \textbf{Completitud} \\
+\midrule
+2 & 195 & 6.3 & 88.2\% & 82.6\% \\
+5 & 15  & 4.4 & 100.0\% & --- \\
+\midrule
+\textbf{Total} & \textbf{210} & \textbf{6.2} & \textbf{89.0\%} & \textbf{76.7\%} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Esta es la vista de jefatura de equipo: compara gestores lado a lado en las mismas cuatro dimensiones. Un gestor con volumen alto y acuerdo bajo puede estar corrigiendo activamente al modelo, lo cual es bueno, o trabajando con prisa y sin revisar, lo cual no lo es --- esa distinción se debe confirmar con el gestor, no asumir a partir de la tabla. Una completitud de clase baja en un gestor específico también puede reflejar que maneja tipos de material con clases poco definidas en el catálogo, en lugar de un problema de su propio desempeño.
+
+\subsubsection{Confirmadas, Descartadas y Exportadas}
+
+Gráfico de dona con tres estados: confirmadas (161, 48.79\%), descartadas (160, 48.48\%), exportadas (9, 2.73\%).
+
+Estos estados siguen el ciclo de vida de una solicitud dentro del chatbot: se confirma, se descarta (el gestor decide no continuar) o se exporta (llega al archivo XLSX para carga en SAP). Los estados no son mutuamente excluyentes en el tiempo --- una misma solicitud puede pasar por más de uno en su recorrido. Una proporción alta de descartadas frente a exportadas puede indicar que el agente presenta sugerencias que no convencen al gestor, o que hay fricción en el flujo conversacional.
+
+
 % ============================================================================
-% PENDIENTE — resultados del período 18 jun – 21 jul 2026.
-% Extraer de las vistas del esquema gold y presentar aquí:
-%   · gold.kpi_processing_time  → tiempo de gestión por solicitud
-%   · gold.kpi_step_breakdown   → desglose máquina vs. deliberación del gestor
-%   · gold.kpi_quality          → exactitud en operación real (tasa de corrección)
-%   · gold.kpi_duplicates       → duplicados detectados y evitados
-%   · gold.kpi_savings          → ahorro en horas-gestor y en quetzales
-%   · gold.kpi_requests_by_user → volumen por gestor
-% Verificar antes que gold.parameters tenga los valores reales de
-% manual_time_s y hourly_rate (en el repositorio siguen en 0).
-% Incluir el número de solicitudes procesadas (n) del período.
+% PENDIENTE — Rudy: extraer de gold.kpi_quality, gold.kpi_duplicates y
+% gold.kpi_requests_by_user:
+%   · Tasa de corrección real (veces que el gestor cambió la clase sugerida)
+%   · Duplicados detectados y evitados antes de la creación
+%   · Desglose máquina vs. deliberación del gestor (gold.kpi_step_breakdown)
+%   · Volumen por gestor — nota: en el export de tiempos, 184 de 187
+%     solicitudes post-GAMMA corresponden a un solo gestor; los otros dos
+%     gestores activos solo procesaron 1 y 2 solicitudes respectivamente.
+%     Esto es una limitación real de la muestra que debe declararse en
+%     Discusión/Limitaciones, no solo un dato a completar aquí.
 % ============================================================================
 
 
 \chapter{Discusión}
 
-\section{Sobre la selección del algoritmo}
+\section{Selección del algoritmo}
 El resultado más relevante de la competencia es que la configuración más simple resultó también la mejor, y por un margen consistente en las cuatro métricas de desempeño. La máquina de vectores de soporte lineal sobre una representación de caracteres superó tanto a los métodos de ensamble como a las arquitecturas basadas en aprendizaje profundo.
 
-La diferencia en costo computacional refuerza esa conclusión. XGBoost consumió más de tres horas de entrenamiento para quedar tres puntos porcentuales por debajo del ganador, que se entrenó en poco más de un minuto; la regresión logística sobre n-gramas de carácter tardó diecisiete veces más que el ganador para un resultado también inferior. En un sistema concebido para reentrenarse periódicamente conforme el catálogo crece, esa diferencia deja de ser un detalle de laboratorio: un modelo que exige horas de cómputo para actualizarse es un modelo que en la práctica no se actualiza.
+La diferencia en costo computacional refuerza esa conclusión. XGBoost consumió más de tres horas de entrenamiento para quedar tres puntos porcentuales por debajo del ganador, que se entrenó en poco más de un minuto; la regresión logística sobre n-gramas de carácter tardó diecisiete veces más que el ganador para un resultado también inferior; y el transformador multilingüe requirió cincuenta veces el tiempo del ganador —sobre una unidad de procesamiento gráfico, mientras que el ganador se entrena sobre procesador convencional— para quedar diez puntos porcentuales por debajo. En un sistema concebido para reentrenarse periódicamente conforme el catálogo crece, esa diferencia deja de ser un detalle de laboratorio: un modelo que exige horas de cómputo para actualizarse es un modelo que en la práctica no se actualiza.
 
 Este hallazgo es consistente con la naturaleza del problema. Las descripciones del maestro son textos cortos, altamente estructurados y con vocabulario técnico acotado; no contienen la ambigüedad sintáctica ni las dependencias de largo alcance que justifican modelos de mayor capacidad. Un clasificador lineal sobre una representación de caracteres captura precisamente el tipo de regularidad que este texto exhibe.
 
-\section{Sobre el efecto del desbalance de clases}
-Todas las configuraciones evaluadas muestran una brecha sistemática entre el F1 macro y el ponderado, de entre nueve y quince puntos según el caso. Esa brecha es la expresión cuantitativa del desbalance descrito en los resultados: los modelos aciertan considerablemente mejor sobre las clases pobladas que sobre las minoritarias, y dado que más de la mitad de las clases cuenta con diez materiales o menos, el promedio no ponderado penaliza con fuerza ese comportamiento.
+\section{Efecto del desbalance de clases}
+Todas las configuraciones evaluadas muestran una brecha sistemática entre el F1 macro y el ponderado, de entre nueve y quince puntos en las configuraciones clásicas y de treinta puntos en el transformador. Esa brecha es la expresión cuantitativa del desbalance descrito en los resultados: los modelos aciertan considerablemente mejor sobre las clases pobladas que sobre las minoritarias, y dado que más de la mitad de las clases cuenta con diez materiales o menos, el promedio no ponderado penaliza con fuerza ese comportamiento.
 
 Resulta significativo que el ordenamiento entre configuraciones no sea idéntico bajo ambas métricas. La regresión logística sobre n-gramas de carácter alcanza la tercera mejor exactitud pero el peor F1 macro del conjunto, lo que indica que su desempeño se concentra desproporcionadamente en las categorías frecuentes. El modelo seleccionado, en cambio, lidera ambas métricas, lo que sugiere un comportamiento más uniforme a lo largo de la taxonomía y no solo un buen resultado agregado.
 
-\section{Sobre el transformador que no convergió}
-El resultado obtenido por el transformador multilingüe no corresponde a un modelo que compite y pierde, sino a un entrenamiento que no alcanzó a converger bajo el presupuesto de cómputo disponible. Una exactitud del 3.95\,\% con un F1 macro prácticamente nulo indica que el modelo no llegó a diferenciar las categorías, no que la arquitectura sea inadecuada para la tarea.
+\section{Desempeño del transformador}
+El transformador multilingüe es el caso que con mayor claridad delimita el alcance de la conclusión anterior. Es el único de los siete candidatos que modela el texto de forma contextual en lugar de tratarlo como un conjunto no ordenado de rasgos, y por lo tanto el único que podría, en principio, capturar regularidades que la representación vectorial descarta por construcción.
 
-La explicación más probable combina la dimensionalidad del problema —1,234 clases de salida— con un número de épocas y una configuración de ajuste fino insuficientes para adaptar un modelo preentrenado en lenguaje general a un vocabulario técnico especializado, requerimiento que la literatura documenta como característico de esta familia \cite{vaswani2017}. La cifra se reporta por transparencia del procedimiento, pero no admite lectura como evidencia sobre el desempeño potencial de los transformadores en esta tarea. Su evaluación adecuada requeriría un presupuesto de cómputo que excedía el alcance del proyecto, y queda planteada como línea de trabajo posterior.
+El modelo converge de forma sostenida a lo largo de las quince épocas y alcanza una exactitud del 74.79\,\%, de modo que aprende efectivamente la tarea. La comparación adquiere entonces sentido: queda diez puntos porcentuales de exactitud y treinta y cinco puntos de F1 macro por debajo de la configuración lineal, empleando cincuenta veces su tiempo de entrenamiento y sobre hardware especializado, mientras que la configuración ganadora se entrena sobre procesador convencional.
 
-\section{Sobre la naturaleza de los errores del modelo}
+La distancia en F1 macro es la más elocuente, porque señala dónde se produce la pérdida: el modelo resuelve razonablemente las categorías de mayor volumen y se desploma en la cola larga de la taxonomía. Esa asimetría es consistente con la exigencia de datos por clase que la literatura documenta para esta familia \cite{vaswani2017}, y constituye la evidencia más directa de la tesis central del capítulo: con una mediana de nueve materiales por categoría, la capacidad adicional del modelo no encuentra información con la cual estimarse.
+
+Corresponde acotar el alcance de esta afirmación. El resultado se obtuvo bajo un presupuesto fijo de quince épocas con decaimiento lineal de la tasa de aprendizaje, de modo que no constituye el techo de desempeño de la arquitectura y un presupuesto mayor probablemente lo mejoraría en algunos puntos. Lo que resulta implausible es que un presupuesto mayor cierre una brecha de treinta y cinco puntos en F1 macro, porque esa brecha no se origina en el tiempo de entrenamiento sino en la cantidad de ejemplos disponibles por categoría, que es una propiedad fija del conjunto de datos.
+
+\section{Naturaleza de los errores del modelo}
 El examen de las confusiones más frecuentes arroja el hallazgo de mayor alcance del análisis, y trasciende el desempeño del modelo. La mayoría de esos casos no son errores de clasificación en sentido estricto, sino manifestaciones de un problema del propio catálogo: existen pares de clases que designan el mismo concepto y difieren únicamente en puntuación, acentuación o separador.
 
 Los pares \textit{FUENTE:ALIMENTACIÓN} y \textit{FUENTE ALIMENTACION}, o \textit{CARGADOR DE BATERIAS} y \textit{CARGADOR:BATERIAS}, son clases distintas en la taxonomía pero indistinguibles en su significado. El caso más elocuente es el de \textit{FUSIBLE} confundido consigo mismo, que solo puede corresponder a dos códigos de clase homónimos coexistiendo en el catálogo. Ninguna representación del texto puede discriminar entre categorías que son semánticamente idénticas: una fracción del error medido es irreducible mientras la taxonomía no se depure.
@@ -334,7 +557,7 @@ Esto tiene dos implicaciones. La primera es metodológica: la exactitud del 84.9
 
 Las categorías genéricas constituyen el segundo foco de error. Clases como \textit{repuesto} o \textit{herramienta} no designan un objeto sino una función, y por lo tanto carecen de vocabulario distintivo: un repuesto puede ser cualquier cosa. Su baja tasa de acierto no refleja una deficiencia del modelo sino una debilidad de diseño de la taxonomía, que admite categorías sin contenido descriptivo.
 
-\section{Sobre el punto de operación seleccionado}
+\section{Punto de operación seleccionado}
 La caracterización del compromiso entre exactitud y cobertura permite fundamentar con datos una decisión que de otro modo sería arbitraria. Al umbral adoptado, el sistema acierta en el 98.62\,\% de los casos que resuelve de forma automática, a cambio de derivar a revisión del gestor algo más de la mitad de las solicitudes.
 
 Se privilegió deliberadamente la exactitud sobre la cobertura, y la justificación es de costos asimétricos: en un proceso de gobierno de datos, una categoría incorrecta que ingresa al catálogo sin revisión genera un costo persistente —distorsiona reportes de consumo, complica la planificación de compras y se propaga a todo proceso que consulte el catálogo—, mientras que una sugerencia derivada a revisión solo consume la atención del gestor, que es exactamente el escenario que la herramienta está diseñada para atender. Conviene subrayar que incluso las solicitudes derivadas a revisión conservan valor: el gestor recibe tres candidatos ordenados por probabilidad en lugar de enfrentar el catálogo completo.
@@ -347,6 +570,21 @@ El desempeño obtenido admite una lectura comparativa frente al antecedente más
 El modelo desarrollado en este proyecto alcanza 84.91\,\% y 94.04\,\% respectivamente, sobre 1,234 categorías y con una ventana de sugerencias considerablemente más estrecha, ya que su segunda cifra se mide sobre tres opciones y no sobre diez. Debe insistirse en que ambos resultados provienen de conjuntos de datos distintos y no constituyen una comparación controlada; su valor es el de situar el desempeño obtenido dentro del orden de magnitud que la literatura reporta para esta clase de problema.
 
 En ese marco resulta especialmente pertinente la advertencia de esos mismos autores: una exactitud en el rango del 78 al 88 por ciento iguala o supera la calidad de la clasificación humana sobre el mismo material, y perseguir cifras sensiblemente superiores implicaría sobreajustar el modelo a decisiones humanas que a su vez contienen una tasa de error no despreciable. La observación aplica de manera directa a este proyecto, cuyo conjunto de entrenamiento son precisamente las clasificaciones históricas realizadas por los gestores, con los defectos de taxonomía que el análisis de errores puso de manifiesto.
+
+\section{Percepción de los usuarios}
+La encuesta de satisfacción confirma, en la voz de quienes usaron la herramienta, la misma dirección que muestran los datos del tablero: facilidad de uso alta, reducción de tiempo percibida y satisfacción general por encima del punto medio de la escala.
+
+Un matiz relevante es la brecha entre la precisión percibida de la clasificación (3.67/5, la calificación más baja entre las dimensiones evaluadas) y la exactitud medida del modelo (84.91\,\% en la primera sugerencia). Esta brecha no es necesariamente una contradicción: es consistente con el hallazgo discutido en la sección de naturaleza de los errores del modelo, donde las categorías genéricas —\textit{repuesto}, \textit{herramienta}— concentran desproporcionadamente los aciertos fallidos. Un usuario que interactúa repetidamente con esas categorías percibirá una tasa de error mayor que el promedio global del modelo, sin que eso implique que la cifra agregada esté mal medida; ambas lecturas son válidas y describen fenómenos distintos.
+
+En cuanto a jefatura y coordinación, la calificación de viabilidad de adopción continua (3.5/5, más baja que la alineación con objetivos de calidad, 4.5/5) es reveladora: la brecha no está en si GAMMA funciona, sino en si la organización cuenta hoy con la estructura para sostenerla sin el equipo de graduación detrás. Ambas personas señalaron como condición necesaria que un equipo técnico interno adopte formalmente el mantenimiento de la herramienta un punto que se retoma en las recomendaciones de este trabajo.
+
+\section{Retorno de inversión}
+El ROI de 308x sobre el promedio (243x sobre la mediana) es una cifra que exige contexto antes de interpretarse como una medida general de viabilidad de este tipo de herramientas. Su magnitud es, en gran parte, un artefacto del denominador: el costo total del proyecto (Q1,641.65) refleja únicamente el gasto marginal de un proyecto de graduación —hospedaje del servidor y horas de capacitación—, sin incorporar el costo de desarrollo. De haberse contratado con un proveedor externo, ese desarrollo habría representado una inversión significativa, ausente en este cálculo por tratarse de trabajo académico no facturado. Un ROI calculado sobre ese costo real de desarrollo sería considerablemente menor, y esa es la lectura relevante para cualquier decisión de replicar el proyecto por la vía comercial en lugar de académica.
+
+Existe además un riesgo de extrapolación. El ahorro anual se proyecta a partir de una reducción de tiempo medida sobre cinco semanas de uso, aplicada sobre un volumen de referencia de 2,963 solicitudes anuales correspondiente a 2025, no al año en curso. Cada uno de esos supuestos introduce incertidumbre que el cálculo puntual no refleja.
+
+Estas salvedades no invalidan la cifra, la contextualizan: la reducción de tiempo en la que se basa el ahorro es estadísticamente significativa (Mann-Whitney, p \textless\ 0.0001), lo que respalda que el efecto medido es real y no ruido de muestra pequeña. Esto considerando que el equipo sostuvo una tasa diaria de solicitudes más alta en el período post-GAMMA (5.8 frente a 4.0 por día hábil pre-GAMMA).
+
 
 \section{Limitaciones del estudio}
 Los resultados presentados deben interpretarse dentro de varias limitaciones.

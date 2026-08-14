@@ -1,14 +1,70 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { API_BASE } from '@/config'
+import { authFetch } from '@/composables/useAuth'
 
-// El manual de usuario aun no esta publicado. Cuando lo este, basta con apuntar
-// MANUAL_URL al archivo (por ejemplo /docs/manual-gamma.pdf en public/) para que
-// la tarjeta de descarga se active sola.
-const MANUAL_URL: string | null = null
+interface ManualItem {
+  slug: string
+  titulo: string
+  descripcion: string
+  solo_admin: boolean
+  disponible: boolean
+  size_bytes: number | null
+}
+
+// El API entrega solo los manuales que el rol permite: a un gestor ni siquiera
+// le llegan los restringidos.
+const manuales = ref<ManualItem[]>([])
+const cargandoManuales = ref(true)
+const descargando = ref<string | null>(null)
+const errorManual = ref<string | null>(null)
+
+async function cargarManuales() {
+  try {
+    const r = await authFetch(`${API_BASE}/api/manuales`)
+    if (r.ok) manuales.value = await r.json()
+  } catch {
+    // Sin conexion la seccion queda vacia; el resto de la ayuda sigue sirviendo.
+  } finally {
+    cargandoManuales.value = false
+  }
+}
+
+// La descarga pasa por el API y necesita el token, asi que no puede ser un
+// enlace directo: se pide el archivo y se entrega al navegador como blob.
+async function descargar(m: ManualItem) {
+  descargando.value = m.slug
+  errorManual.value = null
+  try {
+    const r = await authFetch(`${API_BASE}/api/manuales/${m.slug}`)
+    if (!r.ok) throw new Error('No se pudo descargar el manual')
+    const blob = await r.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `GAMMA - ${m.titulo}.pdf`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  } catch (e: unknown) {
+    errorManual.value = e instanceof Error ? e.message : 'Error de conexion'
+  } finally {
+    descargando.value = null
+  }
+}
+
+function mb(bytes: number | null): string {
+  if (!bytes) return ''
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+onMounted(cargarManuales)
 
 // Flujo real de una solicitud, tal como lo implementa el asistente.
 const pasos = [
@@ -81,35 +137,63 @@ const faqs = [
       </p>
     </div>
 
-    <!-- Manual de usuario -->
+    <!-- Manuales -->
     <Card class="mb-8">
       <CardHeader class="pb-3">
         <CardTitle class="text-base flex items-center gap-2">
           <i class="fa-solid fa-book text-sm text-muted-foreground"></i>
-          Manual de usuario
-          <Badge v-if="!MANUAL_URL" variant="secondary" class="ml-1 text-xs">En preparacion</Badge>
+          Documentacion
         </CardTitle>
         <CardDescription>
-          Documento completo del procedimiento de creacion de materiales con GAMMA, incluyendo
-          el estandar de nomenclatura y los criterios de clasificacion.
+          Los manuales del proyecto en PDF. Se descargan segun los permisos de su cuenta.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div v-if="MANUAL_URL" class="flex items-center gap-3">
-          <Button as-child class="gap-2">
-            <a :href="MANUAL_URL" target="_blank" rel="noopener">
-              <i class="fa-solid fa-download text-xs"></i>
-              Descargar el manual
-            </a>
-          </Button>
-          <span class="text-xs text-muted-foreground">Formato PDF</span>
+        <div v-if="errorManual" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm">
+          <i class="fa-solid fa-triangle-exclamation mr-2"></i>{{ errorManual }}
         </div>
+
+        <p v-if="cargandoManuales" class="text-sm text-muted-foreground">
+          <i class="fa-solid fa-spinner fa-spin mr-2"></i>Consultando la documentacion disponible...
+        </p>
+
+        <div v-else-if="manuales.length" class="grid sm:grid-cols-2 gap-3">
+          <div
+            v-for="m in manuales"
+            :key="m.slug"
+            class="p-4 rounded-md border bg-card flex flex-col"
+          >
+            <div class="flex items-start justify-between gap-2 mb-1">
+              <p class="text-sm font-medium leading-tight">{{ m.titulo }}</p>
+              <Badge v-if="m.solo_admin" variant="secondary" class="text-xs shrink-0">Admin</Badge>
+            </div>
+            <p class="text-xs text-muted-foreground flex-1">{{ m.descripcion }}</p>
+            <Separator class="my-3" />
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs text-muted-foreground">
+                {{ m.disponible ? `PDF · ${mb(m.size_bytes)}` : 'Aun no compilado' }}
+              </span>
+              <Button
+                size="sm" variant="outline" class="gap-2 text-xs h-8"
+                :disabled="!m.disponible || descargando === m.slug"
+                @click="descargar(m)"
+              >
+                <i
+                  :class="descargando === m.slug ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-download'"
+                  class="text-xs"
+                ></i>
+                Descargar
+              </Button>
+            </div>
+          </div>
+        </div>
+
         <div
           v-else
           class="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground"
         >
           <i class="fa-regular fa-file-lines text-xl mb-2 block opacity-60"></i>
-          El manual se publicara en esta seccion.
+          La documentacion todavia no esta disponible.
           <span class="block mt-1 text-xs">
             Mientras tanto, la guia rapida y las preguntas frecuentes cubren el flujo completo.
           </span>
