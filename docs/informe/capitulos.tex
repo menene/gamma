@@ -291,7 +291,7 @@ La Figura \ref{fig:matrizconf} presenta la matriz de confusión del modelo selec
 \label{fig:matrizconf}
 \end{figure}
 
-El modelo cometió 1,194 errores sobre los 7,915 materiales de prueba, equivalentes al 15.09\,\%. El Cuadro \ref{cuadro:confusiones} recoge las diez confusiones más frecuentes.
+El modelo cometió 1,418 errores sobre los 7,915 materiales de prueba, equivalentes al 17.92\,\%. El Cuadro \ref{cuadro:confusiones} recoge las diez confusiones más frecuentes.
 
 \begin{table}[!htb]
 \centering
@@ -302,16 +302,16 @@ El modelo cometió 1,194 errores sobre los 7,915 materiales de prueba, equivalen
 \toprule
 \textbf{Clase real} & \textbf{Clase predicha} & \textbf{Casos} \\
 \midrule
-CONTACTOR:ELECT.      & CONTACTO:ELECT.         & 7 \\
-TUBO:NO METALICO      & TUBO                    & 6 \\
-FUENTE:ALIMENTACIÓN   & FUENTE ALIMENTACION     & 6 \\
-CARGADOR DE BATERIAS  & CARGADOR:BATERIAS       & 6 \\
-FUSIBLE               & FUSIBLE                 & 5 \\
-INTERRUPTOR           & INTERRUPTOR:AUTOMATICO  & 5 \\
-REPUESTO              & INTERRUPTOR:AUTOMATICO  & 4 \\
-FUENTE ALIMENTACION   & FUENTE:ALIMENTACIÓN     & 4 \\
-TRANSFORMADOR         & TRANSFORMADOR:CORRIENTE & 4 \\
-BUJE:ELECTRICO        & TORNILLO                & 4 \\
+TAPON HEMBRA:TUBERIA    & TAPON:TUBO          & 8 \\
+TUBO:ACERO              & TUBO                & 8 \\
+TRANSFORMADOR:CORRIENTE & TRANSFORMADOR       & 7 \\
+FUSIBLE                 & FUSIBLE             & 7 \\
+LENTES:INDUSTRIALES     & LENTE:PROTECTOR     & 6 \\
+CONTACTO:ELECT.         & CONTACTOR:ELECT.    & 6 \\
+FUENTE:ALIMENTACIÓN     & FUENTE ALIMENTACION & 6 \\
+INTERRUPTOR;CIRCUITO    & INTERRUPTOR         & 5 \\
+CABLE:ELECTRICO         & CABLE ELECTRICO     & 5 \\
+BUJE:ELECTRICO          & TORNILLO            & 5 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -421,7 +421,7 @@ La encuesta de satisfacción aplicada al cierre del período de prueba recoge la
 \label{fig:encuesta-gestores}
 \end{figure}
 
-Entre los gestores que usaron la herramienta activamente, la facilidad de uso en el primer contacto obtuvo la calificación más alta (5.0/5), seguida de la satisfacción general y la utilidad de la sugerencia de descripción (4.33/5 ambas). La reducción de tiempo percibida promedió 4.0/5, en la misma dirección que la reducción medida en el tablero de indicadores. La precisión percibida de la clasificación de categoría obtuvo la calificación más baja del grupo (3.67/5), aunque por encima del punto medio de la escala coherente con que el modelo de clasificación evaluado alcanza una exactitud del 84.9\,\% en su primera sugerencia, es decir, en aproximadamente uno de cada seis casos la sugerencia inicial no es la correcta. Jefatura y coordinación, por su parte, calificaron la alineación de GAMMA con los objetivos de calidad del área en 4.5/5 en promedio.
+Entre los gestores que usaron la herramienta activamente, la facilidad de uso en el primer contacto obtuvo la calificación más alta (5.0/5), seguida de la satisfacción general y la utilidad de la sugerencia de descripción (4.33/5 ambas). La reducción de tiempo percibida promedió 4.0/5, en la misma dirección que la reducción medida en el tablero de indicadores. La precisión percibida de la clasificación de categoría obtuvo la calificación más baja del grupo (3.67/5), aunque por encima del punto medio de la escala coherente con que el modelo de clasificación evaluado alcanza una exactitud del 82.1\,\% en su primera sugerencia, es decir, en algo más de uno de cada seis casos la sugerencia inicial no es la correcta. Jefatura y coordinación, por su parte, calificaron la alineación de GAMMA con los objetivos de calidad del área en 4.5/5 en promedio.
 
 \subsection{Impacto financiero}
 El Cuadro \ref{tab:roi} resume el retorno de inversión del proyecto, calculado sobre el costo real de despliegue —incluyendo el hospedaje del servidor durante el período de construcción, pruebas y puesta en producción, y las horas de capacitación de los gestores frente al ahorro anual proyectado a partir de la reducción de tiempo medida.

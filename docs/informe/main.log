@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.8.9)  14 AUG 2026 21:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.8.9)  14 AUG 2026 21:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1192,7 +1192,7 @@ Package pdftex.def Info: figuras/modelos/nb02_cell33.png  used on input line 28
 LaTeX Info: Redefining \. on input line 338.
 LaTeX Info: Redefining \% on input line 338.
  [30 <./figuras/modelos/nb02_cell29.png>]
-Overfull \vbox (0.84216pt too high) has occurred while \output is active []
+Overfull \vbox (0.8153pt too high) has occurred while \output is active []
 
 LaTeX Info: Redefining \. on input line 338.
 LaTeX Info: Redefining \% on input line 338.
@@ -1558,7 +1558,7 @@ asic/texmf-dist/fonts/type1/public/cm-super/sfti0900.pfb></usr/local/texlive/20
 /2026basic/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb></usr/local/texl
 ive/2026basic/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/t
 exlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfxc1000.pfb>
-Output written on main.pdf (82 pages, 2381331 bytes).
+Output written on main.pdf (82 pages, 2381491 bytes).
 PDF statistics:
  1528 PDF objects out of 1728 (max. 8388607)
  1298 compressed objects within 13 object streams
