@@ -61,3 +61,71 @@ TRANSFORMER (multilingual-MiniLM) - CORRIDA CORREGIDA
     Transformer accuracy=0.7479 f1_macro=0.4010 top3=0.8710 tiempo=3147.4s
 
 Resultados guardados en /Users/menene/code/www/mbia_gamma/lab/results/transformer_minilm_fixed_20260813T235234.json
+Device: mps
+Cargando datos...
+[19:47:53] resultados previos recuperados: 10 configuracion(es)
+[19:47:55] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[19:48:03] random  : train 31,656 test 7,915 | fuga 25.72%
+[19:48:03] grouped : train 31,656 test 7,915 | fuga 0.00%
+Dataset: 39,571 materiales, 1234 clases
+Protocolo: grouped | Train: 31,656 | Test: 7,915
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Tokenizer: XLMRobertaTokenizer
+max_len derivado de los datos: 27
+Tokenizando (una sola vez)...
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 25588.35it/s]
+[transformers] [1mBertForSequenceClassification LOAD REPORT[0m from: microsoft/Multilingual-MiniLM-L12-H384
+Key               | Status  | 
+------------------+---------+-
+classifier.weight | MISSING | 
+classifier.bias   | MISSING | 
+
+Notes:
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+Parametros: backbone=117,653,760 cabeza=475,090
+
+Perdida de un clasificador aleatorio: ln(1234) = 7.1180
+Entrenando 15 epocas (backbone_lr=5e-05, head_lr=0.001)...
+
+  Epoca  1/15: loss=6.5379 train_acc=0.0158 test_acc=0.0262 (205s)
+  Epoca  2/15: loss=5.7099 train_acc=0.0371 test_acc=0.0459 (409s)
+  Epoca  3/15: loss=4.9408 train_acc=0.1057 test_acc=0.1816 (613s)
+  Epoca  4/15: loss=3.9896 train_acc=0.2623 test_acc=0.3564 (817s)
+  Epoca  5/15: loss=3.1570 train_acc=0.4134 test_acc=0.4831 (1021s)
+  Epoca  6/15: loss=2.4785 train_acc=0.5276 test_acc=0.5819 (1224s)
+  Epoca  7/15: loss=2.0123 train_acc=0.5987 test_acc=0.6418 (1428s)
+  Epoca  8/15: loss=1.6957 train_acc=0.6558 test_acc=0.6854 (1632s)
+  Epoca  9/15: loss=1.4566 train_acc=0.7010 test_acc=0.7203 (1834s)
+  Epoca 10/15: loss=1.2803 train_acc=0.7324 test_acc=0.7526 (2036s)
+  Epoca 11/15: loss=1.1451 train_acc=0.7593 test_acc=0.7607 (2238s)
+  Epoca 12/15: loss=1.0375 train_acc=0.7832 test_acc=0.7816 (2441s)
+  Epoca 13/15: loss=0.9561 train_acc=0.8009 test_acc=0.7910 (2643s)
+  Epoca 14/15: loss=0.8975 train_acc=0.8101 test_acc=0.7970 (2845s)
+  Epoca 15/15: loss=0.8514 train_acc=0.8236 test_acc=0.7995 (3269s)
+
+Entrenamiento completo: 3268.7s
+
+==============================================================
+TRANSFORMER (multilingual-MiniLM)
+==============================================================
+  accuracy               0.7995
+  f1_macro               0.5654
+  f1_weighted            0.7692
+  precision_weighted     0.7631
+  recall_weighted        0.7995
+  top3_accuracy          0.8953
+  train_seconds          3268.7000
+
+  Analisis de umbral de confianza:
+    Umbral 0.5: accuracy=0.8901 cobertura=80.61% (6,380)
+    Umbral 0.6: accuracy=0.9149 cobertura=72.90% (5,770)
+    Umbral 0.7: accuracy=0.9334 cobertura=64.54% (5,108)
+    Umbral 0.8: accuracy=0.9507 cobertura=55.87% (4,422)
+    Umbral 0.9: accuracy=0.9729 cobertura=39.60% (3,134)
+
+  Comparacion con el modelo desplegado (LinearSVC + CharTFIDF):
+    LinearSVC   accuracy=0.8491 f1_macro=0.7523 top3=0.9404 tiempo=62.9s
+    Transformer accuracy=0.7995 f1_macro=0.5654 top3=0.8953 tiempo=3268.7s
+Resultado agregado a /Users/menene/code/www/mbia_gamma/lab/results/grouped_split.json
+
+Resultados guardados en /Users/menene/code/www/mbia_gamma/lab/results/transformer_minilm_fixed_grouped_20260815T024238.json

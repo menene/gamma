@@ -107,6 +107,12 @@ def preprocess_text(text: str) -> str:
 
 
 def load_dataset() -> pd.DataFrame:
+    """
+    SIN USO desde que la particion se toma de `eval_grouped_split`. Se conserva
+    porque documenta la carga con la que se produjo el resultado del 13 de agosto
+    (39,570 filas). Difiere del cargador vigente en el filtro de `clean_text`
+    vacio de mas abajo. No usar para resultados nuevos: no seria comparable.
+    """
     CLASS_COLS = {
         "Código": "class_code", "Denominación": "class_name",
         "Grupo de Artículos": "article_group", "Sector": "sector",
@@ -171,6 +177,9 @@ def main():
     ap.add_argument("--warmup-frac", type=float, default=0.1)
     ap.add_argument("--weight-decay", type=float, default=0.01)
     ap.add_argument("--tag", type=str, default="minilm_fixed")
+    ap.add_argument("--split", choices=["random", "grouped"], default="random",
+                    help="protocolo de particion; 'grouped' agrupa por descripcion "
+                         "de modo que ningun texto cruza la frontera train/test")
     args = ap.parse_args()
 
     torch.manual_seed(SEED)
@@ -183,18 +192,24 @@ def main():
     )
     print(f"Device: {device}", flush=True)
 
-    print("Cargando datos...", flush=True)
-    df = load_dataset()
-    le = LabelEncoder()
-    y = le.fit_transform(df["class_code"].values)
-    X = df["clean_text"].values
-    n_classes = len(le.classes_)
-    print(f"Dataset: {len(df):,} materiales, {n_classes} clases", flush=True)
+    # La carga y la particion se toman de `eval_grouped_split` para que el
+    # transformer se mida sobre exactamente el mismo conjunto y las mismas
+    # fronteras que las demas configuraciones de la competencia. Difiere del
+    # `load_dataset` local de este archivo en un unico material, cuyo texto
+    # normaliza a cadena vacia: 39,571 filas en lugar de 39,570.
+    import eval_grouped_split as egs
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=SEED, stratify=y
-    )
-    print(f"Train: {len(X_train):,} | Test: {len(X_test):,}", flush=True)
+    print("Cargando datos...", flush=True)
+    egs.load_state()
+    df = egs.load_dataset()
+    X, y, le, splits = egs.make_splits(df)
+    n_classes = len(le.classes_)
+    tr, te = splits[args.split]
+    X_train, X_test = X[tr], X[te]
+    y_train, y_test = y[tr], y[te]
+    print(f"Dataset: {len(df):,} materiales, {n_classes} clases", flush=True)
+    print(f"Protocolo: {args.split} | Train: {len(X_train):,} | Test: {len(X_test):,}",
+          flush=True)
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     print(f"Tokenizer: {type(tokenizer).__name__}", flush=True)
@@ -340,15 +355,42 @@ def main():
           f"f1_macro={metrics['f1_macro']:.4f} top3={metrics['top3_accuracy']:.4f} "
           f"tiempo={train_seconds:.1f}s")
 
+    # Se deposita tambien en grouped_split.json, junto al resto de la
+    # competencia, con las mismas llaves que usa `eval_grouped_split.evaluate`.
+    egs.STATE["protocols"].setdefault(args.split, {})["Transformer (MiniLM)"] = {
+        "accuracy": metrics["accuracy"],
+        "f1_macro": metrics["f1_macro"],
+        "f1_weighted": metrics["f1_weighted"],
+        "precision_weighted": metrics["precision_weighted"],
+        "recall_weighted": metrics["recall_weighted"],
+        "top3_accuracy": metrics["top3_accuracy"],
+        "train_time": metrics["train_seconds"],
+        "n_errors": int((y_pred != y_test).sum()),
+        "n_test": int(len(y_test)),
+        "n_train": int(len(y_train)),
+        "clases_en_train": int(len(np.unique(y_train))),
+        "recorte_calibracion": {"clases_excluidas": 0, "filas_excluidas": 0},
+        "thresholds": {
+            t: {"accuracy": v["accuracy"], "coverage": round(v["cobertura"] * 100, 2),
+                "n": v["n"]}
+            for t, v in umbrales.items()
+        },
+        "device": device,
+        "epochs": args.epochs,
+    }
+    egs.flush()
+    print(f"Resultado agregado a {egs.OUT_JSON}")
+
     os.makedirs(RESULTS_DIR, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-    out_path = os.path.join(RESULTS_DIR, f"transformer_{args.tag}_{stamp}.json")
+    out_path = os.path.join(RESULTS_DIR, f"transformer_{args.tag}_{args.split}_{stamp}.json")
     with open(out_path, "w") as f:
         json.dump({
             "model_name": MODEL_NAME,
             "config": vars(args) | {"max_len": max_len, "seed": SEED, "device": device},
             "dataset": {"n_samples": len(df), "n_classes": n_classes,
-                        "n_train": len(X_train), "n_test": len(X_test)},
+                        "n_train": len(X_train), "n_test": len(X_test),
+                        "split": args.split},
             "chance_loss": round(chance_loss, 4),
             "history": history,
             "metrics": metrics,

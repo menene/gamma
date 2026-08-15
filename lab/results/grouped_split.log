@@ -1,0 +1,56 @@
+[16:42:48] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[16:42:56] random  : train 31,656 test 7,915 | fuga 25.72%
+[16:42:56] grouped : train 31,656 test 7,915 | fuga 0.00%
+[16:42:56] grouped  | LinearSVC + CharTFIDF ...
+[16:42:57] FALLO grouped/LinearSVC + CharTFIDF: ValueError: Requesting 2-fold cross-validation but provided less than 2 examples for at least one class.
+[16:42:57] grouped  | RandomForest + WordTFIDF ...
+[16:58:21] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[16:58:29] random  : train 31,656 test 7,915 | fuga 25.72%
+[16:58:29] grouped : train 31,656 test 7,915 | fuga 0.00%
+[16:58:29] a correr: 2 celda(s) -> ['LinearSVC + CharTFIDF'] x ['grouped', 'random']
+[16:58:29] grouped  | LinearSVC + CharTFIDF ...
+[16:58:29]   recorte de calibracion: -1 clase(s), -1 fila(s) del entrenamiento
+[16:59:25] grouped  | LinearSVC + CharTFIDF: acc=0.8208 f1m=0.7072 f1w=0.8041 top3=0.9176247631080228 t=54.1s
+[16:59:25] random   | LinearSVC + CharTFIDF ...
+[17:00:24] random   | LinearSVC + CharTFIDF: acc=0.8491 f1m=0.7523 f1w=0.8380 top3=0.9403663929248263 t=55.8s
+[17:00:24] LISTO
+[17:03:38] resultados previos recuperados: 2 configuracion(es)
+[17:03:40] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[17:03:48] random  : train 31,656 test 7,915 | fuga 25.72%
+[17:03:48] grouped : train 31,656 test 7,915 | fuga 0.00%
+[17:03:48] a correr: 2 celda(s) -> ['RandomForest + WordTFIDF'] x ['grouped', 'random']
+[17:03:48] grouped  | RandomForest + WordTFIDF ...
+[17:04:41] grouped  | RandomForest + WordTFIDF: acc=0.8133 f1m=0.7029 f1w=0.8014 top3=0.906253948199621 t=46.0s
+[17:04:41] random   | RandomForest + WordTFIDF ...
+[17:05:33] random   | RandomForest + WordTFIDF: acc=0.8334 f1m=0.7360 f1w=0.8254 top3=0.9263423878711308 t=44.1s
+[17:05:33] LISTO
+[17:08:01] resultados previos recuperados: 4 configuracion(es)
+[17:08:03] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[17:08:11] random  : train 31,656 test 7,915 | fuga 25.72%
+[17:08:11] grouped : train 31,656 test 7,915 | fuga 0.00%
+[17:08:11] a correr: 2 celda(s) -> ['LogReg + WordTFIDF'] x ['grouped', 'random']
+[17:08:11] grouped  | LogReg + WordTFIDF ...
+[17:08:40] grouped  | LogReg + WordTFIDF: acc=0.8095 f1m=0.6689 f1w=0.7949 top3=0.9134554643082754 t=28.9s
+[17:08:40] random   | LogReg + WordTFIDF ...
+[17:09:09] random   | LogReg + WordTFIDF: acc=0.8291 f1m=0.6950 f1w=0.8177 top3=0.9274794693619709 t=28.2s
+[17:09:09] LISTO
+[17:09:52] resultados previos recuperados: 6 configuracion(es)
+[17:09:54] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[17:10:02] random  : train 31,656 test 7,915 | fuga 25.72%
+[17:10:02] grouped : train 31,656 test 7,915 | fuga 0.00%
+[17:10:02] a correr: 2 celda(s) -> ['LogReg + CharTFIDF'] x ['grouped', 'random']
+[17:10:02] grouped  | LogReg + CharTFIDF ...
+[17:27:55] grouped  | LogReg + CharTFIDF: acc=0.8080 f1m=0.6423 f1w=0.7886 top3=0.9248262792166771 t=1071.9s
+[17:27:55] random   | LogReg + CharTFIDF ...
+[17:44:59] random   | LogReg + CharTFIDF: acc=0.8293 f1m=0.6713 f1w=0.8126 top3=0.9359444093493366 t=1023.0s
+[17:44:59] LISTO
+[18:59:41] resultados previos recuperados: 8 configuracion(es)
+[18:59:44] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[18:59:51] random  : train 31,656 test 7,915 | fuga 25.72%
+[18:59:51] grouped : train 31,656 test 7,915 | fuga 0.00%
+[18:59:51] a correr: 2 celda(s) -> ['fastText'] x ['grouped', 'random']
+[18:59:51] grouped  | fastText ...
+[19:00:42] grouped  | fastText: acc=0.7780 f1m=0.6275 f1w=0.7648 top3=0.8865445356917245 t=42.8s
+[19:00:42] random   | fastText ...
+[19:01:33] random   | fastText: acc=0.8059 f1m=0.6907 f1w=0.7988 top3=0.9077700568540745 t=42.8s
+[19:01:33] LISTO

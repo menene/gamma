@@ -403,21 +403,6 @@ INPUT /usr/local/texlive/2026basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/
 INPUT /usr/local/texlive/2026basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2026basic/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ecbx0900.tfm
-INPUT ./figuras/modelos/nb02_cell14.png
-INPUT ./figuras/modelos/nb02_cell14.png
-INPUT ./figuras/modelos/nb02_cell14.png
-INPUT ./figuras/modelos/nb02_cell14.png
-INPUT ./figuras/modelos/nb02_cell14.png
-INPUT ./figuras/modelos/nb02_cell12.png
-INPUT ./figuras/modelos/nb02_cell12.png
-INPUT ./figuras/modelos/nb02_cell12.png
-INPUT ./figuras/modelos/nb02_cell12.png
-INPUT ./figuras/modelos/nb02_cell12.png
-INPUT ./figuras/modelos/nb02_cell15.png
-INPUT ./figuras/modelos/nb02_cell15.png
-INPUT ./figuras/modelos/nb02_cell15.png
-INPUT ./figuras/modelos/nb02_cell15.png
-INPUT ./figuras/modelos/nb02_cell15.png
 INPUT ./figuras/modelos/fig_global_distribucion.png
 INPUT ./figuras/modelos/fig_global_distribucion.png
 INPUT ./figuras/modelos/fig_global_distribucion.png
@@ -458,6 +443,41 @@ INPUT ./figuras/encuesta_gestores.pdf
 INPUT ./figuras/encuesta_gestores.pdf
 INPUT ./figuras/encuesta_gestores.pdf
 INPUT ./figuras/encuesta_gestores.pdf
+INPUT ./figuras/tablero_operativo_tarjetas_kpi_v2.png
+INPUT ./figuras/tablero_operativo_tarjetas_kpi_v2.png
+INPUT ./figuras/tablero_operativo_tarjetas_kpi_v2.png
+INPUT ./figuras/tablero_operativo_tarjetas_kpi_v2.png
+INPUT ./figuras/tablero_operativo_tarjetas_kpi_v2.png
+INPUT ./figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png
+INPUT ./figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png
+INPUT ./figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png
+INPUT ./figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png
+INPUT ./figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png
+INPUT ./figuras/tablero_operativo_desempeno_por_gestor_v2.png
+INPUT ./figuras/tablero_operativo_desempeno_por_gestor_v2.png
+INPUT ./figuras/tablero_operativo_desempeno_por_gestor_v2.png
+INPUT ./figuras/tablero_operativo_desempeno_por_gestor_v2.png
+INPUT ./figuras/tablero_operativo_desempeno_por_gestor_v2.png
+INPUT ./figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png
+INPUT ./figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png
+INPUT ./figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png
+INPUT ./figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png
+INPUT ./figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png
+INPUT ./figuras/tablero_operativo_duplicados_por_semana.png
+INPUT ./figuras/tablero_operativo_duplicados_por_semana.png
+INPUT ./figuras/tablero_operativo_duplicados_por_semana.png
+INPUT ./figuras/tablero_operativo_duplicados_por_semana.png
+INPUT ./figuras/tablero_operativo_duplicados_por_semana.png
+INPUT ./figuras/tablero_operativo_tasa_aceptacion_duplicados.png
+INPUT ./figuras/tablero_operativo_tasa_aceptacion_duplicados.png
+INPUT ./figuras/tablero_operativo_tasa_aceptacion_duplicados.png
+INPUT ./figuras/tablero_operativo_tasa_aceptacion_duplicados.png
+INPUT ./figuras/tablero_operativo_tasa_aceptacion_duplicados.png
+INPUT ./figuras/tablero_operativo_desglose_tiempo_por_etapas.png
+INPUT ./figuras/tablero_operativo_desglose_tiempo_por_etapas.png
+INPUT ./figuras/tablero_operativo_desglose_tiempo_por_etapas.png
+INPUT ./figuras/tablero_operativo_desglose_tiempo_por_etapas.png
+INPUT ./figuras/tablero_operativo_desglose_tiempo_por_etapas.png
 INPUT ./conclusiones.tex
 INPUT ./conclusiones.tex
 INPUT ./conclusiones.tex
@@ -539,6 +559,16 @@ INPUT ./figuras/encuesta_forms/forms_12_condiciones.png
 INPUT ./figuras/encuesta_forms/forms_12_condiciones.png
 INPUT ./figuras/encuesta_forms/forms_12_condiciones.png
 INPUT /usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ectt0900.tfm
+INPUT ./figuras/Tablero completo.png
+INPUT ./figuras/Tablero completo.png
+INPUT ./figuras/Tablero completo.png
+INPUT ./figuras/Tablero completo.png
+INPUT ./figuras/Tablero completo.png
+INPUT ./figuras/Tablero 2.png
+INPUT ./figuras/Tablero 2.png
+INPUT ./figuras/Tablero 2.png
+INPUT ./figuras/Tablero 2.png
+INPUT ./figuras/Tablero 2.png
 INPUT /usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ecti0900.tfm
 INPUT /usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ecbi0900.tfm
 INPUT main.aux
