@@ -1,16 +1,17 @@
 # Fdb version 4
-["bibtex main"] 1786764891.63426 "main.aux" "main.bbl" "main" 1786764894.27708 0
+["bibtex main"] 1786764891.63426 "main.aux" "main.bbl" "main" 1786765011.47172 0
   "./bibliografia.bib" 1786783576 15553 72a6b44bfe37b9acf66b953c765fe9c5 ""
   "/Users/menene/Library/texmf/bibtex/bst/apacite/apacite.bst" 1374530685 141073 9d7b79dbf9d91133318126032cff8c27 ""
-  "main.aux" 1786764894.04446 80214 b40685c12cccc0cd399032ded815d583 "pdflatex"
+  "main.aux" 1786765011.26457 80214 b40685c12cccc0cd399032ded815d583 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1786764891.6762 "main.tex" "main.pdf" "main" 1786764894.27735 0
+["pdflatex"] 1786765008.80095 "/Users/menene/code/www/mbia_gamma/docs/informe/main.tex" "main.pdf" "main" 1786765011.472 0
   "/Users/menene/Library/texlive/2026basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1786567345 471942 3798b59c59a833e15d8ebc8d4aab9a8a ""
   "/Users/menene/Library/texmf/tex/latex/apacite/apacite.sty" 1374530685 72212 966b0b8d2be774cb1d3a7f97b253b725 ""
   "/Users/menene/Library/texmf/tex/latex/apacite/spanish.apc" 1374530685 9680 288c60a2b42c1bd3c1f1275917444092 ""
+  "/Users/menene/code/www/mbia_gamma/docs/informe/main.tex" 1786783576 11872 c8df7390318de99899141839f517aff4 ""
   "/usr/local/texlive/2026basic/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ecbi0900.tfm" 1136768653 3072 7ff1a6294a418a0283ec56a11878dc2c ""
   "/usr/local/texlive/2026basic/texmf-dist/fonts/tfm/jknappen/ec/ecbx0900.tfm" 1136768653 3584 1a7de6c99457381c64abc1a7c545505f ""
@@ -216,13 +217,13 @@
   "glosario.tex" 1786783576 5017 f06222bc843c4668cdb0c963c8102c3b ""
   "introduccion.tex" 1786783576 4092 79afe25f35c827f908a295f7b79e296f ""
   "justificacion.tex" 1786783576 2600 f11c8b91c7ab4f4b5b321fbaa1f10123 ""
-  "main.aux" 1786764894.04446 80214 b40685c12cccc0cd399032ded815d583 "pdflatex"
+  "main.aux" 1786765011.26457 80214 b40685c12cccc0cd399032ded815d583 "pdflatex"
   "main.bbl" 1786764891.67521 26384 e7be82f234c794d53d09211f78bf10ad "bibtex main"
-  "main.lof" 1786764894.06035 4433 4b8cf489ede8c2dbe4e5b1a740d4455f "pdflatex"
-  "main.lot" 1786764894.06043 2245 c8ef59b35d3b025914989604255eaaee "pdflatex"
+  "main.lof" 1786765011.2801 4433 4b8cf489ede8c2dbe4e5b1a740d4455f "pdflatex"
+  "main.lot" 1786765011.2802 2245 c8ef59b35d3b025914989604255eaaee "pdflatex"
   "main.nls" 0 -1 0 ""
   "main.tex" 1786783576 11872 c8df7390318de99899141839f517aff4 ""
-  "main.toc" 1786764894.06018 10361 4b6abb3d48936a45d079bb0bf46dc467 "pdflatex"
+  "main.toc" 1786765011.27993 10361 4b6abb3d48936a45d079bb0bf46dc467 "pdflatex"
   "marco_teorico.tex" 1786783576 29020 8b287d674ad43434e55b84355f617fa3 ""
   "objetivos.tex" 1786783576 2211 3a5a68e921dcca77ba80d453b3226f85 ""
   "opciones_adicionales.tex" 1786783576 1105 b05caa19e040d78cee5b3b284eafa3bf ""
