@@ -48,18 +48,18 @@ const activeTab = ref('operacion')
 // —clasificar un material que aun no existe—. Medido con
 // lab/scripts/eval_grouped_split.py. Ordenados por accuracy descendente.
 const modelos = [
-  { nombre: 'LinearSVC + CharTFIDF', accuracy: 0.8208, f1Macro: 0.7072, f1Weighted: 0.8041, precision: 0.8079, recall: 0.8208, top3: 0.9176, tiempo: 54.1, ganador: true },
-  { nombre: 'RandomForest + WordTFIDF', accuracy: 0.8133, f1Macro: 0.7029, f1Weighted: 0.8014, precision: 0.8195, recall: 0.8133, top3: 0.9063, tiempo: 46.0 },
-  { nombre: 'LogReg + WordTFIDF', accuracy: 0.8095, f1Macro: 0.6689, f1Weighted: 0.7949, precision: 0.8066, recall: 0.8095, top3: 0.9135, tiempo: 28.9 },
-  { nombre: 'LogReg + CharTFIDF', accuracy: 0.8080, f1Macro: 0.6423, f1Weighted: 0.7886, precision: 0.7912, recall: 0.8080, top3: 0.9248, tiempo: 1071.9 },
-  { nombre: 'fastText', accuracy: 0.7780, f1Macro: 0.6275, f1Weighted: 0.7648, precision: 0.7743, recall: 0.7771, top3: 0.8865, tiempo: 42.8 },
+  { nombre: 'LinearSVC + CharTFIDF', accuracy: 0.8208, f1Macro: 0.7072, f1Weighted: 0.8041, precision: 0.8079, recall: 0.8208, top3: 0.9176, tiempo: 54.1, gpu: false, ganador: true },
+  { nombre: 'RandomForest + WordTFIDF', accuracy: 0.8133, f1Macro: 0.7029, f1Weighted: 0.8014, precision: 0.8195, recall: 0.8133, top3: 0.9063, tiempo: 46.0, gpu: false },
+  { nombre: 'LogReg + WordTFIDF', accuracy: 0.8095, f1Macro: 0.6689, f1Weighted: 0.7949, precision: 0.8066, recall: 0.8095, top3: 0.9135, tiempo: 28.9, gpu: false },
+  { nombre: 'LogReg + CharTFIDF', accuracy: 0.8080, f1Macro: 0.6423, f1Weighted: 0.7886, precision: 0.7912, recall: 0.8080, top3: 0.9248, tiempo: 1071.9, gpu: false },
+  { nombre: 'Transformer (MiniLM)', accuracy: 0.7995, f1Macro: 0.5654, f1Weighted: 0.7692, precision: 0.7631, recall: 0.7995, top3: 0.8953, tiempo: 3268.7, gpu: true },
+  { nombre: 'fastText', accuracy: 0.7780, f1Macro: 0.6275, f1Weighted: 0.7648, precision: 0.7743, recall: 0.7771, top3: 0.8865, tiempo: 42.8, gpu: false },
 ]
 
-// Sin cifra bajo esta particion todavia. No se listan con la medicion anterior
+// Sin cifra bajo esta particion todavia. No se lista con la medicion anterior
 // porque no seria comparable con las filas de arriba.
 const pendientes = [
-  { nombre: 'Transformer (MiniLM)', motivo: 'reevaluacion en curso' },
-  { nombre: 'XGBoost + CharTFIDF', motivo: 'sin reevaluar' },
+  { nombre: 'XGBoost + CharTFIDF', motivo: 'sin reevaluar bajo esta particion' },
 ]
 
 const series = [
@@ -589,15 +589,23 @@ onUnmounted(detenerSondeo)
                 <p class="mb-2">
                   Transformer pre-entrenado de Microsoft (<code>Multilingual-MiniLM-L12-H384</code>, 118M parametros, 12 capas,
                   384 dimensiones hidden) sometido a ajuste fino sobre los <code>short_text</code> normalizados, con
-                  <code>batch_size=64</code> y 15 epochs. Es el unico candidato que modela el texto de forma contextual en
-                  lugar de tratarlo como una bolsa de rasgos.
+                  <code>batch_size=64</code>, 15 epochs y tasas de aprendizaje separadas para el cuerpo
+                  (<code>5e-5</code>) y la cabeza de clasificacion (<code>1e-3</code>). Es el unico candidato que modela el
+                  texto de forma contextual en lugar de tratarlo como una bolsa de rasgos.
                 </p>
                 <p class="mb-2">
-                  Queda por debajo de las configuraciones clasicas y con 50 veces el tiempo de entrenamiento del ganador
-                  —ademas sobre GPU, mientras que el ganador se entrena en CPU—. La brecha mas grande esta en el F1 macro:
-                  con 118M de parametros y una mediana de 9 materiales por clase, el modelo aprende las categorias pobladas
-                  y se desploma en la cola larga, que es donde vive mas de la mitad de la taxonomia.
-                  <span class="text-muted-foreground">Su cifra bajo esta particion esta en curso de medicion.</span>
+                  Reevaluado bajo la particion agrupada alcanza <strong class="text-foreground">79.95% de accuracy</strong>
+                  y <strong class="text-foreground">89.53% de Top-3</strong>: por debajo de las cuatro configuraciones
+                  clasicas y con 60 veces el tiempo de entrenamiento del ganador —54 minutos sobre GPU, frente a 54 segundos
+                  en CPU—. La brecha mas grande esta en el F1 macro: <strong class="text-foreground">0.5654 contra 0.7072</strong>,
+                  catorce puntos por debajo. Con 118M de parametros y una mediana de 9 materiales por clase, el modelo aprende
+                  las categorias pobladas y se desploma en la cola larga, que es donde vive mas de la mitad de la taxonomia.
+                </p>
+                <p>
+                  La curva de entrenamiento explica el resto: la accuracy de prueba seguia subiendo en la epoch 15
+                  (79.7% a 79.9%) sin haberse estancado, de modo que la cifra no es un techo del modelo sino del presupuesto
+                  de computo. Cerrar la brecha exigiria mas epochs —cada una cuesta 3.4 minutos— sin garantia de superar a un
+                  SVM lineal que ya converge en menos de un minuto.
                 </p>
               </div>
             </div>
@@ -684,7 +692,9 @@ onUnmounted(detenerSondeo)
                     <td class="text-right py-2 px-2 tabular-nums">{{ m.precision.toFixed(4) }}</td>
                     <td class="text-right py-2 px-2 tabular-nums">{{ m.recall.toFixed(4) }}</td>
                     <td class="text-right py-2 px-2 tabular-nums">{{ m.top3.toFixed(4) }}</td>
-                    <td class="text-right py-2 pl-2 tabular-nums">{{ fmtTiempo(m.tiempo) }}</td>
+                    <td class="text-right py-2 pl-2 tabular-nums">
+                      {{ fmtTiempo(m.tiempo) }}<span v-if="m.gpu" class="text-muted-foreground"> *</span>
+                    </td>
                   </tr>
                   <tr v-for="p in pendientes" :key="p.nombre" class="border-b last:border-0 text-muted-foreground">
                     <td class="py-2 pr-3">{{ p.nombre }}</td>
@@ -693,6 +703,10 @@ onUnmounted(detenerSondeo)
                 </tbody>
               </table>
             </div>
+            <p class="text-xs mt-2">
+              <span class="text-muted-foreground">*</span> tiempo medido sobre GPU; el resto de las filas se entrena en CPU,
+              de modo que la columna de tiempo no es comparable directamente entre ellas.
+            </p>
           </div>
 
 
@@ -707,21 +721,24 @@ onUnmounted(detenerSondeo)
             </p>
             <ul class="space-y-2 list-disc list-inside">
               <li>
-                <strong class="text-foreground">Mejor en todas las metricas:</strong> accuracy (82.1%), F1 weighted (80.4%),
-                F1 macro (70.7%) y Top-3 (91.8%) — superior en cada dimension frente al resto de configuraciones evaluadas.
+                <strong class="text-foreground">Mejor accuracy y mejor F1:</strong> accuracy (82.08%), F1 weighted (80.41%)
+                y F1 macro (70.72%), primero en las tres. Solo cede en dos metricas secundarias: precision ponderada, donde
+                RandomForest llega a 0.8195 a costa de menor recall, y Top-3, donde LogReg + CharTFIDF alcanza 0.9248
+                contra 0.9176 —a cambio de veinte veces el tiempo de entrenamiento y 6.5 puntos menos de F1 macro—.
               </li>
               <li>
-                <strong class="text-foreground">F1 macro mayor:</strong> 0.7072 contra 0.6275-0.7029 del resto.
+                <strong class="text-foreground">F1 macro mayor:</strong> 0.7072 contra 0.5654-0.7029 del resto.
                 Es la metrica que pesa igual a todas las clases, y por lo tanto la que mide el desempeno sobre la cola larga:
-                mas de la mitad de las 1,234 clases tiene diez materiales o menos.
+                mas de la mitad de las 1,234 clases tiene diez materiales o menos. El transformer marca el piso de este
+                rango, que es precisamente donde mas se separa del ganador.
               </li>
               <li>
                 <strong class="text-foreground">Top-3 del 92%:</strong> en el 92% de los casos la clase correcta esta entre
                 las tres primeras. Es la metrica alineada con el uso real, donde el gestor confirma sobre una lista corta.
               </li>
               <li>
-                <strong class="text-foreground">Costo de entrenamiento:</strong> 54 segundos en CPU, frente a las tres horas
-                de XGBoost y los 52 minutos en GPU del transformer, ambos con resultados inferiores.
+                <strong class="text-foreground">Costo de entrenamiento:</strong> 54 segundos en CPU, frente a los 54 minutos
+                en GPU del transformer y las tres horas de XGBoost, ambos con resultados inferiores.
                 En un sistema que se reentrena desde la propia aplicacion, esa diferencia define si el reentrenamiento es un
                 boton o es infraestructura aparte.
               </li>
