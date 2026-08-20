@@ -33,6 +33,7 @@ interface QueueItem {
   file: File
   status: 'pending' | 'uploading' | 'success' | 'error'
   row_count?: number
+  reconciled_count?: number
   elapsed_s?: number
   error?: string
 }
@@ -99,6 +100,7 @@ async function processQueue(key: SectionKey) {
         const data = await res.json()
         item.status = 'success'
         item.row_count = data.row_count
+        item.reconciled_count = data.reconciled_count
         item.elapsed_s = data.elapsed_s
       } else {
         const err = await res.json().catch(() => ({ detail: 'Error desconocido' }))
@@ -447,6 +449,13 @@ onMounted(() => {
                   <span class="text-xs text-muted-foreground shrink-0">{{ formatSize(item.file.size) }}</span>
                   <span v-if="item.status === 'success'" class="text-xs text-green-600 shrink-0">
                     {{ item.row_count?.toLocaleString() }} filas · {{ item.elapsed_s }}s
+                  </span>
+                  <span
+                    v-if="item.status === 'success' && item.reconciled_count"
+                    class="text-xs text-blue-600 shrink-0"
+                    title="Materiales creados en GAMMA que recibieron su codigo SAP en esta carga"
+                  >
+                    · {{ item.reconciled_count.toLocaleString() }} conciliados
                   </span>
                   <span v-if="item.status === 'error'" class="text-xs text-red-500 truncate max-w-[200px] shrink-0" :title="item.error">
                     {{ item.error }}

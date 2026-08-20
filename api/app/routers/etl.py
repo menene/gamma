@@ -10,6 +10,7 @@ from sqlalchemy import text
 import pandas as pd
 
 from app.db import get_db
+from app.services.text import preprocess_text
 
 router = APIRouter(prefix="/api/etl", tags=["ETL"], dependencies=[Depends(get_current_user)])
 
@@ -21,6 +22,9 @@ class IngestionResult(BaseModel):
     status: str
     error_message: str | None = None
     elapsed_s: float
+    # Materials created by GAMMA that got their SAP code assigned by this upload
+    # instead of being inserted as a new row (see _reconcile_pending_materials).
+    reconciled_count: int = 0
 
 
 class IngestionLog(BaseModel):
@@ -92,6 +96,90 @@ def _build_lookup(db: Session, table: str) -> dict[str, int]:
     """Build a code → id lookup dict for a reference table."""
     rows = db.execute(text(f"SELECT code, id FROM {table}")).fetchall()
     return {str(r[0]): r[1] for r in rows}
+
+
+def _nan_to_none(val):
+    """pandas leaves NaN where a lookup missed; the DB wants NULL."""
+    if isinstance(val, float) and pd.isna(val):
+        return None
+    return val
+
+
+def _reconcile_pending_materials(db: Session, rows: list[dict]) -> tuple[list[dict], int]:
+    """Close the loop between export and import.
+
+    A material exported to SAP is written to silver.materials with code NULL
+    (pending) and a source_request_id. Once SAP assigns it a code, the material
+    comes back in the next maestro upload. Without this step it would be
+    inserted as a brand-new row, leaving the pending one behind as a duplicate
+    of itself.
+
+    Instead we match incoming rows against pending materials by normalized
+    short_text and stamp the SAP code onto the existing row. Returns the rows
+    that still need a plain insert, plus how many were reconciled.
+    """
+    pending = db.execute(
+        text("SELECT id, short_text FROM silver.materials "
+             "WHERE code IS NULL AND short_text IS NOT NULL ORDER BY id")
+    ).fetchall()
+    if not pending:
+        return rows, 0
+
+    # Several pending materials can normalize to the same text; keep them in a
+    # queue per key so each incoming row consumes exactly one.
+    by_text: dict[str, list[int]] = {}
+    for mat_id, short_text in pending:
+        by_text.setdefault(preprocess_text(short_text), []).append(mat_id)
+
+    # A code already present in the maestro must not be moved onto a pending
+    # row — that row would then collide with the existing one. Those fall
+    # through to the regular upsert.
+    taken_codes = {
+        str(r[0])
+        for r in db.execute(text("SELECT code FROM silver.materials WHERE code IS NOT NULL")).fetchall()
+    }
+
+    remaining: list[dict] = []
+    updates: list[dict] = []
+
+    for row in rows:
+        code = row.get("code")
+        short_text = row.get("short_text")
+        key = preprocess_text(str(short_text)) if short_text else None
+        candidates = by_text.get(key) if key else None
+
+        if not code or code in taken_codes or not candidates:
+            remaining.append(row)
+            continue
+
+        updates.append({
+            "id": candidates.pop(0),
+            "code": code,
+            # The uploaded file may not carry these columns at all; keep whatever
+            # GAMMA assigned at export time rather than blanking it out.
+            "class_id": _nan_to_none(row.get("class_id")),
+            "unit_of_measure_id": _nan_to_none(row.get("unit_of_measure_id")),
+            "short_text": short_text,
+            "deletion_flag": row.get("deletion_flag", False),
+        })
+        taken_codes.add(code)
+
+    if updates:
+        db.execute(
+            text("""
+                UPDATE silver.materials SET
+                    code               = :code,
+                    class_id           = COALESCE(CAST(:class_id AS BIGINT), class_id),
+                    unit_of_measure_id = COALESCE(CAST(:unit_of_measure_id AS BIGINT), unit_of_measure_id),
+                    short_text         = :short_text,
+                    deletion_flag      = :deletion_flag,
+                    updated_at         = now()
+                WHERE id = :id
+            """),
+            updates,
+        )
+
+    return remaining, len(updates)
 
 
 # ── Upload endpoints ─────────────────────────────────────────
@@ -170,6 +258,12 @@ def upload_materials(file: UploadFile = File(...), db: Session = Depends(get_db)
                 if pd.isna(v) if isinstance(v, float) else False:
                     row[k] = None
 
+        total_rows = len(rows)
+
+        # Materials GAMMA already created (code pending) get their SAP code
+        # stamped onto the existing row instead of being inserted again.
+        rows, reconciled = _reconcile_pending_materials(db, rows)
+
         if rows:
             cols_str = ", ".join(rows[0].keys())
             vals_str = ", ".join(f":{k}" for k in rows[0].keys())
@@ -185,12 +279,13 @@ def upload_materials(file: UploadFile = File(...), db: Session = Depends(get_db)
             )
 
         elapsed = round(time.time() - t0, 3)
-        _log_ingestion(db, file.filename, "silver.materials", len(rows), "success", elapsed_s=elapsed)
+        _log_ingestion(db, file.filename, "silver.materials", total_rows, "success", elapsed_s=elapsed)
         db.commit()
 
         return IngestionResult(
             file_name=file.filename, target="silver.materials",
-            row_count=len(rows), status="success", elapsed_s=elapsed,
+            row_count=total_rows, status="success", elapsed_s=elapsed,
+            reconciled_count=reconciled,
         )
     except HTTPException:
         raise
