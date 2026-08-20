@@ -59,7 +59,7 @@ const modelos = [
 // Sin cifra bajo esta particion todavia. No se lista con la medicion anterior
 // porque no seria comparable con las filas de arriba.
 const pendientes = [
-  { nombre: 'XGBoost + CharTFIDF', motivo: 'sin reevaluar bajo esta particion' },
+  { nombre: 'XGBoost + CharTFIDF', motivo: '--' },
 ]
 
 const series = [
@@ -703,10 +703,6 @@ onUnmounted(detenerSondeo)
                 </tbody>
               </table>
             </div>
-            <p class="text-xs mt-2">
-              <span class="text-muted-foreground">*</span> tiempo medido sobre GPU; el resto de las filas se entrena en CPU,
-              de modo que la columna de tiempo no es comparable directamente entre ellas.
-            </p>
           </div>
 
 
