@@ -88,11 +88,11 @@
 \contentsline {subsection}{\numberline {8.5.5}Impacto financiero}{34}{subsection.111}%
 \contentsline {section}{\numberline {8.6}Visualizacion de resultados}{35}{section.113}%
 \contentsline {subsection}{\numberline {8.6.1}Tarjetas KPI}{35}{subsection.114}%
-\contentsline {subsection}{\numberline {8.6.2}Tiempo de máquina por tipo}{35}{subsection.116}%
+\contentsline {subsection}{\numberline {8.6.2}Tiempo de máquina por tipo}{36}{subsection.116}%
 \contentsline {subsection}{\numberline {8.6.3}Desempeño por gestor}{36}{subsection.118}%
-\contentsline {subsection}{\numberline {8.6.4}Confirmadas, Descartadas y Exportadas}{36}{subsection.120}%
+\contentsline {subsection}{\numberline {8.6.4}Confirmadas, Descartadas y Exportadas}{37}{subsection.120}%
 \contentsline {subsection}{\numberline {8.6.5}Duplicados por semana}{37}{subsection.122}%
-\contentsline {subsection}{\numberline {8.6.6}Desglose de tiempo por etapas}{37}{subsection.125}%
+\contentsline {subsection}{\numberline {8.6.6}Desglose de tiempo por etapas}{38}{subsection.125}%
 \contentsline {chapter}{\numberline {9}Discusión}{40}{chapter.127}%
 \contentsline {section}{\numberline {9.1}Selección del algoritmo}{40}{section.128}%
 \contentsline {section}{\numberline {9.2}Efecto del desbalance de clases}{40}{section.129}%

@@ -176,7 +176,7 @@ pareja: ZEQU presenta la mayor tasa relativa, con 35.2\% de sus registros
 duplicados, mientras que ZRPI concentra el mayor volumen absoluto, con 973
 casos.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figuras/modelos/fig_global_duplicados.png}
     \caption{Duplicados exactos por tipo de material, en número absoluto y como porcentaje del total}
@@ -211,7 +211,7 @@ promedio de 31.9 caracteres por tipo, lo que confirma la restricción
 estructural descrita en el Capítulo 4 como causa directa de las abreviaturas
 inconsistentes entre gestores.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figuras/modelos/fig_global_longitud.png}
     \caption{Longitud promedio del texto breve por tipo de material}
@@ -454,7 +454,7 @@ El tablero operativo contiene dos filtros, categoría de material y gestor. Esto
 \subsection{Tarjetas KPI}
 Seis tarjetas resumen el periodo del piloto de un vistazo.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figuras/tablero_operativo_tarjetas_kpi_v2.png}
 \caption{Tarjetas KPI del tablero operativo}
@@ -471,7 +471,7 @@ Seis tarjetas resumen el periodo del piloto de un vistazo.
 
 \subsection{Tiempo de máquina por tipo}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.6\textwidth]{figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png}
 \caption{Tiempo de máquina por tipo de material}
@@ -482,7 +482,7 @@ Los tipos con un catálogo original más sucio (ZEQU, ZQUI) tienden a tardar má
 
 \subsection{Desempeño por gestor}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figuras/tablero_operativo_desempeno_por_gestor_v2.png}
 \caption{Desempeño por gestor}
@@ -494,7 +494,7 @@ Esta es la vista de jefatura de equipo: compara gestores lado a lado en las mism
 
 \subsection{Confirmadas, Descartadas y Exportadas}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png}
 \caption{Estados de las solicitudes: confirmadas, descartadas y exportadas}
@@ -505,7 +505,7 @@ Estos estados siguen el ciclo de vida de una solicitud dentro del agente: se con
 
 \subsection{Duplicados por semana}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{figuras/tablero_operativo_duplicados_por_semana.png}
 \caption{Duplicados presentados y aceptados por semana}
@@ -513,7 +513,7 @@ Estos estados siguen el ciclo de vida de una solicitud dentro del agente: se con
 
 El gráfico desglosa, semana a semana, cuántos duplicados presentó el agente frente a cuántos aceptó el gestor. Seguir esta relación en el tiempo —y no solo su promedio acumulado— permite distinguir si la tasa de aceptación se mantiene estable a medida que el catálogo crece, o si se degrada conforme se acumulan más candidatos por revisar.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.4\textwidth]{figuras/tablero_operativo_tasa_aceptacion_duplicados.png}
 \caption{Tasa de aceptación de duplicados}
@@ -523,7 +523,7 @@ La tarjeta de 20.5\% es la proporción de duplicados presentados por el agente q
 
 \subsection{Desglose de tiempo por etapas}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{figuras/tablero_operativo_desglose_tiempo_por_etapas.png}
 \caption{Desglose de tiempo por etapas del proceso}
@@ -536,28 +536,28 @@ El desglose por etapa hace visible dónde se concentra el tiempo de cómputo de 
 \section{Selección del algoritmo}
 El resultado más relevante de la competencia es que la configuración más simple resultó también la mejor, y por un margen consistente en las cuatro métricas de desempeño. La máquina de vectores de soporte lineal sobre una representación de caracteres superó tanto a los métodos de ensamble como a las arquitecturas basadas en aprendizaje profundo.
 
-La diferencia en costo computacional refuerza esa conclusión. XGBoost consumió más de tres horas de entrenamiento para quedar tres puntos porcentuales por debajo del ganador, que se entrenó en poco más de un minuto; la regresión logística sobre n-gramas de carácter tardó diecisiete veces más que el ganador para un resultado también inferior; y el transformador multilingüe requirió cincuenta veces el tiempo del ganador —sobre una unidad de procesamiento gráfico, mientras que el ganador se entrena sobre procesador convencional— para quedar diez puntos porcentuales por debajo. En un sistema concebido para reentrenarse periódicamente conforme el catálogo crece, esa diferencia deja de ser un detalle de laboratorio: un modelo que exige horas de cómputo para actualizarse es un modelo que en la práctica no se actualiza.
+La diferencia en costo computacional refuerza esa conclusión. XGBoost consumió más de tres horas de entrenamiento para quedar apenas seis décimas de punto porcentual por debajo del ganador, que se entrenó en menos de un minuto; la regresión logística sobre n-gramas de carácter tardó casi veinte veces más que el ganador para un resultado también inferior; y el transformador multilingüe requirió sesenta veces el tiempo del ganador —sobre una unidad de procesamiento gráfico, mientras que el ganador se entrena sobre procesador convencional— sin lograr superarlo. En un sistema concebido para reentrenarse periódicamente conforme el catálogo crece, esa diferencia deja de ser un detalle de laboratorio: un modelo que exige horas de cómputo para actualizarse es un modelo que en la práctica no se actualiza, y ninguno de los modelos más costosos ofreció a cambio una mejora de exactitud que lo justificara.
 
 Este hallazgo es consistente con la naturaleza del problema. Las descripciones del maestro son textos cortos, altamente estructurados y con vocabulario técnico acotado; no contienen la ambigüedad sintáctica ni las dependencias de largo alcance que justifican modelos de mayor capacidad. Un clasificador lineal sobre una representación de caracteres captura precisamente el tipo de regularidad que este texto exhibe.
 
 \section{Efecto del desbalance de clases}
-Todas las configuraciones evaluadas muestran una brecha sistemática entre el F1 macro y el ponderado, de entre nueve y quince puntos en las configuraciones clásicas y de treinta puntos en el transformador. Esa brecha es la expresión cuantitativa del desbalance descrito en los resultados: los modelos aciertan considerablemente mejor sobre las clases pobladas que sobre las minoritarias, y dado que más de la mitad de las clases cuenta con diez materiales o menos, el promedio no ponderado penaliza con fuerza ese comportamiento.
+Todas las configuraciones evaluadas muestran una brecha sistemática entre el F1 macro y el ponderado, de entre nueve y quince puntos en las configuraciones clásicas y de veinte puntos en el transformador. Esa brecha es la expresión cuantitativa del desbalance descrito en los resultados: los modelos aciertan considerablemente mejor sobre las clases pobladas que sobre las minoritarias, y dado que más de la mitad de las clases cuenta con diez materiales o menos, el promedio no ponderado penaliza con fuerza ese comportamiento.
 
-Resulta significativo que el ordenamiento entre configuraciones no sea idéntico bajo ambas métricas. La regresión logística sobre n-gramas de carácter alcanza la tercera mejor exactitud pero el peor F1 macro del conjunto, lo que indica que su desempeño se concentra desproporcionadamente en las categorías frecuentes. El modelo seleccionado, en cambio, lidera ambas métricas, lo que sugiere un comportamiento más uniforme a lo largo de la taxonomía y no solo un buen resultado agregado.
+Resulta significativo que el ordenamiento entre configuraciones no sea idéntico bajo ambas métricas. La regresión logística sobre n-gramas de carácter presenta la mayor distancia entre ambas métricas de todas las configuraciones clásicas, lo que indica que su desempeño se concentra desproporcionadamente en las categorías frecuentes. El modelo seleccionado, en cambio, lidera ambas métricas, lo que sugiere un comportamiento más uniforme a lo largo de la taxonomía y no solo un buen resultado agregado.
 
 \section{Desempeño del transformador}
 El transformador multilingüe es el caso que con mayor claridad delimita el alcance de la conclusión anterior. Es el único de los siete candidatos que modela el texto de forma contextual en lugar de tratarlo como un conjunto no ordenado de rasgos, y por lo tanto el único que podría, en principio, capturar regularidades que la representación vectorial descarta por construcción.
 
-El modelo converge de forma sostenida a lo largo de las quince épocas y alcanza una exactitud del 74.79\,\%, de modo que aprende efectivamente la tarea. La comparación adquiere entonces sentido: queda diez puntos porcentuales de exactitud y treinta y cinco puntos de F1 macro por debajo de la configuración lineal, empleando cincuenta veces su tiempo de entrenamiento y sobre hardware especializado, mientras que la configuración ganadora se entrena sobre procesador convencional.
+El modelo converge de forma sostenida a lo largo de las quince épocas y alcanza una exactitud del 79.95\,\%, de modo que aprende efectivamente la tarea y queda a poco más de dos puntos porcentuales de la configuración lineal. La distancia real está en el F1 macro, catorce puntos por debajo, y en el costo de entrenamiento: sesenta veces el tiempo del ganador y sobre hardware especializado, mientras que la configuración ganadora se entrena sobre procesador convencional. Su cercanía en exactitud pura no se traduce en un desempeño equivalente sobre las clases minoritarias, ni en un costo de mantenimiento comparable.
 
 La distancia en F1 macro es la más elocuente, porque señala dónde se produce la pérdida: el modelo resuelve razonablemente las categorías de mayor volumen y se desploma en la cola larga de la taxonomía. Esa asimetría es consistente con la exigencia de datos por clase que la literatura documenta para esta familia \cite{vaswani2017}, y constituye la evidencia más directa de la tesis central del capítulo: con una mediana de nueve materiales por categoría, la capacidad adicional del modelo no encuentra información con la cual estimarse.
 
-Corresponde acotar el alcance de esta afirmación. El resultado se obtuvo bajo un presupuesto fijo de quince épocas con decaimiento lineal de la tasa de aprendizaje, de modo que no constituye el techo de desempeño de la arquitectura y un presupuesto mayor probablemente lo mejoraría en algunos puntos. Lo que resulta implausible es que un presupuesto mayor cierre una brecha de treinta y cinco puntos en F1 macro, porque esa brecha no se origina en el tiempo de entrenamiento sino en la cantidad de ejemplos disponibles por categoría, que es una propiedad fija del conjunto de datos.
+Corresponde acotar el alcance de esta afirmación. El resultado se obtuvo bajo un presupuesto fijo de quince épocas con decaimiento lineal de la tasa de aprendizaje, de modo que no constituye el techo de desempeño de la arquitectura y un presupuesto mayor probablemente lo mejoraría en algunos puntos. Con todo, la brecha de catorce puntos en F1 macro no se origina únicamente en el tiempo de entrenamiento sino en la cantidad de ejemplos disponibles por categoría, que es una propiedad fija del conjunto de datos y que ningún presupuesto adicional modifica.
 
 \section{Naturaleza de los errores del modelo}
 El examen de las confusiones más frecuentes arroja el hallazgo de mayor alcance del análisis, y trasciende el desempeño del modelo. La mayoría de esos casos no son errores de clasificación en sentido estricto, sino manifestaciones de un problema del propio catálogo: existen pares de clases que designan el mismo concepto y difieren únicamente en puntuación, acentuación o separador.
 
-Los pares \textit{FUENTE:ALIMENTACIÓN} y \textit{FUENTE ALIMENTACION}, o \textit{CARGADOR DE BATERIAS} y \textit{CARGADOR:BATERIAS}, son clases distintas en la taxonomía pero indistinguibles en su significado. El caso más elocuente es el de \textit{FUSIBLE} confundido consigo mismo, que solo puede corresponder a dos códigos de clase homónimos coexistiendo en el catálogo. Ninguna representación del texto puede discriminar entre categorías que son semánticamente idénticas: una fracción del error medido es irreducible mientras la taxonomía no se depure.
+Los pares \textit{FUENTE:ALIMENTACIÓN} y \textit{FUENTE ALIMENTACION}, o \textit{CABLE:ELECTRICO} y \textit{CABLE ELECTRICO}, son clases distintas en la taxonomía pero indistinguibles en su significado. El caso más elocuente es el de \textit{FUSIBLE} confundido consigo mismo, que solo puede corresponder a dos códigos de clase homónimos coexistiendo en el catálogo. Ninguna representación del texto puede discriminar entre categorías que son semánticamente idénticas: una fracción del error medido es irreducible mientras la taxonomía no se depure.
 
 Esto tiene dos implicaciones. La primera es metodológica: la exactitud del 82.08\,\% subestima el desempeño real del modelo, ya que una parte de sus errores consiste en asignar una etiqueta correcta que la taxonomía duplica bajo otro código. La segunda es operativa: el análisis de errores del modelo constituye, por sí mismo, un instrumento de diagnóstico de la calidad del catálogo, capaz de señalar los pares de clases candidatos a fusión. La herramienta construida para clasificar materiales resultó también un mecanismo para detectar defectos en la taxonomía que los clasifica.
 

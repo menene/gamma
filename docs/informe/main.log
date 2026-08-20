@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.8.9)  14 AUG 2026 21:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.8.9)  14 AUG 2026 22:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -992,30 +992,22 @@ File: figuras/modelos/fig_global_duplicados.png Graphic file (type png)
 <use figuras/modelos/fig_global_duplicados.png>
 Package pdftex.def Info: figuras/modelos/fig_global_duplicados.png  used on input line 181.
 (pdftex.def)             Requested size: 390.25536pt x 133.31648pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figuras/modelos/fig_global_calidad_heatmap.png, id=654, 993.7125pt x 692.5875pt>
+LaTeX Info: Redefining \. on input line 185.
+LaTeX Info: Redefining \% on input line 185.
+ [26 <./figuras/modelos/fig_global_distribucion.png>]
+<figuras/modelos/fig_global_calidad_heatmap.png, id=660, 993.7125pt x 692.5875pt>
 File: figuras/modelos/fig_global_calidad_heatmap.png Graphic file (type png)
 <use figuras/modelos/fig_global_calidad_heatmap.png>
 Package pdftex.def Info: figuras/modelos/fig_global_calidad_heatmap.png  used on input line 188.
 (pdftex.def)             Requested size: 325.215pt x 226.6629pt.
-LaTeX Info: Redefining \. on input line 208.
-LaTeX Info: Redefining \% on input line 208.
-[26 <./figuras/modelos/fig_global_distribucion.png>]
 <figuras/modelos/fig_global_longitud.png, id=663, 1193.45876pt x 490.83376pt>
 File: figuras/modelos/fig_global_longitud.png Graphic file (type png)
 <use figuras/modelos/fig_global_longitud.png>
 Package pdftex.def Info: figuras/modelos/fig_global_longitud.png  used on input line 216.
 (pdftex.def)             Requested size: 390.25536pt x 160.5002pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-LaTeX Info: Redefining \. on input line 228.
-LaTeX Info: Redefining \% on input line 228.
-[27 <./figuras/modelos/fig_global_duplicados.png> <./figuras/modelos/fig_global_calidad_heatmap.png>]
+LaTeX Info: Redefining \. on input line 220.
+LaTeX Info: Redefining \% on input line 220.
+ [27 <./figuras/modelos/fig_global_duplicados.png> <./figuras/modelos/fig_global_calidad_heatmap.png>]
 LaTeX Info: Redefining \. on input line 228.
 LaTeX Info: Redefining \% on input line 228.
  [28 <./figuras/modelos/fig_global_longitud.png>]
@@ -1070,13 +1062,9 @@ File: figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png Graphic file (typ
 <use figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png>
 Package pdftex.def Info: figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png  used on input line 476.
 (pdftex.def)             Requested size: 260.17465pt x 224.70415pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-LaTeX Info: Redefining \. on input line 483.
-LaTeX Info: Redefining \% on input line 483.
-[35 <./figuras/tablero_operativo_tarjetas_kpi_v2.png>]
+LaTeX Info: Redefining \. on input line 479.
+LaTeX Info: Redefining \% on input line 479.
+ [35 <./figuras/tablero_operativo_tarjetas_kpi_v2.png>]
 <figuras/tablero_operativo_desempeno_por_gestor_v2.png, id=769, 657.45625pt x 110.4125pt>
 File: figuras/tablero_operativo_desempeno_por_gestor_v2.png Graphic file (type png)
 <use figuras/tablero_operativo_desempeno_por_gestor_v2.png>
@@ -1087,60 +1075,49 @@ File: figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png Graphi
 <use figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png>
 Package pdftex.def Info: figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png  used on input line 499.
 (pdftex.def)             Requested size: 216.81pt x 118.9159pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figuras/tablero_operativo_duplicados_por_semana.png, id=771, 265.99374pt x 250.9375pt>
+LaTeX Info: Redefining \. on input line 502.
+LaTeX Info: Redefining \% on input line 502.
+ [36 <./figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png> <./figuras/tablero_operativo_desempeno_por_gestor_v2.png>]
+<figuras/tablero_operativo_duplicados_por_semana.png, id=775, 265.99374pt x 250.9375pt>
 File: figuras/tablero_operativo_duplicados_por_semana.png Graphic file (type png)
 <use figuras/tablero_operativo_duplicados_por_semana.png>
 Package pdftex.def Info: figuras/tablero_operativo_duplicados_por_semana.png  used on input line 510.
 (pdftex.def)             Requested size: 216.81pt x 204.54095pt.
-LaTeX Info: Redefining \. on input line 512.
-LaTeX Info: Redefining \% on input line 512.
-[36 <./figuras/tablero_operativo_tiempo_maquina_por_tipo_v2.png> <./figuras/tablero_operativo_desempeno_por_gestor_v2.png>]
 <figuras/tablero_operativo_tasa_aceptacion_duplicados.png, id=776, 265.99374pt x 155.58125pt>
 File: figuras/tablero_operativo_tasa_aceptacion_duplicados.png Graphic file (type png)
 <use figuras/tablero_operativo_tasa_aceptacion_duplicados.png>
 Package pdftex.def Info: figuras/tablero_operativo_tasa_aceptacion_duplicados.png  used on input line 518.
 (pdftex.def)             Requested size: 173.44534pt x 101.45183pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<figuras/tablero_operativo_desglose_tiempo_por_etapas.png, id=777, 487.8225pt x 559.08875pt>
+LaTeX Info: Redefining \. on input line 521.
+LaTeX Info: Redefining \% on input line 521.
+ [37 <./figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png> <./figuras/tablero_operativo_duplicados_por_semana.png>]
+<figuras/tablero_operativo_desglose_tiempo_por_etapas.png, id=781, 487.8225pt x 559.08875pt>
 File: figuras/tablero_operativo_desglose_tiempo_por_etapas.png Graphic file (type png)
 <use figuras/tablero_operativo_desglose_tiempo_por_etapas.png>
 Package pdftex.def Info: figuras/tablero_operativo_desglose_tiempo_por_etapas.png  used on input line 528.
 (pdftex.def)             Requested size: 303.53267pt x 347.87695pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
 LaTeX Info: Redefining \. on input line 533.
 LaTeX Info: Redefining \% on input line 533.
-[37 <./figuras/tablero_operativo_confirmadas_descartadas_exportadas_v2.png> <./figuras/tablero_operativo_duplicados_por_semana.png>]
+ [38 <./figuras/tablero_operativo_tasa_aceptacion_duplicados.png> <./figuras/tablero_operativo_desglose_tiempo_por_etapas.png>]
 LaTeX Info: Redefining \. on input line 534.
 LaTeX Info: Redefining \% on input line 534.
- [38 <./figuras/tablero_operativo_tasa_aceptacion_duplicados.png>]
-LaTeX Info: Redefining \. on input line 534.
-LaTeX Info: Redefining \% on input line 534.
- [39 <./figuras/tablero_operativo_desglose_tiempo_por_etapas.png>]
+ [39]
 Cap\'{\i }tulo 9.
 [40
 
 ]
-LaTeX Info: Redefining \. on input line 563.
-LaTeX Info: Redefining \% on input line 563.
+LaTeX Info: Redefining \. on input line 561.
+LaTeX Info: Redefining \% on input line 561.
  [41]
-LaTeX Info: Redefining \. on input line 581.
-LaTeX Info: Redefining \% on input line 581.
+LaTeX Info: Redefining \. on input line 579.
+LaTeX Info: Redefining \% on input line 579.
  [42]
-LaTeX Info: Redefining \. on input line 599.
-LaTeX Info: Redefining \% on input line 599.
- [43])
-LaTeX Info: Redefining \. on input line 353.
-LaTeX Info: Redefining \% on input line 353.
- [44]
+LaTeX Info: Redefining \. on input line 596.
+LaTeX Info: Redefining \% on input line 596.
+ [43]
+LaTeX Info: Redefining \. on input line 613.
+LaTeX Info: Redefining \% on input line 613.
+ [44])
 LaTeX Info: Redefining \. on input line 353.
 LaTeX Info: Redefining \% on input line 353.
  [45]
@@ -1327,7 +1304,7 @@ Here is how much of TeX's memory you used:
  345 hyphenation exceptions out of 8191
  110i,10n,107p,2540b,1069s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfbi0900.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfbx0900.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfcc1000.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfrm2488.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfsl1000.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfss1440.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfss2488.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfti0900.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/cm-super/sfxc1000.pfb>
-Output written on main.pdf (82 pages, 2381491 bytes).
+Output written on main.pdf (82 pages, 2381983 bytes).
 PDF statistics:
  1528 PDF objects out of 1728 (max. 8388607)
  1298 compressed objects within 13 object streams
