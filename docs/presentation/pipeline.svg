@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 300" font-family="Inter, system-ui, -apple-system, sans-serif" role="img" aria-label="Pipeline del modelo ganador">
+  <defs><marker id="mp" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="9" markerHeight="7" orient="auto">
+    <path d="M0,0 L10,4 L0,8 Z" fill="#c4cace"/></marker></defs>
+  <rect x="15" y="74" width="250" height="132" rx="14" fill="#ffffff" stroke="#e6e6e3" stroke-width="1.5"/>
+  <text x="140" y="120" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="-0.4" fill="#15181b">Descripcion libre</text>
+  <text x="140" y="150" text-anchor="middle" font-size="16" fill="#7a8288">texto del gestor</text>
+  <line x1="277" y1="140" x2="308" y2="140" stroke="#c4cace" stroke-width="2" marker-end="url(#mp)"/>
+  <rect x="320" y="74" width="250" height="132" rx="14" fill="#ffffff" stroke="#e6e6e3" stroke-width="1.5"/>
+  <text x="445" y="120" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="-0.4" fill="#15181b">Normalizacion</text>
+  <text x="445" y="150" text-anchor="middle" font-size="16" fill="#7a8288">mayusculas, sin tildes</text>
+  <text x="445" y="176" text-anchor="middle" font-size="16" fill="#7a8288">sin separadores</text>
+  <line x1="582" y1="140" x2="613" y2="140" stroke="#c4cace" stroke-width="2" marker-end="url(#mp)"/>
+  <rect x="625" y="74" width="250" height="132" rx="14" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="750" y="120" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="-0.4" fill="#0f766e">TF-IDF de caracter</text>
+  <text x="750" y="150" text-anchor="middle" font-size="16" fill="#7a8288">n-gramas de 2 a 5</text>
+  <text x="750" y="176" text-anchor="middle" font-size="16" fill="#7a8288">50,000 dimensiones</text>
+  <line x1="887" y1="140" x2="918" y2="140" stroke="#c4cace" stroke-width="2" marker-end="url(#mp)"/>
+  <rect x="930" y="74" width="250" height="132" rx="14" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="1055" y="120" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="-0.4" fill="#0f766e">SVM lineal calibrada</text>
+  <text x="1055" y="150" text-anchor="middle" font-size="16" fill="#7a8288">1,234 fronteras</text>
+  <text x="1055" y="176" text-anchor="middle" font-size="16" fill="#7a8288">probabilidades</text>
+  <line x1="1192" y1="140" x2="1223" y2="140" stroke="#c4cace" stroke-width="2" marker-end="url(#mp)"/>
+  <rect x="1235" y="74" width="250" height="132" rx="14" fill="#ffffff" stroke="#e6e6e3" stroke-width="1.5"/>
+  <text x="1360" y="120" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="-0.4" fill="#15181b">Top-3 + confianza</text>
+  <text x="1360" y="150" text-anchor="middle" font-size="16" fill="#7a8288">al gestor</text>
+  <text x="750" y="258" text-anchor="middle" font-size="18" fill="#a8afb4">Un solo artefacto serializado &#183; 0.09 s por solicitud</text>
+</svg>

@@ -11,6 +11,7 @@ const router = createRouter({
     { path: '/referencia', component: () => import('@/pages/Referencia.vue'), meta: { admin: true } },
     { path: '/lab', component: () => import('@/pages/Lab.vue'), meta: { admin: true } },
     { path: '/ayuda', component: () => import('@/pages/Ayuda.vue') },
+    { path: '/presentacion', component: () => import('@/pages/Deck.vue') },
     { path: '/chat', component: () => import('@/pages/Chat.vue') },
     { path: '/modelo', component: () => import('@/pages/Modelo.vue'), meta: { admin: true } },
     { path: '/usuarios', component: () => import('@/pages/Usuarios.vue'), meta: { admin: true } },

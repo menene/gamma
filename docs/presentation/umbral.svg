@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 600" font-family="Inter, system-ui, -apple-system, sans-serif" role="img" aria-label="Exactitud y cobertura del modelo segun el umbral de confianza">
+  <rect x="1072" y="64" width="116" height="380" rx="10" fill="#f2f5f4"/>
+  <text x="1130" y="52" text-anchor="middle" font-size="15" font-weight="600" letter-spacing="1.4" fill="#7a8288">ADOPTADO</text>
+  <line x1="150" y1="430.0" x2="1130" y2="430.0" stroke="#efefec" stroke-width="1"/>
+  <text x="128" y="436.0" text-anchor="end" font-size="17" fill="#a8afb4">0 %</text>
+  <line x1="150" y1="342.0" x2="1130" y2="342.0" stroke="#efefec" stroke-width="1"/>
+  <text x="128" y="348.0" text-anchor="end" font-size="17" fill="#a8afb4">25 %</text>
+  <line x1="150" y1="254.0" x2="1130" y2="254.0" stroke="#efefec" stroke-width="1"/>
+  <text x="128" y="260.0" text-anchor="end" font-size="17" fill="#a8afb4">50 %</text>
+  <line x1="150" y1="166.0" x2="1130" y2="166.0" stroke="#efefec" stroke-width="1"/>
+  <text x="128" y="172.0" text-anchor="end" font-size="17" fill="#a8afb4">75 %</text>
+  <line x1="150" y1="78.0" x2="1130" y2="78.0" stroke="#efefec" stroke-width="1"/>
+  <text x="128" y="84.0" text-anchor="end" font-size="17" fill="#a8afb4">100 %</text>
+  <text x="150" y="470" text-anchor="middle" font-size="19" fill="#7a8288" font-weight="400">Sin umbral</text>
+  <text x="395" y="470" text-anchor="middle" font-size="19" fill="#7a8288" font-weight="400">0.5</text>
+  <text x="640" y="470" text-anchor="middle" font-size="19" fill="#7a8288" font-weight="400">0.6</text>
+  <text x="885" y="470" text-anchor="middle" font-size="19" fill="#7a8288" font-weight="400">0.7</text>
+  <text x="1130" y="470" text-anchor="middle" font-size="19" fill="#15181b" font-weight="600">0.8</text>
+  <text x="640" y="512" text-anchor="middle" font-size="16" letter-spacing="1.6" fill="#a8afb4">UMBRAL DE CONFIANZA</text>
+  <path d="M150.0,141.1 L395.0,102.9 L640.0,95.0 L885.0,89.3 L1130.0,81.9" fill="none" stroke="#0d8b7d" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="150.0" cy="141.1" r="5.5" fill="#0d8b7d" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="395.0" cy="102.9" r="5.5" fill="#0d8b7d" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="640.0" cy="95.0" r="5.5" fill="#0d8b7d" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="885.0" cy="89.3" r="5.5" fill="#0d8b7d" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="1130.0" cy="81.9" r="8" fill="#0d8b7d" stroke="#fbfbfa" stroke-width="2"/>
+  <path d="M150.0,78.0 L395.0,169.8 L640.0,200.9 L885.0,239.5 L1130.0,330.6" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="150.0" cy="78.0" r="5.5" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="395.0" cy="169.8" r="5.5" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="640.0" cy="200.9" r="5.5" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="885.0" cy="239.5" r="5.5" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
+  <circle cx="1130.0" cy="330.6" r="8" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
+  <text x="150" y="177" text-anchor="middle" font-size="21" font-weight="700" fill="#0d8b7d">82.1 %</text>
+  <text x="1130" y="118" text-anchor="middle" font-size="21" font-weight="700" fill="#0d8b7d">98.9 %</text>
+  <text x="150" y="54" text-anchor="middle" font-size="21" font-weight="700" fill="#b45309">100.0 %</text>
+  <text x="1130" y="367" text-anchor="middle" font-size="21" font-weight="700" fill="#b45309">28.2 %</text>
+  <circle cx="156" cy="544" r="6.5" fill="#0d8b7d"/>
+  <text x="174" y="551" font-size="19" fill="#7a8288">Exactitud</text>
+  <circle cx="346" cy="544" r="6.5" fill="#b45309"/>
+  <text x="364" y="551" font-size="19" fill="#7a8288">Cobertura</text>
+  <text x="1130" y="551" text-anchor="end" font-size="17" fill="#a8afb4">Se gana poca exactitud y se paga mucha cobertura</text>
+</svg>

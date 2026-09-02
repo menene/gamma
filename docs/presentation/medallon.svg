@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 620" font-family="Inter, system-ui, -apple-system, sans-serif" role="img" aria-label="Arquitectura medallon: anillos bronze, silver y gold">
+
+  <!-- medallon -->
+  <circle cx="330" cy="310" r="260" fill="none" stroke="#efefec" stroke-width="1.5"/>
+  <circle cx="330" cy="310" r="250" fill="#fdf3e7" stroke="#b45309" stroke-width="2"/>
+  <circle cx="330" cy="310" r="175" fill="#f1f3f6" stroke="#5a6675" stroke-width="2"/>
+  <circle cx="330" cy="310" r="100" fill="#e6f2f0" stroke="#0f766e" stroke-width="2"/>
+  <text x="330" y="98" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="2.4" fill="#b45309">BRONZE</text>
+  <text x="330" y="173" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="2.4" fill="#5a6675">SILVER</text>
+  <text x="330" y="318" text-anchor="middle" font-size="20" font-weight="600" letter-spacing="2.4" fill="#0f766e">GOLD</text>
+
+
+  <!-- leyenda bronze -->
+  <circle cx="697" cy="102" r="7" fill="#b45309"/>
+  <text x="720" y="108" font-size="15" font-weight="600" letter-spacing="2" fill="#b45309">BRONZE</text>
+  <text x="690" y="154" font-size="31" font-weight="600" letter-spacing="-0.7" fill="#15181b">Lo crudo y la memoria</text>
+  <text x="690" y="200" font-size="19" fill="#7a8288">Archivos de SAP tal cual, con marca de tiempo</text>
+  <text x="690" y="232" font-size="19" fill="#7a8288">Ingestas, predicciones, decisiones, LLM, errores</text>
+
+  <!-- leyenda silver -->
+  <circle cx="697" cy="280" r="7" fill="#5a6675"/>
+  <text x="720" y="286" font-size="15" font-weight="600" letter-spacing="2" fill="#5a6675">SILVER</text>
+  <text x="690" y="332" font-size="31" font-weight="600" letter-spacing="-0.7" fill="#15181b">Donde el API trabaja</text>
+  <text x="690" y="378" font-size="19" fill="#7a8288">Mapeo de esquema y llaves for&#225;neas</text>
+  <text x="690" y="410" font-size="19" fill="#7a8288">UPSERT idempotente e &#237;ndice de trigramas</text>
+
+  <!-- leyenda gold -->
+  <circle cx="697" cy="458" r="7" fill="#0f766e"/>
+  <text x="720" y="464" font-size="15" font-weight="600" letter-spacing="2" fill="#0f766e">GOLD</text>
+  <text x="690" y="510" font-size="31" font-weight="600" letter-spacing="-0.7" fill="#15181b">No almacena. Calcula.</text>
+  <text x="690" y="556" font-size="19" fill="#7a8288">Vistas en tiempo real sobre silver</text>
+  <text x="690" y="588" font-size="19" fill="#7a8288">Tiempos, calidad, duplicados, ahorro</text>
+
+  <text x="330" y="602" text-anchor="middle" font-size="17" fill="#a8afb4" letter-spacing="0.3">De lo crudo (fuera) a los indicadores (centro)</text>
+</svg>

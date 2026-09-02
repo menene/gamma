@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GAMMA — Modelos y experimento</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#fbfbfa;
+    --ink:#15181b;
+    --muted:#7a8288;
+    --faint:#a8afb4;
+    --accent:#0f766e;
+    --accent-soft:#e6f2f0;
+    --rule:#e6e6e3;
+    --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  }
+
+  .reveal-viewport{ background:var(--bg); }
+
+  .reveal{
+    font-family:var(--font);
+    color:var(--ink);
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- canvas ---------- */
+  .reveal .slides{ text-align:left; }
+  /* Sin override de `display`: reveal.js oculta las laminas inactivas con
+     display:none, y forzarlo aqui las mostraria todas apiladas. El centrado
+     vertical lo resuelve la opcion `center` de reveal.
+
+     `box-sizing` es obligatorio: reveal declara las secciones como width:100%
+     (= 1600px) y NO trae un border-box global, de modo que sin esto el padding
+     se suma por fuera y la lamina desborda 180px por la derecha. */
+  .reveal .slides section{ box-sizing:border-box; padding:0 90px; }
+  .reveal .slides section *{ box-sizing:border-box; }
+
+  /* ---------- typography ---------- */
+  .reveal h1,.reveal h2{
+    font-weight:600;
+    letter-spacing:-.035em;
+    line-height:1.04;
+    margin:0;
+    text-transform:none;
+    color:var(--ink);
+  }
+  .reveal h1{ font-size:96px; }
+  .reveal h2{ font-size:64px; }
+
+  .kicker{
+    font-size:17px;
+    font-weight:500;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--faint);
+    margin:0 0 34px;
+  }
+
+  .lede{
+    font-size:30px;
+    font-weight:300;
+    line-height:1.5;
+    color:var(--muted);
+    margin:34px 0 0;
+    max-width:31em;
+  }
+
+  .rule{
+    width:64px;
+    height:3px;
+    background:var(--accent);
+    border-radius:2px;
+    margin:0 0 40px;
+  }
+
+  em.hl{ color:var(--accent); font-style:normal; }
+
+  /* ---------- cover ---------- */
+  .cover h1{ font-size:150px; letter-spacing:-.05em; }
+  .cover .sub{
+    font-size:29px;
+    font-weight:300;
+    color:var(--muted);
+    margin:26px 0 0;
+    max-width:22em;
+    line-height:1.45;
+  }
+  .cover .by{
+    font-size:19px;
+    color:var(--faint);
+    margin-top:76px;
+    letter-spacing:.02em;
+  }
+
+  /* ---------- stats ---------- */
+  .stats{ display:flex; gap:110px; align-items:flex-end; }
+  .stat .n{
+    font-size:150px;
+    font-weight:700;
+    letter-spacing:-.055em;
+    line-height:.86;
+    color:var(--accent);
+    font-variant-numeric:tabular-nums;
+  }
+  .stat .l{
+    font-size:22px;
+    font-weight:400;
+    color:var(--muted);
+    margin-top:20px;
+    line-height:1.35;
+  }
+  .stat.solo .n{ font-size:230px; }
+
+  /* ---------- triad ---------- */
+  .triad{ font-size:82px; font-weight:600; letter-spacing:-.035em; line-height:1.25; }
+  .triad span{ color:var(--faint); font-weight:300; margin:0 .18em; }
+
+  /* ---------- tables ---------- */
+  .reveal table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:26px;
+    font-variant-numeric:tabular-nums;
+    margin:0;
+  }
+  .reveal table th{
+    font-size:16px;
+    font-weight:500;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    color:var(--faint);
+    text-align:right;
+    padding:0 20px 16px;
+    border:0;
+    border-bottom:1px solid var(--rule);
+  }
+  .reveal table th:first-child{ text-align:left; }
+  .reveal table td{
+    padding:17px 20px;
+    text-align:right;
+    border:0;
+    border-bottom:1px solid var(--rule);
+    color:var(--muted);
+    font-weight:400;
+  }
+  .reveal table td:first-child{ text-align:left; color:var(--ink); }
+  .reveal table tr.win td{
+    color:var(--ink);
+    font-weight:600;
+    background:var(--accent-soft);
+  }
+  .reveal table tr.win td:first-child{ color:var(--accent); box-shadow:inset 3px 0 0 var(--accent); }
+  .reveal table tr:last-child td{ border-bottom:0; }
+
+  /* ---------- word marks ---------- */
+  .words{ display:flex; gap:26px; flex-wrap:wrap; }
+  .words b{
+    font-size:56px;
+    font-weight:600;
+    letter-spacing:-.02em;
+    color:var(--accent);
+    background:var(--accent-soft);
+    padding:14px 30px;
+    border-radius:10px;
+  }
+
+  /* ---------- metricas ---------- */
+  .metrics{ display:grid; grid-template-columns:repeat(4,1fr); gap:26px; }
+  .m{ border:1px solid var(--rule); border-radius:14px; padding:34px 30px; background:#fff; }
+  .mv{ font-size:56px; font-weight:700; letter-spacing:-.045em; color:var(--accent);
+       font-variant-numeric:tabular-nums; line-height:1; }
+  .ml{ font-size:19px; color:var(--muted); margin-top:16px; }
+
+  /* ---------- regimenes ---------- */
+  .regimes{ display:flex; gap:30px; }
+  .rg{ flex:1; border:1px solid var(--rule); border-radius:14px; padding:40px 36px; background:#fff; }
+  .rg.hi{ border-color:var(--accent); background:var(--accent-soft); }
+  .rt{ font-size:34px; font-weight:600; letter-spacing:-.025em; margin-bottom:16px; }
+  .rg.hi .rt{ color:var(--accent); }
+  .rd{ font-size:22px; font-weight:300; color:var(--muted); line-height:1.45; }
+
+  /* ---------- diagramas ---------- */
+  .diagram{ display:block; width:100%; height:auto; max-height:660px; margin:0 auto; }
+
+  /* ---------- architecture ---------- */
+  .arch{ display:flex; align-items:center; justify-content:center; }
+  /* Altura explicita, no max-height: el SVG es apaisado-vertical (940x980) y
+     con `auto` se quedaba muy por debajo del alto disponible de la lamina. */
+  .arch-svg{ height:800px; width:auto; display:block; }
+
+  /* ---------- footer ---------- */
+  .reveal .slide-number{
+    background:transparent;
+    color:var(--faint);
+    font-family:var(--font);
+    font-size:15px;
+    font-variant-numeric:tabular-nums;
+    right:34px; bottom:26px;
+  }
+  .reveal .progress{ height:2px; color:var(--accent); }
+
+  /* ---------- print ---------- */
+  @media print{ .reveal .slides section{ padding:0 90px; } }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<!-- 1 ─ Portada -->
+<section class="cover">
+  <h1>GAMMA</h1>
+  <p class="sub">Gobierno Automatizado del Maestro de Materiales</p>
+  <p class="by">Modelos, experimento y modelo ganador</p>
+  <aside class="notes">
+    Presentarse y decir en una frase qué es GAMMA: asistente inteligente en el flujo de creación de materiales SAP.
+    Anunciar el recorrido: qué construimos, cómo elegimos el modelo, y cómo funciona el que ganó.
+  </aside>
+</section>
+
+<!-- 2 ─ Punto de partida -->
+<section>
+  <p class="kicker">El punto de partida</p>
+  <div class="stats">
+    <div class="stat fragment fade-up"><div class="n">45,397</div><div class="l">materiales</div></div>
+    <div class="stat fragment fade-up"><div class="n">3.3 h</div><div class="l">por solicitud</div></div>
+    <div class="stat fragment fade-up"><div class="n">1,234</div><div class="l">categorías posibles</div></div>
+  </div>
+  <aside class="notes">
+    Catálogo de una unidad de negocio del sector energético, Centroamérica y el Caribe.
+    Cada solicitud permanecía 3.3 horas dentro del rol del gestor.
+    No existía ningún mecanismo automatizado que dijera si el material ya existía ni qué categoría le tocaba.
+    La búsqueda manual en SAP —el paso que GAMMA automatiza— consumía entre 5 y 10 minutos por solicitud.
+  </aside>
+</section>
+
+<!-- 3 ─ Tres cosas -->
+<section>
+  <div class="rule"></div>
+  <div class="triad">Normaliza <span>·</span> Compara <span>·</span> Clasifica</div>
+  <aside class="notes">
+    Normaliza la descripción con un modelo de lenguaje, según la convención ISO 8000 de la corporación.
+    Compara contra el catálogo por similitud difusa para alertar duplicados.
+    Clasifica la categoría con un modelo supervisado entrenado sobre el histórico.
+    Insistir: asiste, no sustituye. No escribe en SAP. La decisión final es del gestor.
+  </aside>
+</section>
+
+<!-- 4 ─ Arquitectura -->
+<section>
+  <div class="arch"><svg viewBox="0 0 940 980" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" class="arch-svg">
+    <rect width="940" height="980" fill="white" rx="8"/>
+
+    <defs>
+      <marker id="ah" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="6" orient="auto">
+        <path d="M0,0 L10,4 L0,8 Z" fill="#6b7280"/>
+      </marker>
+      <marker id="ah-db" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="6" orient="auto">
+        <path d="M0,0 L10,4 L0,8 Z" fill="#2563eb"/>
+      </marker>
+      <marker id="ah-llm" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="6" orient="auto">
+        <path d="M0,0 L10,4 L0,8 Z" fill="#9333ea"/>
+      </marker>
+      <marker id="ah-llm-rev" viewBox="0 0 10 8" refX="1" refY="4" markerWidth="8" markerHeight="6" orient="auto">
+        <path d="M10,0 L0,4 L10,8 Z" fill="#9333ea"/>
+      </marker>
+    </defs>
+
+    <!-- ==================== NODES ==================== -->
+
+    <!-- Frontend (teal) -->
+    <rect x="145" y="18" width="510" height="70" rx="12" fill="#f0fdfa" stroke="#2dd4bf" stroke-width="1.8"/>
+    <text x="400" y="44" text-anchor="middle" font-size="14" font-weight="600" fill="#134e4a">Frontend</text>
+    <text x="400" y="64" text-anchor="middle" font-size="10.5" fill="#4b5563">Vue 3 + Vite — Login · Chatbot · ETL · Exportador</text>
+
+    <!-- Nginx + JWT (sky blue) -->
+    <rect x="275" y="128" width="250" height="55" rx="10" fill="#f0f9ff" stroke="#38bdf8" stroke-width="1.8"/>
+    <text x="400" y="151" text-anchor="middle" font-size="13" font-weight="600" fill="#0c4a6e">Nginx + JWT</text>
+    <text x="400" y="168" text-anchor="middle" font-size="10.5" fill="#0369a1">Reverse proxy · Autenticacion</text>
+
+    <!-- API REST (green) -->
+    <rect x="275" y="225" width="250" height="55" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.8"/>
+    <text x="400" y="248" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">API REST</text>
+    <text x="400" y="265" text-anchor="middle" font-size="10.5" fill="#15803d">FastAPI · Python 3.12</text>
+
+    <!-- Duplicados (green) -->
+    <rect x="35" y="340" width="210" height="62" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
+    <text x="140" y="365" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">Duplicados</text>
+    <text x="140" y="383" text-anchor="middle" font-size="10" fill="#15803d">pg_trgm · PostgreSQL</text>
+
+    <!-- Categorizacion (green) -->
+    <rect x="290" y="340" width="210" height="62" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
+    <text x="395" y="365" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">Categorizacion</text>
+    <text x="395" y="383" text-anchor="middle" font-size="10" fill="#15803d">Modelo ML</text>
+
+    <!-- Normalizacion (green) -->
+    <rect x="545" y="340" width="210" height="62" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5"/>
+    <text x="650" y="365" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">Normalizacion</text>
+    <text x="650" y="383" text-anchor="middle" font-size="10" fill="#15803d">Descripcion SAP</text>
+
+    <!-- Gemini (purple) -->
+    <rect x="793" y="340" width="130" height="62" rx="10" fill="#faf5ff" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="858" y="362" text-anchor="middle" font-size="12" font-weight="600" fill="#6b21a8">Gemini</text>
+    <text x="858" y="378" text-anchor="middle" font-size="9.5" fill="#7c3aed">gemini-2.5-flash</text>
+    <text x="858" y="392" text-anchor="middle" font-size="9.5" fill="#7c3aed">LLM via API</text>
+
+    <!-- Confirmacion humana (amber/orange) -->
+    <rect x="280" y="455" width="192" height="62" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="376" y="480" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">Confirmacion</text>
+    <text x="376" y="498" text-anchor="middle" font-size="10.5" fill="#b45309">Validacion humana</text>
+
+    <!-- DB Group (dashed, blue) -->
+    <rect x="22" y="575" width="725" height="115" rx="14" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="8,4"/>
+    <text x="732" y="592" text-anchor="end" font-size="10" fill="#2563eb" font-style="italic">PostgreSQL 16 — medallon</text>
+
+    <!-- Bronze (blue) -->
+    <rect x="45" y="600" width="192" height="62" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="141" y="625" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Bronze</text>
+    <text x="141" y="643" text-anchor="middle" font-size="10" fill="#1d4ed8">Datos crudos + logs</text>
+
+    <!-- Silver (blue) -->
+    <rect x="280" y="600" width="192" height="62" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="376" y="625" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Silver</text>
+    <text x="376" y="643" text-anchor="middle" font-size="10" fill="#1d4ed8">Normalizado</text>
+
+    <!-- Gold (blue) -->
+    <rect x="515" y="600" width="192" height="62" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="611" y="625" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">Gold</text>
+    <text x="611" y="643" text-anchor="middle" font-size="10" fill="#1d4ed8">Agregados</text>
+
+    <!-- Jupyter Lab (gray) -->
+    <rect x="45" y="745" width="192" height="58" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="141" y="769" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">Jupyter Lab</text>
+    <text x="141" y="786" text-anchor="middle" font-size="10" fill="#6b7280">EDA + entrenamiento</text>
+
+    <!-- Exportador (gray) -->
+    <rect x="280" y="745" width="192" height="58" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="376" y="769" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">Exportador</text>
+    <text x="376" y="786" text-anchor="middle" font-size="10" fill="#6b7280">XLSX via Frontend</text>
+
+    <!-- Power BI (rose/red) -->
+    <rect x="515" y="745" width="192" height="58" rx="10" fill="#fff1f2" stroke="#fb7185" stroke-width="1.8"/>
+    <text x="611" y="769" text-anchor="middle" font-size="12" font-weight="600" fill="#9f1239">Power BI</text>
+    <text x="611" y="786" text-anchor="middle" font-size="10" fill="#be123c">Rendimiento + control</text>
+
+    <!-- SAP (gray) -->
+    <rect x="280" y="855" width="192" height="58" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="376" y="879" text-anchor="middle" font-size="12" font-weight="600" fill="#374151">SAP</text>
+    <text x="376" y="896" text-anchor="middle" font-size="10" fill="#6b7280">Carga masiva</text>
+
+    <!-- ==================== ARROWS ==================== -->
+
+    <!-- Frontend → Nginx -->
+    <line x1="400" y1="88" x2="400" y2="128" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- Nginx → API -->
+    <line x1="400" y1="183" x2="400" y2="225" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- API → Services (branching tree) -->
+    <path d="M400,280 V310" stroke="#6b7280" stroke-width="1.5" fill="none"/>
+    <path d="M400,310 H140 V340" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+    <line x1="400" y1="310" x2="400" y2="340" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+    <path d="M400,310 H650 V340" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#ah)"/>
+
+    <!-- Norm ↔ Gemini (purple, bidirectional) -->
+    <line x1="755" y1="371" x2="793" y2="371" stroke="#a855f7" stroke-width="1.5" marker-end="url(#ah-llm)" marker-start="url(#ah-llm-rev)"/>
+
+    <!-- Services → Confirm (converging tree) -->
+    <path d="M140,402 V428 H376" stroke="#6b7280" stroke-width="1.5" fill="none"/>
+    <line x1="395" y1="402" x2="395" y2="428" stroke="#6b7280" stroke-width="1.5"/>
+    <path d="M650,402 V428 H376" stroke="#6b7280" stroke-width="1.5" fill="none"/>
+    <line x1="376" y1="428" x2="376" y2="455" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- Confirm → Silver (straight vertical) -->
+    <line x1="376" y1="517" x2="376" y2="600" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- ETL side path: API left → Bronze (L-shaped, dashed) -->
+    <path d="M275,252 H14 V631 H45" stroke="#6b7280" stroke-width="1.3" fill="none" stroke-dasharray="6,3" marker-end="url(#ah)"/>
+    <text x="10" y="445" fill="#6b7280" font-size="10" text-anchor="middle" transform="rotate(-90,10,445)" font-style="italic">datos + logs</text>
+
+    <!-- Bronze → Silver → Gold (blue arrows) -->
+    <line x1="237" y1="631" x2="280" y2="631" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ah-db)"/>
+    <line x1="472" y1="631" x2="515" y2="631" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#ah-db)"/>
+
+    <!-- Silver → Exportador (through group) -->
+    <line x1="376" y1="662" x2="376" y2="745" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- Gold → Power BI (through group) -->
+    <line x1="611" y1="662" x2="611" y2="745" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- DB group → Jupyter (dashed, EDA) -->
+    <line x1="141" y1="690" x2="141" y2="745" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="6,3" marker-end="url(#ah)"/>
+
+    <!-- Exportador → SAP -->
+    <line x1="376" y1="803" x2="376" y2="855" stroke="#6b7280" stroke-width="1.5" marker-end="url(#ah)"/>
+
+    <!-- ==================== LEGEND ==================== -->
+    <g transform="translate(55, 940)">
+      <rect x="0" y="0" width="16" height="12" rx="3" fill="#f0fdfa" stroke="#2dd4bf" stroke-width="1.2"/>
+      <text x="22" y="10" font-size="10.5" fill="#4b5563">Frontend</text>
+
+      <rect x="110" y="0" width="16" height="12" rx="3" fill="#f0f9ff" stroke="#38bdf8" stroke-width="1.2"/>
+      <text x="132" y="10" font-size="10.5" fill="#4b5563">Infraestructura</text>
+
+      <rect x="260" y="0" width="16" height="12" rx="3" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.2"/>
+      <text x="282" y="10" font-size="10.5" fill="#4b5563">Backend</text>
+
+      <rect x="360" y="0" width="16" height="12" rx="3" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.2"/>
+      <text x="382" y="10" font-size="10.5" fill="#4b5563">Validacion humana</text>
+
+      <rect x="530" y="0" width="16" height="12" rx="3" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.2"/>
+      <text x="552" y="10" font-size="10.5" fill="#4b5563">Capas medallon</text>
+
+      <rect x="680" y="0" width="16" height="12" rx="3" fill="#faf5ff" stroke="#a855f7" stroke-width="1.2"/>
+      <text x="702" y="10" font-size="10.5" fill="#4b5563">LLM externo</text>
+
+      <rect x="800" y="0" width="16" height="12" rx="3" fill="#fff1f2" stroke="#fb7185" stroke-width="1.2"/>
+      <text x="822" y="10" font-size="10.5" fill="#4b5563">Analitica</text>
+    </g>
+  </svg></div>
+  <aside class="notes">
+    Aclarar que es el mismo diagrama que la plataforma expone a sus usuarios, no uno hecho para la presentación.
+    Leerlo en tres planos, de arriba hacia abajo.
+    Acceso: frontend Vue, Nginx, JWT. Nada entra sin pasar por ahí.
+    Servicios: el API orquesta y se ramifica en duplicados, categorización y normalización. Los tres convergen en confirmación humana.
+    Datos: PostgreSQL 16 con el medallón.
+    Señalar el nodo de confirmación humana: sin él nada avanza.
+  </aside>
+</section>
+
+<!-- 5 ─ Medallón (vertical) -->
+<section>
+  <section>
+    <p class="kicker">Arquitectura de datos</p>
+    <img class="diagram" src="medallon.svg" alt="Arquitectura medallon: bronze, silver y gold">
+    <aside class="notes">
+      La idea de fondo: el dato no se transforma donde se consulta. Cada capa tiene una responsabilidad, y el paso entre capas es lo que hace auditable el sistema.
+      Todo sobre una sola instancia de PostgreSQL.
+    </aside>
+  </section>
+</section>
+
+<!-- 6 ─ API -->
+<section>
+  <p class="kicker">El API</p>
+  <h1>Democratizar el modelo predictivo</h1>
+  <aside class="notes">
+    El problema: un modelo entrenado es un archivo. Así solo lo usa quien tenga Python, las mismas versiones, el artefacto y la misma función de preprocesamiento. Es decir, solo nosotros. Eso no es una herramienta de la organización, es un activo de sus autores.
+    Detrás de un endpoint HTTP, cualquier cliente lo consume enviando una descripción. El gestor lo usa sin saber que existe.
+    Esa fue la forma de democratizarlo.
+    Además garantiza: mismo preprocesamiento que en entrenamiento, una sola versión vigente para todos, acceso con token, y registro automático de cada predicción.
+    La inferencia va dentro del API, no en un servicio aparte: 0.09 segundos. No había nada que ganar separándola.
+  </aside>
+</section>
+
+<!-- 7 ─ El experimento -->
+<section>
+  <p class="kicker">El experimento</p>
+  <div class="stat solo"><div class="n">7</div><div class="l">configuraciones, una misma partición, las mismas métricas</div></div>
+  <aside class="notes">
+    Cuatro familias: modelos lineales sobre representaciones dispersas, métodos de ensamble, un clasificador de subpalabras y un transformador multilingüe con ajuste fino.
+    El conjunto: 39,571 materiales, 1,234 clases, tras descartar los que no tenían categoría en la fuente y las clases con menos de tres ejemplos.
+    Cuatro métricas de desempeño más el tiempo de entrenamiento — y el tiempo entró como criterio de selección, no como dato de color.
+  </aside>
+</section>
+
+<!-- 8 ─ Resultados -->
+<section>
+  <p class="kicker">Resultados</p>
+  <table>
+    <thead>
+      <tr><th>Configuración</th><th>Exactitud</th><th>F1 macro</th><th>Top-3</th><th>Tiempo</th></tr>
+    </thead>
+    <tbody>
+      <tr class="win"><td>LinearSVC + carácter</td><td>0.8208</td><td>0.7072</td><td>0.9176</td><td>54 s</td></tr>
+      <tr><td>XGBoost</td><td>0.8145</td><td>0.6821</td><td>0.9200</td><td>3 h</td></tr>
+      <tr><td>Random Forest</td><td>0.8133</td><td>0.7029</td><td>0.9063</td><td>46 s</td></tr>
+      <tr><td>Reg. logística palabra</td><td>0.8095</td><td>0.6689</td><td>0.9135</td><td>29 s</td></tr>
+      <tr><td>Reg. logística carácter</td><td>0.8080</td><td>0.6423</td><td>0.9248</td><td>18 min</td></tr>
+      <tr><td>Transformer</td><td>0.7995</td><td>0.5654</td><td>0.8953</td><td>54 min</td></tr>
+      <tr><td>fastText</td><td>0.7780</td><td>0.6275</td><td>0.8865</td><td>43 s</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    Dejar la tabla en pantalla y hablar sobre ella; no leerla.
+    Señalar la primera fila, y luego la última columna.
+  </aside>
+</section>
+
+<!-- 9 ─ Ganó el más simple -->
+<section>
+  <p class="kicker">Ganó el más simple</p>
+  <div class="stats">
+    <div class="stat"><div class="n">54 s</div><div class="l">el ganador, en CPU</div></div>
+    <div class="stat"><div class="n">3 h</div><div class="l">XGBoost, para quedar abajo</div></div>
+  </div>
+  <aside class="notes">
+    La SVM lineal sobre caracteres superó a los ensambles y al aprendizaje profundo.
+    XGBoost: más de tres horas para quedar seis décimas abajo.
+    El transformador: sesenta veces el tiempo, sobre GPU, mientras el ganador entrena en CPU. Y no lo superó.
+    El argumento que cierra: el sistema está pensado para reentrenarse conforme el catálogo crece. Un modelo que exige horas para actualizarse es un modelo que en la práctica no se actualiza.
+    Y es coherente con el problema: textos cortos, muy estructurados, vocabulario técnico acotado. No hay ambigüedad sintáctica que justifique más capacidad.
+  </aside>
+</section>
+
+<!-- 10 ─ El modelo ganador (vertical) -->
+<section>
+  <section>
+    <p class="kicker">El modelo ganador</p>
+    <h1>SVM lineal sobre<br>n&#8209;gramas de car&aacute;cter</h1>
+    <p class="lede">Calibrada con validaci&oacute;n cruzada &#183; 1,234 clases &#183; 54 segundos en procesador convencional</p>
+    <aside class="notes">
+      Nombrarlo completo: maquina de vectores de soporte lineal sobre TF-IDF de n-gramas de caracter, envuelta en un calibrador de probabilidades.
+      Es la configuracion mas simple de las siete, y gano en las cuatro metricas de desempeno.
+      Los tres numeros de la linea de abajo son los que sostienen la decision: calibrada porque sin probabilidades no hay umbral; 1,234 clases porque ese es el tamano real del problema; 54 segundos porque es lo que lo hace sostenible.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Las m&eacute;tricas</p>
+    <div class="metrics">
+      <div class="m"><div class="mv">0.8208</div><div class="ml">Exactitud</div></div>
+      <div class="m"><div class="mv">0.9176</div><div class="ml">Top-3</div></div>
+      <div class="m"><div class="mv">0.7072</div><div class="ml">F1 macro</div></div>
+      <div class="m"><div class="mv">0.8041</div><div class="ml">F1 ponderado</div></div>
+    </div>
+    <aside class="notes">
+      Exactitud 82.08 sobre 1,234 clases. El azar seria 0.08 por ciento, asi que la cifra hay que leerla contra ese fondo, no contra un problema binario.
+      Top-3 de 91.76: en nueve de cada diez casos la clase correcta esta entre las tres que se le muestran al gestor. Ese es el numero que importa para la experiencia real, porque al gestor se le presentan tres opciones.
+      El F1 macro promedia sin ponderar por volumen, asi que castiga el desempeno sobre las clases pequenas; el ponderado pesa por volumen. La brecha entre ambos mide cuanto sufre la cola larga.
+      El ganador lidera las dos, lo que indica comportamiento uniforme a lo largo de la taxonomia y no solo un buen agregado.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">El costo</p>
+    <div class="stats">
+      <div class="stat"><div class="n">54 s</div><div class="l">entrenar, en CPU<br>31,656 ejemplos</div></div>
+      <div class="stat"><div class="n">0.09 s</div><div class="l">predecir<br>1.5 % del tiempo de m&aacute;quina</div></div>
+    </div>
+    <aside class="notes">
+      Estas dos cifras son las que separan un experimento de una herramienta que se puede mantener.
+      54 segundos en procesador convencional significa que reentrenar es trivial: se puede hacer despues de cada carga importante al maestro. El transformador tardaba sesenta veces mas y sobre GPU.
+      0.09 segundos de inferencia significa que el modelo es invisible para el usuario. Es el 1.5 por ciento del tiempo de maquina de una solicitud; el 70 por ciento se lo lleva el modelo de lenguaje.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Qu&eacute; hace</p>
+    <h1>Texto libre <em class="hl">&rarr;</em><br>una de 1,234 clases</h1>
+    <p class="lede">No entiende el material. Aprendi&oacute; qu&eacute; patrones de caracteres aparecen en las descripciones de cada clase.</p>
+    <aside class="notes">
+      Aclarar el limite conceptual: no sabe que es un tornillo, no tiene modelo del mundo.
+      Lo que aprendio de 31,656 ejemplos historicos es una correspondencia entre patrones de texto y codigos de clase.
+      Un texto nuevo se resuelve buscando a que patron conocido se parece mas. Toda la potencia esta en como se representa ese texto, que es lo que viene ahora.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">El pipeline</p>
+    <img class="diagram" src="pipeline.svg" alt="Pipeline del modelo: descripcion, normalizacion, TF-IDF, SVM calibrada, top-3">
+    <aside class="notes">
+      Son dos etapas de modelado con un preproceso delante y una salida ordenada detras.
+      El detalle que importa: el vectorizador ajustado viaja dentro del artefacto, no se reconstruye. Si se reconstruyera, el vocabulario cambiaria y las dimensiones dejarian de significar lo mismo.
+      Y la funcion de normalizacion es literalmente la misma que se uso en entrenamiento, importada del mismo modulo. Consultar el modelo con texto preparado de otra forma lo degrada en silencio, sin producir ningun error visible.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Etapa 1 &#183; Vectorizaci&oacute;n</p>
+    <h1>Caracteres,<br>no palabras</h1>
+    <p class="lede">El texto se parte en secuencias de caracteres consecutivos, no en palabras completas.</p>
+    <aside class="notes">
+      El clasificador no recibe texto, recibe numeros. Esta etapa es la que mas define el desempeno del modelo.
+      La decision de fondo es la unidad: en lugar de contar palabras, se cuentan fragmentos de caracteres.
+      Es contraintuitivo, porque la palabra parece la unidad natural del lenguaje. En este catalogo no lo es, y la siguiente lamina explica por que.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">C&oacute;mo se parte el texto</p>
+    <img class="diagram" src="ngramas.svg" alt="TORNILLO descompuesto en ventanas de tres caracteres">
+    <aside class="notes">
+      Cada palabra se rellena con espacios en sus extremos y se recorren ventanas de 2, 3, 4 y 5 caracteres que no cruzan de una palabra a la siguiente.
+      Aqui se ve solo el paso de tres caracteres sobre TORNILLO: TOR, ORN, RNI, NIL, y asi.
+      Una descripcion de cuarenta caracteres genera del orden de cien fragmentos. De todo el corpus se conservan los 50,000 mas frecuentes, que son las dimensiones del vector.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Por qu&eacute; caracteres</p>
+    <div class="words"><b>TORNILLO</b><b>TORNILO</b><b>TORN</b></div>
+    <p class="lede">Para un vectorizador de palabras son tres tokens sin relaci&oacute;n. Para uno de caracteres son tres textos casi id&eacute;nticos.</p>
+    <aside class="notes">
+      Esta es la decision clave y responde a como esta escrito el catalogo.
+      Se escribio durante anos, por distintos gestores, contra un limite de cuarenta caracteres de SAP. La abreviatura inconsistente no es una anomalia, es la norma.
+      Ademas captura medidas y designaciones alfanumericas —un medio de pulgada, M12, 2X4— que un tokenizador de palabras trata como ruido.
+      Y tolera errores de digitacion sin diccionario de correcciones.
+      El cuarto beneficio es el mas sutil: no requiere vocabulario cerrado. Un material de una familia nueva, con una palabra que nunca aparecio en el entrenamiento, igual produce fragmentos conocidos. Con palabras seria un vector vacio.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">El peso de cada fragmento</p>
+    <h1>Lo raro<br>pesa m&aacute;s</h1>
+    <p class="lede">Un fragmento que aparece en casi todas las descripciones no distingue nada. Uno que aparece en pocas clases es el que discrimina.</p>
+    <aside class="notes">
+      No basta con saber que fragmentos contiene una descripcion; hay que saber cuanto vale cada uno. Eso es lo que hace el TF-IDF.
+      La parte TF cuenta cuantas veces aparece el fragmento, pero de forma logaritmica: que aparezca cinco veces no lo hace cinco veces mas importante. En descripciones tan cortas eso evita que una repeticion accidental domine el vector.
+      La parte IDF es la interesante: pondera por lo raro que es el fragmento en el catalogo completo. Es el mecanismo que hace que el modelo se fije en lo distintivo de cada material y no en lo que todos comparten.
+      Finalmente cada vector se escala a longitud unitaria, para que una descripcion larga y una corta se comparen por composicion y no por tamano.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Etapa 2 &#183; El clasificador</p>
+    <div class="stat solo"><div class="n">1,234</div><div class="l">fronteras, una por clase</div></div>
+    <aside class="notes">
+      Una maquina de vectores de soporte lineal busca el hiperplano que separa una clase de las demas dejando el mayor margen posible.
+      Mayor margen significa que no toma cualquier frontera que separe los ejemplos de entrenamiento, sino la que queda lo mas lejos posible de los ejemplos de ambos lados. Eso es precisamente lo que le da capacidad de generalizar a textos que no ha visto.
+      Con 1,234 clases se entrena un separador por clase, uno contra el resto: es esto un tornillo o no lo es. Ante una descripcion nueva, cada separador emite una puntuacion y gana la clase que la deja mas adentro de su lado.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Por qu&eacute; lineal basta</p>
+    <div class="stat solo"><div class="n">50,000</div><div class="l">dimensiones</div></div>
+    <aside class="notes">
+      La pregunta obvia es por que no un modelo con mas capacidad, y la respuesta esta en la geometria del espacio.
+      En espacios de muy alta dimensionalidad las clases tienden a ser linealmente separables: hay tantas direcciones disponibles que casi siempre existe un hiperplano que separa.
+      Anadir capacidad no lineal no compra separabilidad que ya se tiene, y si compra sobreajuste y costo de entrenamiento.
+      Esto es exactamente lo que la competencia mostro de forma empirica: los ensambles y el transformador no superaron a la configuracion lineal, y costaron entre veinte y doscientas veces mas.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Etapa 3 &#183; Calibraci&oacute;n</p>
+    <h1>Distancia <em class="hl">&rarr;</em> probabilidad</h1>
+    <p class="lede">Sin esta etapa no existir&iacute;a el umbral. Es lo que convierte un clasificador en un sistema capaz de abstenerse.</p>
+    <aside class="notes">
+      Una SVM no produce probabilidades: produce distancias con signo al hiperplano. Un valor de 2.4 significa que cae bien adentro del lado positivo, pero no significa 84 por ciento de probabilidad.
+      El procedimiento entrena el modelo sobre una parte de los datos, observa que distancias produce sobre la parte que no vio, y ajusta una funcion que traduce distancia en probabilidad fiel: que del conjunto de casos a los que asigna 0.9, aproximadamente el 90 por ciento sea efectivamente correcto.
+      Un detalle de implementacion: se configuro para conservar un unico estimador base en lugar de una copia por particion, lo que reduce varias veces el tamano del artefacto sin afectar la calidad de las probabilidades.
+      Y el numero de particiones se ajusta a lo que el conjunto soporte, porque una clase con el minimo de tres ejemplos llega al entrenamiento con dos. Antes que descartar esas clases —lo que dejaria materiales imposibles de predecir— se reduce el numero de particiones.
+    </aside>
+  </section>
+</section>
+
+<!-- 11 ─ Punto de operacion (vertical) -->
+<section>
+  <section>
+    <p class="kicker">Punto de operaci&oacute;n</p>
+    <h1>Cada sugerencia llega<br>con una confianza</h1>
+    <p class="lede">La probabilidad calibrada de la clase m&aacute;s votada. Es lo que permite tratar distinto lo seguro de lo dudoso.</p>
+    <aside class="notes">
+      Gracias a la calibracion, el modelo no solo dice que clase cree que es: dice cuanto lo cree.
+      Eso abre una posibilidad que una prediccion cruda no tiene: que el sistema distinga entre las sugerencias de las que esta seguro y las que no, y trate cada grupo de forma distinta.
+      En la literatura esto es clasificacion con opcion de rechazo: el modelo tiene permitido abstenerse en lugar de verse obligado a responder siempre.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Dos reg&iacute;menes</p>
+    <div class="regimes">
+      <div class="rg hi">
+        <div class="rt">Supera el umbral</div>
+        <div class="rd">El sistema resuelve solo</div>
+      </div>
+      <div class="rg lo">
+        <div class="rt">No lo supera</div>
+        <div class="rd">Se deriva al gestor con las tres candidatas</div>
+      </div>
+    </div>
+    <aside class="notes">
+      Se fija un umbral. Las predicciones que lo superan el sistema las resuelve por si solo; las que no lo superan las deriva a revision explicita del gestor.
+      Es una sola decision de diseno, pero cambia por completo el caracter de la herramienta: deja de ser un clasificador que siempre responde y pasa a ser un asistente que sabe cuando callarse.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">El compromiso</p>
+    <h1>Subir el umbral<br>no mejora el modelo</h1>
+    <p class="lede">Lo hace m&aacute;s selectivo. Menos casos pasan, pero los que pasan son m&aacute;s confiables.</p>
+    <aside class="notes">
+      Este es el punto que mas se malinterpreta. Mover el umbral no cambia el modelo en absoluto: el modelo es el mismo, con la misma exactitud del 82 por ciento.
+      Lo unico que cambia es cuantos casos se aceptan sin revisar. Al subir el umbral se recorta la parte de la distribucion donde el modelo esta dudando, y lo que queda es mas fiable.
+      La pregunta de diseno no es entonces cual umbral es el correcto, sino que combinacion de exactitud y cobertura le conviene a este proceso.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Exactitud contra cobertura</p>
+    <img class="diagram" src="umbral.svg" alt="Exactitud sube y cobertura cae al aumentar el umbral de confianza">
+    <aside class="notes">
+      Las dos curvas estan en la misma escala porcentual, a proposito, porque asi se ve la forma real del intercambio.
+      La exactitud apenas se mueve: va de 82 a 99, diecisiete puntos en todo el recorrido. La cobertura se desploma: de 100 a 28, setenta y dos puntos.
+      Dicho de otro modo: se gana poca exactitud y se paga mucha cobertura. Cada punto adicional de exactitud cuesta cada vez mas volumen automatizado.
+      Eso es lo que hace que la eleccion del umbral sea una decision de negocio y no una de estadistica.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Punto de operaci&oacute;n</p>
+    <table>
+      <thead><tr><th>Umbral</th><th>Exactitud</th><th>Cobertura</th><th>Resueltos</th></tr></thead>
+      <tbody>
+        <tr><td>Sin umbral</td><td>0.8208</td><td>100 %</td><td>7,915</td></tr>
+        <tr><td>0.5</td><td>0.9294</td><td>73.9 %</td><td>5,851</td></tr>
+        <tr><td>0.6</td><td>0.9517</td><td>65.1 %</td><td>5,151</td></tr>
+        <tr><td>0.7</td><td>0.9678</td><td>54.1 %</td><td>4,284</td></tr>
+        <tr class="win"><td>0.8</td><td>0.9888</td><td>28.2 %</td><td>2,235</td></tr>
+      </tbody>
+    </table>
+    <aside class="notes">
+      Cada fila responde a la misma pregunta con distinta tolerancia al error, medida sobre los 7,915 materiales de la particion de prueba.
+      Al umbral 0.5 el sistema resolveria tres de cada cuatro solicitudes acertando en el 92.9 por ciento. Es tentador: mucho volumen automatizado.
+      Al 0.8 resuelve poco mas de una de cada cuatro, pero acierta en el 98.9 por ciento. De 2,235 materiales resueltos solos, se equivocaria en unos 25.
+      Elegimos 0.8, y la razon esta en la lamina siguiente.
+    </aside>
+  </section>
+
+  <section>
+    <h1>Los dos errores<br>no cuestan lo mismo</h1>
+    <aside class="notes">
+      Una categoria incorrecta que entra al catalogo sin revision cuesta para siempre: distorsiona los reportes de consumo, complica la planificacion de compras por tipo de material, y se propaga a todo proceso que consulte el catalogo despues. Y nadie la detecta, porque nadie la esta buscando. Corregirla retroactivamente cuesta mas que haberla revisado.
+      Una sugerencia derivada a revision solo consume la atencion del gestor, que es exactamente el escenario que la herramienta esta disenada para atender. No es un fallo del sistema: es el sistema funcionando.
+      Como los dos errores no cuestan lo mismo, no tiene sentido tratarlos de forma simetrica. Por eso privilegiamos exactitud sobre cobertura, en un proceso cuyo proposito declarado es la calidad del dato.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">El 72 % restante no queda solo</p>
+    <div class="stats">
+      <div class="stat"><div class="n">3</div><div class="l">candidatos ordenados<br>por probabilidad</div></div>
+      <div class="stat"><div class="n">91.8 %</div><div class="l">exactitud sobre esos tres</div></div>
+    </div>
+    <aside class="notes">
+      Esta es la precision que evita que el 28 por ciento se lea como una limitacion de la herramienta.
+      Las solicitudes derivadas a revision conservan todo el valor: el gestor no vuelve al punto de partida ni enfrenta un catalogo de 1,234 clases. Recibe tres candidatas ordenadas por probabilidad, y la correcta esta entre ellas en el 91.8 por ciento de los casos.
+      Lo que cambia entre un regimen y otro no es si el modelo ayuda, sino quien firma la decision.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">Por qu&eacute; el umbral es leg&iacute;timo</p>
+    <h1>Los aciertos se agrupan<br>en confianza alta</h1>
+    <p class="lede">Los errores se dispersan hacia valores bajos. Sin esa separaci&oacute;n, cualquier umbral seleccionar&iacute;a al azar.</p>
+    <aside class="notes">
+      Un umbral solo sirve si la confianza efectivamente discrimina entre aciertos y errores. Esa es la condicion de validez, y conviene decirla porque es lo primero que deberia preguntar alguien que evalua el trabajo.
+      La distribucion observada la cumple: las predicciones correctas se concentran en la region de confianza alta y las incorrectas se dispersan hacia valores bajos.
+      Si la confianza estuviera repartida por igual entre aciertos y errores, filtrar por ella no seleccionaria nada util y la prediccion selectiva careceria de sentido. La forma de esa distribucion es lo que hace legitimo todo el planteamiento.
+    </aside>
+  </section>
+
+  <section>
+    <p class="kicker">No es una constante</p>
+    <h1>El umbral se recalibra</h1>
+    <p class="lede">Cada correcci&oacute;n del gestor sobre una solicitud que el sistema resolvi&oacute; solo queda registrada.</p>
+    <aside class="notes">
+      El umbral esta configurado, no cableado, y la plataforma registra lo necesario para auditarlo: cada vez que un gestor modifica una categoria sugerida, la correccion se almacena.
+      El contraste consiste en comparar la proporcion de correcciones sobre las solicitudes que el sistema resolvio automaticamente contra el margen de error que el umbral admite, que es un 1.1 por ciento.
+      Si las correcciones resultan mas frecuentes de lo previsto, el umbral es demasiado permisivo y conviene elevarlo, a costa de derivar mas solicitudes. Si resultan menos frecuentes, puede bajarse para automatizar mas volumen sin comprometer la calidad.
+      Y esta revision debe repetirse despues de cada reentrenamiento, porque un modelo nuevo altera la distribucion de confianzas sobre la que el umbral fue ajustado.
+    </aside>
+  </section>
+</section>
+
+<!-- 12 ─ En operación -->
+<section>
+  <p class="kicker">En operación</p>
+  <div class="stats">
+    <div class="stat"><div class="n">0.09 s</div><div class="l">inferencia — 1.5 % del<br>tiempo de máquina</div></div>
+    <div class="stat"><div class="n">88.2 %</div><div class="l">acuerdo modelo–gestor<br>sobre 153 solicitudes</div></div>
+  </div>
+  <aside class="notes">
+    El desglose de tiempo de máquina: la normalización con LLM se lleva 4.37 segundos, los duplicados 1.78, la clasificación 0.09.
+    El núcleo analítico del trabajo consume el 1.5 por ciento del cómputo. Una arquitectura más pesada habría desplazado ese costo sin dar mejor desempeño.
+    Sobre 153 solicitudes asistidas, el gestor conservó la categoría sugerida en el 88.2 por ciento de los casos.
+    Ese número es una validación independiente del laboratorio: mide contra decisiones reales de quien conoce el catálogo, no contra una partición de los mismos datos. Y que supere al 82.08 indica que el desempeño se sostuvo con materiales reales.
+  </aside>
+</section>
+
+<!-- 13 ─ Limitaciones -->
+<section>
+  <p class="kicker">Limitaciones</p>
+  <div class="triad">Léxico <span>·</span> Etiquetas <span>·</span> Corte <span>·</span> Cola larga</div>
+  <aside class="notes">
+    Correspondencia léxica: la convención hace que el término principal coincida a menudo con el nombre de la clase. Parte del acierto viene de ahí. Cuantificarlo exige una evaluación por ablación, que queda pendiente.
+    Etiquetas: entrenamos sobre decisiones de los propios gestores. Es la mejor referencia disponible, no una verdad de campo independiente. El techo lo pone la consistencia de esas decisiones.
+    Corte: los resultados son sobre una fotografía del catálogo a una fecha. No se puede inferir el desempeño sobre familias no representadas.
+    Cola larga: las clases con menos de tres ejemplos quedan fuera del espacio de predicción.
+  </aside>
+</section>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    width: 1600,
+    height: 900,
+    margin: 0.04,
+    minScale: 0.2,
+    maxScale: 2.0,
+    hash: true,
+    slideNumber: 'c/t',
+    controls: false,
+    progress: true,
+    transition: 'fade',
+    transitionSpeed: 'fast',
+    backgroundTransition: 'none',
+    plugins: [ RevealNotes ]
+  });
+</script>
+</body>
+</html>
