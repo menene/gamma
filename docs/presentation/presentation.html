@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GAMMA — Modelos y experimento</title>
+<meta name="color-scheme" content="light">
+<title>GAMMA — Defensa de graduación MBIA</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +13,7 @@
 
 <style>
   :root{
+    color-scheme: only light;
     --bg:#fbfbfa;
     --ink:#15181b;
     --muted:#7a8288;
@@ -22,6 +24,7 @@
     --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   }
 
+  html,body,.reveal-viewport{ background:var(--bg); color-scheme: only light; }
   .reveal-viewport{ background:var(--bg); }
 
   .reveal{
@@ -101,7 +104,12 @@
   }
 
   /* ---------- stats ---------- */
-  .stats{ display:flex; gap:110px; align-items:flex-end; }
+  /* Rejilla y no flex: con flex cada cifra ocupaba el ancho de su texto, asi que
+     los bordes izquierdos quedaban a distancias distintas. Columnas iguales y
+     alineadas por arriba: las cifras comparten base y las etiquetas arrancan
+     todas a la misma altura, tengan una linea o dos. */
+  .stats{ display:grid; grid-auto-flow:column; grid-auto-columns:1fr;
+          gap:56px; align-items:start; }
   .stat .n{
     font-size:150px;
     font-weight:700;
@@ -189,6 +197,8 @@
 
   /* ---------- diagramas ---------- */
   .diagram{ display:block; width:100%; height:auto; max-height:660px; margin:0 auto; }
+  .diagram.png{ mix-blend-mode:multiply; }
+  .split.fig-r{ grid-template-columns:0.8fr 1.2fr; gap:48px; }
 
   /* ---------- architecture ---------- */
   .arch{ display:flex; align-items:center; justify-content:center; }
@@ -209,52 +219,374 @@
 
   /* ---------- print ---------- */
   @media print{ .reveal .slides section{ padding:0 90px; } }
+
+  /* ═══════════ añadido en la consolidación (defensa completa) ═══════════ */
+
+  /* ---------- portadas de sección ---------- */
+  .section-cover h1{ font-size:112px; }
+  .section-cover .lede{ margin-top:40px; max-width:26em; }
+
+  /* ---------- listas ---------- */
+  .bullets{ list-style:none; margin:0; padding:0; max-width:30em; }
+  .bullets li{
+    font-size:30px;
+    font-weight:300;
+    line-height:1.42;
+    color:var(--ink);
+    padding-left:38px;
+    position:relative;
+    margin-bottom:26px;
+  }
+  .bullets li:last-child{ margin-bottom:0; }
+  .bullets li::before{
+    content:"";
+    position:absolute;
+    left:0; top:.62em;
+    width:12px; height:2px;
+    background:var(--accent);
+    border-radius:1px;
+  }
+  .bullets.tight{ max-width:42em; }
+  .bullets.tight li{ font-size:25px; margin-bottom:17px; }
+  .bullets.tight li::before{ top:.66em; }
+  .bullets.num{ counter-reset:b; }
+  .bullets.num li{ padding-left:52px; }
+  .bullets.num li::before{
+    counter-increment:b;
+    content:counter(b);
+    width:auto; height:auto; background:none;
+    top:.06em;
+    font-size:20px; font-weight:600;
+    color:var(--accent);
+    font-variant-numeric:tabular-nums;
+  }
+  .bullets .off{ color:var(--muted); }
+
+  /* ---------- figuras ---------- */
+  .figure-caption{
+    font-size:15px;
+    color:var(--faint);
+    letter-spacing:.04em;
+    margin:20px 0 0;
+    text-align:right;
+  }
+  .figure-missing{
+    display:flex; flex-direction:column; gap:18px;
+    align-items:center; justify-content:center;
+    height:520px;
+    border:2px dashed var(--rule);
+    border-radius:14px;
+    color:var(--faint);
+    font-size:21px;
+    font-weight:400;
+    text-align:center;
+    padding:0 60px;
+    line-height:1.5;
+  }
+
+  /* ---------- variantes de stats ---------- */
+  .stats.sm{ gap:48px; }
+  .stats.sm .n{ font-size:104px; }
+  .stats.sm .l{ font-size:20px; }
+  .stats .stat .n small{ font-size:.42em; font-weight:600; letter-spacing:-.02em; }
+
+  /* ---------- rejilla de seis indicadores ---------- */
+  .words.sm b{ font-size:38px; padding:10px 22px; }
+  .split table{ font-size:22px; }
+  .metrics.six{ grid-template-columns:repeat(3,1fr); gap:22px; }
+  .metrics.six .m{ padding:26px 26px; }
+  .metrics.six .mv{ font-size:44px; }
+  .metrics.six .ml{ font-size:17px; margin-top:12px; }
+
+  /* ---------- dos columnas: texto + figura ---------- */
+  .split{ display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+  .split.fig{ grid-template-columns:1.2fr 0.8fr; gap:48px; }
+  .split .diagram{ max-height:600px; }
+
+  /* ---------- antes / después ---------- */
+  .rg .rn{
+    font-size:64px; font-weight:700; letter-spacing:-.045em;
+    color:var(--ink); font-variant-numeric:tabular-nums; line-height:1;
+    margin-bottom:14px;
+  }
+  .rg.hi .rn{ color:var(--accent); }
+
+  /* ---------- pie de lámina ---------- */
+  .foot{
+    font-size:19px;
+    font-weight:400;
+    color:var(--muted);
+    margin:38px 0 0;
+    max-width:46em;
+    line-height:1.45;
+  }
+  .foot em.hl{ font-weight:500; }
+
+  /* ---------- separador de anexo ---------- */
+
+  /* ---------- pista de guion (solo vista de presentador) ---------- */
+  .cue{ display:block; margin-bottom:.7em; letter-spacing:.06em; text-transform:uppercase; font-size:.82em; }
 </style>
 </head>
 <body>
 <div class="reveal">
 <div class="slides">
-<!-- 1 ─ Portada -->
+
+
+<!-- ═════════════════ LA NECESIDAD ═════════════════ -->
 <section class="cover">
   <h1>GAMMA</h1>
   <p class="sub">Gobierno Automatizado del Maestro de Materiales</p>
-  <p class="by">Modelos, experimento y modelo ganador</p>
+  <p class="sub" style="font-size:23px;margin-top:18px;">Plataforma de gobernanza de datos maestros mediante aprendizaje automático</p>
+  <p class="by">Alejandra Alvarado · Erick Marroquín · Rudy Osorio<br>
+     Maestría en Business Intelligence and Analytics — Universidad del Valle de Guatemala, 2026</p>
   <aside class="notes">
-    Presentarse y decir en una frase qué es GAMMA: asistente inteligente en el flujo de creación de materiales SAP.
-    Anunciar el recorrido: qué construimos, cómo elegimos el modelo, y cómo funciona el que ganó.
+    <b class="cue">0:25 · 00:25</b>
+    Buenas tardes. Somos el grupo 1, conformado por Alejandra Alvarado, Erick Marroquín y Rudy Osorio.
+    Les presentamos nuestro trabajo de graduación GAMMA: Gobierno Automatizado del Maestro de Materiales, desarrollado como proyecto de graduación de la Maestría en Business Intelligence and Analytics de la Universidad del Valle de Guatemala.
   </aside>
 </section>
-
-<!-- 2 ─ Punto de partida -->
+<section class="section-cover">
+  <h1>La necesidad</h1>
+  <p class="lede">Qué hace hoy un gestor de datos maestros antes de crear un material, y qué le cuesta a la organización que lo haga sin apoyo.</p>
+  <aside class="notes">
+    <b class="cue">0:20 · 00:45</b>
+    Anunciar el recorrido completo en una frase: primero por qué hacía falta, después qué construimos, y al final qué pasó cuando se usó. Este primer bloque responde lo primero.
+  </aside>
+</section>
 <section>
-  <p class="kicker">El punto de partida</p>
-  <div class="stats">
-    <div class="stat fragment fade-up"><div class="n">45,397</div><div class="l">materiales</div></div>
-    <div class="stat fragment fade-up"><div class="n">3.3 h</div><div class="l">por solicitud</div></div>
-    <div class="stat fragment fade-up"><div class="n">1,234</div><div class="l">categorías posibles</div></div>
+  <p class="kicker">Contexto</p>
+  <h2>45,397 materiales<br>validados a mano</h2>
+  <ul class="bullets tight" style="margin-top:44px;">
+    <li>Unidad de negocio del sector energético, con operación en Centroamérica y el Caribe</li>
+    <li>El catálogo vive en el módulo MM de SAP y se reparte en 13 tipos de material</li>
+    <li>Antes de crear un material, el gestor confirma que no exista, le asigna categoría y verifica la norma ISO 8000</li>
+    <li class="off">No existe ninguna herramienta que lo apoye en esas verificaciones</li>
+  </ul>
+  <aside class="notes">
+    <b class="cue">1:00 · 01:45</b>
+    El presente proyecto se desarrolla en una unidad de negocio del sector energético, con operación en varios países de Centroamérica y el Caribe. Dicha unidad administra, sobre el módulo de materiales de SAP, un catálogo de 45,397 registros activos, distribuidos en trece tipos de material.
+    Dentro de este proceso, un equipo de gestores de datos maestros es responsable de validar cada material antes de su creación: debe confirmarse que no exista previamente en el catálogo, que se le asigne la categoría correspondiente, y que cumpla con las especificaciones mínimas establecidas por la normativa ISO 8000.
+    Actualmente, esta validación se realiza de forma enteramente manual. Cabe señalar que, si bien el presente trabajo se desarrolla sobre SAP, la problemática que se expondrá a continuación es inherente a la gestión de datos maestros en general, independientemente del sistema ERP utilizado.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Planteamiento del problema</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">4.8<small> %</small></div><div class="l">duplicidad exacta</div></div>
+    <div class="stat"><div class="n">8.3<small> %</small></div><div class="l">sin separador estándar<br>(duplicidad no detectable)</div></div>
+    <div class="stat"><div class="n">3.3<small> h</small></div><div class="l">promedio por solicitud</div></div>
+  </div>
+  <p class="foot">No existe ningún mecanismo automatizado que apoye al gestor en el momento de la decisión: ni para verificar duplicados, ni para sugerir la categoría.</p>
+  <aside class="notes">
+    <b class="cue">1:15 · 03:00</b>
+    Al analizar este proceso se identificó que, dentro de la organización, no existe ningún mecanismo automatizado que apoye al gestor en el momento de la decisión: ni para verificar duplicados, ni para sugerir la categoría correspondiente.
+    Un análisis exploratorio sobre la totalidad del catálogo permitió cuantificar la problemática en tres dimensiones. En duplicidad: el 4.8 % de los registros presenta duplicidad exacta, más un 8.3 % adicional que, al no seguir la convención de separadores, representa un riesgo de duplicidad no detectable mediante búsqueda exacta.
+    En segundo lugar, materiales asignados a categorías que no corresponden a su naturaleza real, lo que afecta la trazabilidad del catálogo y la planificación de compras.
+    Y en tercer lugar, un tiempo de gestión elevado: 3.3 horas promedio por solicitud, sobre unas cuatro solicitudes diarias por gestor.
+    Su caracterización detallada se expone más adelante, en el análisis exploratorio.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Justificación</p>
+  <h2>Un material mal registrado<br>afecta a compras y mantenimiento</h2>
+  <ul class="bullets tight" style="margin-top:42px;">
+    <li>Se propaga a compras, mantenimiento y trazabilidad de activos</li>
+    <li>Es acumulativo: sin apoyo analítico, el catálogo sigue incorporando inconsistencias</li>
+    <li>Corregir retroactivamente cuesta más que prevenir</li>
+  </ul>
+  <p class="foot">De ahí los dos componentes de la solución: <em class="hl">un modelo que asista en el momento de la decisión</em> y <em class="hl">un mecanismo que permita medir su efecto</em>.</p>
+  <aside class="notes">
+    <b class="cue">0:50 · 03:50</b>
+    Esta problemática no se limita al tiempo invertido por el gestor: un material mal registrado incide directamente en procesos posteriores, como la ejecución de órdenes de compra, la planificación del mantenimiento y la trazabilidad de los activos.
+    Es además un problema acumulativo: mientras el proceso continúe sin apoyo analítico, el catálogo seguirá incorporando inconsistencias, cuyo costo de corrección retroactiva es superior al de su prevención.
+    Con base en lo anterior, la solución debía combinar dos componentes: un modelo que asista al gestor en el momento mismo de la decisión, y un mecanismo que permita verificar, con evidencia cuantitativa, si esa asistencia reduce el tiempo de gestión y mejora la calidad del catálogo. Ese es el propósito de GAMMA. Antes de explicar qué construimos, toca mostrar de dónde salen estas cifras.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Fuentes de información</p>
+  <h2>Extracción manual<br>del módulo MM</h2>
+  <ul class="bullets tight" style="margin-top:40px;">
+    <li><em class="hl">Fuente primaria:</em> maestro de materiales del módulo MM de SAP — 13 archivos, uno por tipo</li>
+    <li><em class="hl">Referencia:</em> maestro de clases corporativo (1,538 clases) y taxonomía UNSPSC de Naciones Unidas</li>
+    <li><em class="hl">Corte:</em> mandante 402, 29 de mayo de 2026 — 45,400 registros exportados, 45,397 activos</li>
+  </ul>
+  <aside class="notes">
+    <b class="cue">0:50 · 04:40</b>
+    La fuente primaria es el maestro de materiales del módulo MM de SAP, extraído mediante exportación manual en trece archivos organizados por tipo de material, dado que no existe integración directa con el ERP.
+    A esta fuente se sumaron dos catálogos de referencia: el maestro de clases corporativo, con 1,538 entradas, y la tabla del clasificador UNSPSC de Naciones Unidas, que permite anclar la taxonomía interna a un referente externo estandarizado.
+    El corte corresponde al mandante 402, con fecha del 29 de mayo de 2026: 45,400 registros exportados, de los cuales 45,397 son los registros activos sobre los que se trabaja de aquí en adelante.
+    OJO — esta es la única lámina donde aparece el 45,400. En todo el resto de la presentación la cifra es 45,397. Si el tribunal pregunta por la diferencia: son tres registros inactivos descartados en la exportación.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Composición del catálogo</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">45,397</div><div class="l">materiales</div></div>
+    <div class="stat"><div class="n">13</div><div class="l">tipos de material</div></div>
+    <div class="stat"><div class="n">2/3</div><div class="l">concentrados en dos tipos:<br>ZRPI y ZSUM</div></div>
+  </div>
+  <p class="foot">Los problemas de calidad <em class="hl">no se distribuyen de forma uniforme</em> entre tipos. Esa concentración es la que hace posible priorizar.</p>
+  <aside class="notes">
+    <b class="cue">0:55 · 05:35</b>
+    El primer hallazgo es de composición: sobre los 45,397 registros activos, dos tipos de material —ZRPI y ZSUM— concentran por sí solos cerca de dos terceras partes del catálogo completo.
+    El resto se distribuye de forma considerablemente más dispersa entre los once tipos restantes.
+    Esta concentración es relevante porque, como se verá enseguida, los problemas de calidad no se distribuyen de manera uniforme entre tipos, sino que se concentran de forma distinta según el volumen y la naturaleza de cada uno. Eso es lo que permite priorizar la intervención en lugar de atacar el catálogo entero.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Descripciones sin separador estándar</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">8.3<small> %</small></div><div class="l">3,759 descripciones sin separador —<br><em class="hl">invisibles a una búsqueda exacta</em></div></div>
+    <div class="stat"><div class="n">4.8<small> %</small></div><div class="l">2,182 registros con duplicidad<br>exacta en el texto breve</div></div>
+  </div>
+  <img class="diagram png" src="figuras/fig02-duplicados-por-tipo.png" style="max-width:1280px;margin-top:22px;" alt="Duplicados exactos por tipo de material, en número absoluto y como porcentaje del total">
+  <p class="figure-caption">Figura 2 · tesis, p. 27</p>
+  <aside class="notes">
+    <b class="cue">1:30 · 07:05</b>
+    Este es el hallazgo con mayor peso en el diseño de la herramienta: 3,759 descripciones —el 8.3 % del catálogo— no siguen la convención de separadores, dos puntos o punto y coma, establecida por la organización. Un tipo de material concentra el 31.8 % de sus descripciones sin la estructura esperada.
+    Por qué importa: una descripción sin separador es indistinguible de otra similar mediante una búsqueda exacta en SAP. Esos 3,759 registros representan un riesgo de duplicidad que ninguna búsqueda exacta puede detectar.
+    Ese fue el motivo directo por el que la detección de duplicados se resolvió por similitud difusa y no por coincidencia de cadenas. Decisión de diseño número uno.
+    A esto se suma el problema relacionado y ya visible: 2,182 registros con duplicidad exacta en el texto breve, el 4.8 % del catálogo. Y ahí hay una distinción importante: un tipo de equipos tiene la mayor tasa relativa, 35.2 % de sus registros duplicados, mientras que ZRPI concentra el mayor volumen absoluto, 973 casos, con una tasa relativa mucho menor. Tasa y volumen priorizan de forma distinta dónde concentrar la limpieza.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Mapa de calidad consolidado</p>
+  <div class="split fig-r">
+    <div>
+      <div class="stat"><div class="n" style="font-size:104px;">14.9<small> %</small></div><div class="l">6,748 materiales bloqueados<br>en el sistema</div></div>
+      <p class="foot" style="margin-top:34px;">Cuatro dimensiones por tipo: <em class="hl">% duplicados · % bloqueados · % sin separador · % sin clase</em>. ZRPI y ZRPA combinan los volúmenes más altos con el mayor riesgo.</p>
+    </div>
+    <div>
+      <img class="diagram png" src="figuras/fig03-mapa-calidad.png" alt="Mapa de calidad del catálogo: duplicados, bloqueados, sin separador y sin clase, por tipo de material">
+      <p class="figure-caption">Figura 3 · tesis, p. 27</p>
+    </div>
   </div>
   <aside class="notes">
-    Catálogo de una unidad de negocio del sector energético, Centroamérica y el Caribe.
-    Cada solicitud permanecía 3.3 horas dentro del rol del gestor.
-    No existía ningún mecanismo automatizado que dijera si el material ya existía ni qué categoría le tocaba.
-    La búsqueda manual en SAP —el paso que GAMMA automatiza— consumía entre 5 y 10 minutos por solicitud.
+    <b class="cue">1:30 · 08:35</b>
+    Además de la duplicidad se evaluó el porcentaje de materiales marcados como bloqueados: 6,748 registros, un 14.9 % del catálogo.
+    El patrón se repite. Un tipo concentra el mayor porcentaje relativo, con un 46.0 % de sus registros bloqueados; pero es nuevamente ZRPI el que concentra el mayor volumen absoluto, 1,597 materiales, cerca de una cuarta parte de todos los bloqueados del catálogo.
+    Las cuatro dimensiones —duplicidad, bloqueo, ausencia de separador y ausencia de clase— se consolidaron en este mapa único por tipo de material, que permite ver de forma integrada dónde se concentra el riesgo combinado.
+    Este mapa es la evidencia que sustenta priorizar la intervención sobre los tipos de mayor riesgo, particularmente ZRPI y ZRPA.
+    SI PREGUNTAN POR DIEN: el 90.0 % de registros sin clase es el valor más alto del mapa, pero es un caso aislado de bajo volumen —531 registros— y no altera la priorización.
   </aside>
 </section>
-
-<!-- 3 ─ Tres cosas -->
 <section>
-  <div class="rule"></div>
-  <div class="triad">Normaliza <span>·</span> Compara <span>·</span> Clasifica</div>
+  <p class="kicker">Registros sin clase y clases sin volumen</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">5,368</div><div class="l">registros sin ninguna clase<br>asignada en la fuente</div></div>
+    <div class="stat"><div class="n">&gt; ½</div><div class="l">de las clases del catálogo tienen<br>diez materiales o menos</div></div>
+  </div>
+  <p class="foot">Esta distribución es la que obliga, en la fase de modelado, a tratar el <em class="hl">desbalance de clases como un problema central</em> y no como un detalle técnico.</p>
   <aside class="notes">
-    Normaliza la descripción con un modelo de lenguaje, según la convención ISO 8000 de la corporación.
-    Compara contra el catálogo por similitud difusa para alertar duplicados.
-    Clasifica la categoría con un modelo supervisado entrenado sobre el histórico.
-    Insistir: asiste, no sustituye. No escribe en SAP. La decisión final es del gestor.
+    <b class="cue">1:00 · 09:35</b>
+    El análisis reveló algo que no estaba en el planteamiento original: 5,368 registros no tenían ninguna categoría asignada en la fuente, y más de la mitad de las clases del catálogo tienen diez materiales o menos.
+    Estos dos datos son los que después determinan dos decisiones del modelado. Los registros sin clase quedan fuera del conjunto de entrenamiento, porque no hay etiqueta que aprender. Y la cola larga de clases minúsculas obliga a reportar F1 macro además de exactitud: una métrica que pondere cada clase por igual es indispensable para no subestimar el error sobre las categorías minoritarias.
+    Decisión de diseño número dos y número tres.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Longitud de las descripciones</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">31.9</div><div class="l">caracteres promedio<br>por descripción</div></div>
+    <div class="stat"><div class="n">40</div><div class="l">límite del campo<br>de texto breve en SAP</div></div>
+  </div>
+  <p class="foot">Los gestores no abrevian por descuido: <em class="hl">abrevian porque el sistema los obliga</em>. Esa es la causa directa de las abreviaturas inconsistentes entre gestores.</p>
+  <aside class="notes">
+    <b class="cue">0:50 · 10:25</b>
+    Finalmente se analizó la longitud del texto breve. El promedio se ubica en 31.9 caracteres, contra un límite estructural de cuarenta que impone el propio campo de SAP.
+    Las descripciones se concentran contra ese límite, y ese es el origen de las abreviaturas inconsistentes entre gestores descritas en el marco teórico: ante un espacio reducido, cada gestor adopta sus propias convenciones para abreviar.
+    Insistir en la frase: no abrevian por descuido, abrevian porque el sistema los obliga. Esto importa porque es lo que después justifica vectorizar por caracteres y no por palabras — decisión de diseño número cuatro, y se retoma más adelante.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Síntesis del análisis exploratorio</p>
+  <div class="words" style="margin-bottom:40px;"><b>Duplicación</b><b>Separadores</b><b>Clases faltantes</b><b>Límite de caracteres</b></div>
+  <p class="lede">Cada módulo de GAMMA responde a uno de estos cuatro problemas.</p>
+  <aside class="notes">
+    <b class="cue">0:40 · 11:05</b>
+    Estos cuatro hallazgos —duplicación, ausencia de separadores, clases faltantes y el límite de caracteres— son las cuatro decisiones que dieron forma a la arquitectura de GAMMA.
+    Duplicación y separadores llevan a la similitud difusa. Clases faltantes lleva al tratamiento del desbalance y a la métrica F1 macro. El límite de caracteres lleva a la vectorización por caracteres.
+    Cada módulo que van a ver en la metodología responde directamente a uno de estos problemas. Cuatro problemas concretos. Lo que sigue es qué nos propusimos hacer con ellos.
   </aside>
 </section>
 
-<!-- 4 ─ Arquitectura -->
+<!-- ═════════════════ EL PROYECTO ═════════════════ -->
+<section class="section-cover">
+  <h1>El proyecto</h1>
+  <p class="lede">Qué nos propusimos construir, hasta dónde llega, y cómo quedó resuelto cada uno de los cuatro problemas del catálogo.</p>
+  <aside class="notes">
+    <b class="cue">0:20 · 11:25</b>
+    Cierre del bloque anterior. El tribunal ya sabe el tamaño del problema; ahora corresponde exponer qué nos propusimos hacer con él y hasta dónde llega el alcance.
+  </aside>
+</section>
 <section>
+  <p class="kicker">Objetivo general</p>
+  <h1>Desarrollar GAMMA</h1>
+  <p class="lede">Una plataforma de asistencia analítica para el flujo de creación individual de materiales en SAP.</p>
+  <div class="rule" style="margin:44px 0 30px;"></div>
+  <div class="triad" style="font-size:44px;">Procesamiento de lenguaje natural <span>·</span> Similitud difusa <span>·</span> Aprendizaje supervisado</div>
+  <aside class="notes">
+    <b class="cue">0:40 · 12:05</b>
+    El objetivo general consistió en desarrollar GAMMA, una plataforma de asistencia analítica para el flujo de creación individual de materiales en SAP. Su desarrollo articuló tres capacidades complementarias: procesamiento de lenguaje natural para la normalización de descripciones, búsqueda por similitud difusa para la detección de duplicados, y aprendizaje automático supervisado, entrenado sobre el histórico del catálogo, para la sugerencia de categoría.
+    La finalidad de estas capacidades es reducir el tiempo de gestión y mejorar la calidad del maestro de materiales de la unidad de negocio evaluada.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Objetivos específicos</p>
+  <ol class="bullets num tight" style="max-width:44em;">
+    <li>Implementar un pipeline de integración del maestro de materiales (arquitectura medallón)</li>
+    <li>Caracterizar los defectos de calidad acumulados en el catálogo — la línea base</li>
+    <li>Seleccionar el algoritmo de clasificación mediante evaluación comparativa de siete configuraciones</li>
+    <li>Construir una plataforma web de asistencia conversacional</li>
+    <li>Evaluar el efecto de la herramienta sobre el proceso de creación de materiales</li>
+    <li>Diseñar y ejecutar un plan de adopción cultural con gestores y jefatura</li>
+  </ol>
+  <aside class="notes">
+    <b class="cue">1:30 · 13:35</b>
+    A partir del objetivo general se definieron seis objetivos específicos.
+    El primero, implementar un pipeline de integración del maestro mediante una arquitectura por capas —bronce, plata y oro— sobre PostgreSQL, para consolidar en un repositorio único, normalizado y trazable los trece archivos de exportación previamente dispersos.
+    El segundo, caracterizar los defectos de calidad ya acumulados, mediante un análisis retroactivo de duplicidad exacta y completitud de categoría, para establecer una línea base contra la cual medir la mejora.
+    El tercero, seleccionar el algoritmo de clasificación mediante una evaluación comparativa de siete configuraciones sobre una partición estratificada del histórico.
+    El cuarto, construir una plataforma web de asistencia conversacional que articulara normalización, detección de duplicados y sugerencia de categoría, conservando siempre la validación humana previa al registro en SAP.
+    El quinto, evaluar el efecto de la herramienta comparando los tiempos de gestión antes y después, y midiendo el acuerdo entre las sugerencias del modelo y las decisiones del gestor en producción.
+    Y el sexto, diseñar y ejecutar un plan de adopción cultural con gestores y jefatura, en el entendido de que una herramienta que no es adoptada no genera ningún efecto real. Ese plan fue el que sostuvo el uso activo de GAMMA durante todo el período de validación.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Alcance · qué sí incluye</p>
+  <ul class="bullets tight" style="max-width:42em;">
+    <li>El flujo de creación <em class="hl">individual</em> de materiales en SAP</li>
+    <li>Una única unidad de negocio, con operación multi-país</li>
+    <li>Tres intervenciones: normalización · detección de duplicados · sugerencia de categoría</li>
+  </ul>
+  <p class="foot">GAMMA es <em class="hl">asistencia, no automatización plena</em>. No escribe en SAP. El gestor conserva el control de la decisión final.</p>
+  <aside class="notes">
+    <b class="cue">1:00 · 14:35</b>
+    El alcance se circunscribe al flujo de creación individual de materiales en SAP; es decir, al mecanismo mediante el cual un gestor solicita, valida y registra un material nuevo.
+    El desarrollo y la validación se realizaron dentro de una única unidad de negocio, con operación en múltiples países de Centroamérica y el Caribe. Dentro de este flujo, GAMMA interviene en tres momentos: normaliza la descripción propuesta, verifica su similitud contra el catálogo para alertar sobre posibles duplicados, y sugiere la categoría más probable con base en el histórico ya clasificado.
+    Subrayar: GAMMA es una herramienta de asistencia y validación, no de automatización plena. No escribe directamente en SAP ni sustituye el criterio del gestor, quien conserva en todo momento el control de la decisión final.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Alcance · qué no incluye</p>
+  <ul class="bullets tight off" style="max-width:42em;">
+    <li class="off">No hay integración en línea con SAP, ni de lectura ni de escritura</li>
+    <li class="off">No comprende el flujo de creación masiva de materiales</li>
+    <li class="off">No corrige automáticamente duplicados ni materiales mal categorizados preexistentes — se cuantifican, no se remedian</li>
+    <li class="off">La extensión a otras unidades de negocio se plantea como etapa posterior</li>
+  </ul>
+  <p class="foot">La separación respecto del ERP es <em class="hl">deliberada</em>: es el mecanismo de supervisión humana sobre el que se diseñó la solución.</p>
+  <aside class="notes">
+    <b class="cue">1:00 · 15:35</b>
+    De igual manera que es necesario precisar qué comprende el proyecto, es necesario delimitar lo que queda fuera.
+    La plataforma no mantiene integración en línea con el ERP, ni de lectura ni de escritura: el gestor exporta periódicamente el maestro desde SAP hacia la plataforma, y registra posteriormente en SAP las solicitudes ya validadas. Esta separación es deliberada y constituye el mecanismo de supervisión humana sobre el que se diseñó la solución.
+    Tampoco comprende el flujo de creación masiva, que opera mediante un mecanismo distinto y no fue intervenido. Y si bien el análisis cuantifica los duplicados y materiales mal categorizados existentes, su corrección automática queda fuera del alcance, por corresponder a un esfuerzo de limpieza de datos independiente.
+    Finalmente, el modelo fue entrenado y validado sobre el catálogo de esta única unidad de negocio; su extensión al resto de la corporación se plantea como la etapa siguiente, una vez confirmado su desempeño en el presente entorno. Con el encargo ya delimitado, sigue qué se construyó.
+  </aside>
+</section>
+<section>
+  <p class="kicker" style="position:absolute;top:0;left:90px;">Arquitectura de integración</p>
   <div class="arch"><svg viewBox="0 0 940 980" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" class="arch-svg">
     <rect width="940" height="980" fill="white" rx="8"/>
 
@@ -426,376 +758,405 @@
     </g>
   </svg></div>
   <aside class="notes">
-    Aclarar que es el mismo diagrama que la plataforma expone a sus usuarios, no uno hecho para la presentación.
-    Leerlo en tres planos, de arriba hacia abajo.
-    Acceso: frontend Vue, Nginx, JWT. Nada entra sin pasar por ahí.
-    Servicios: el API orquesta y se ramifica en duplicados, categorización y normalización. Los tres convergen en confirmación humana.
-    Datos: PostgreSQL 16 con el medallón.
-    Señalar el nodo de confirmación humana: sin él nada avanza.
+    <b class="cue">0:55 · 16:30</b>
+    Este es el mismo diagrama que la plataforma expone a sus propios usuarios en la sección de arquitectura, no una versión hecha para la presentación.
+    Se lee en tres planos, de arriba hacia abajo. Acceso: el frontend en Vue entra por Nginx, que actúa como proxy inverso y resuelve la autenticación con JWT. Nada llega a los servicios internos sin pasar por ahí.
+    Servicios: el API en FastAPI orquesta el flujo y se ramifica en los tres módulos analíticos —duplicados, categorización y normalización—. Los tres convergen en el nodo de confirmación humana.
+    Datos: PostgreSQL 16 con las tres capas del medallón, sobre una sola instancia.
+    Señalar el nodo de confirmación humana: sin él nada avanza. Es la materialización, en la arquitectura, de la decisión de alcance que ya se explicó.
   </aside>
 </section>
-
-<!-- 5 ─ Medallón (vertical) -->
 <section>
-  <section>
-    <p class="kicker">Arquitectura de datos</p>
-    <img class="diagram" src="medallon.svg" alt="Arquitectura medallon: bronze, silver y gold">
-    <aside class="notes">
-      La idea de fondo: el dato no se transforma donde se consulta. Cada capa tiene una responsabilidad, y el paso entre capas es lo que hace auditable el sistema.
-      Todo sobre una sola instancia de PostgreSQL.
-    </aside>
-  </section>
-</section>
-
-<!-- 6 ─ API -->
-<section>
-  <p class="kicker">El API</p>
-  <h1>Democratizar el modelo predictivo</h1>
+  <p class="kicker">Las tres capas del medallón</p>
+  <img class="diagram" src="figuras/medallon.svg" alt="Arquitectura medallon: bronze, silver y gold">
   <aside class="notes">
-    El problema: un modelo entrenado es un archivo. Así solo lo usa quien tenga Python, las mismas versiones, el artefacto y la misma función de preprocesamiento. Es decir, solo nosotros. Eso no es una herramienta de la organización, es un activo de sus autores.
-    Detrás de un endpoint HTTP, cualquier cliente lo consume enviando una descripción. El gestor lo usa sin saber que existe.
-    Esa fue la forma de democratizarlo.
-    Además garantiza: mismo preprocesamiento que en entrenamiento, una sola versión vigente para todos, acceso con token, y registro automático de cada predicción.
-    La inferencia va dentro del API, no en un servicio aparte: 0.09 segundos. No había nada que ganar separándola.
+    <b class="cue">0:35 · 17:05</b>
+    El repositorio se implementó siguiendo una arquitectura por capas sobre PostgreSQL 16.
+    Bronce concentra la trazabilidad completa: ingesta, predicciones, decisiones sobre duplicados y errores. Plata contiene los datos ya normalizados: el maestro, los catálogos de referencia y las solicitudes. Oro expone las vistas agregadas que alimentan el tablero.
+    La idea de fondo: el dato no se transforma donde se consulta, y el paso entre capas es lo que hace auditable el sistema.
+    Se optó por un motor relacional y no por una plataforma distribuida porque el volumen —decenas de miles de registros— no justifica esa complejidad operativa.
   </aside>
 </section>
-
-<!-- 7 ─ El experimento -->
 <section>
-  <p class="kicker">El experimento</p>
-  <div class="stat solo"><div class="n">7</div><div class="l">configuraciones, una misma partición, las mismas métricas</div></div>
+  <p class="kicker">Preparación de los datos</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">39,571</div><div class="l">materiales en el conjunto<br>de modelado</div></div>
+    <div class="stat"><div class="n">1,234</div><div class="l">clases con al menos<br>tres ejemplos</div></div>
+    <div class="stat"><div class="n">80/20</div><div class="l">partición estratificada<br>31,656 · 7,915</div></div>
+  </div>
+  <p class="foot">Se descartan los materiales sin categoría en la fuente y las clases con menos de tres ejemplos. La función de normalización de texto es <em class="hl">idéntica en entrenamiento y en inferencia</em>.</p>
   <aside class="notes">
-    Cuatro familias: modelos lineales sobre representaciones dispersas, métodos de ensamble, un clasificador de subpalabras y un transformador multilingüe con ajuste fino.
-    El conjunto: 39,571 materiales, 1,234 clases, tras descartar los que no tenían categoría en la fuente y las clases con menos de tres ejemplos.
-    Cuatro métricas de desempeño más el tiempo de entrenamiento — y el tiempo entró como criterio de selección, no como dato de color.
+    <b class="cue">1:00 · 18:05</b>
+    Para el modelado se definió una función de normalización de texto —aplicada de forma idéntica en entrenamiento y en inferencia— que convierte a mayúsculas, elimina diacríticos y estandariza los separadores de la convención de nomenclatura. Que sea la misma función importa: consultar el modelo con texto preparado de otra forma lo degrada en silencio, sin producir ningún error visible.
+    Dos criterios de exclusión: los materiales sin categoría asignada en la fuente —los 5,368 ya mencionados— y las clases con menos de tres ejemplos, insuficientes para entrenar y evaluar simultáneamente.
+    El conjunto resultante: 39,571 materiales en 1,234 clases, particionado de forma estratificada en 80 % de entrenamiento —31,656 registros— y 20 % de prueba —7,915—, preservando la proporción de cada clase en ambos subconjuntos.
+    OJO CON LAS DOS CIFRAS DE CLASES: 1,538 es el maestro de clases corporativo; 1,234 son las que tienen al menos tres ejemplos y por tanto las únicas que el modelo puede predecir.
   </aside>
 </section>
-
-<!-- 8 ─ Resultados -->
 <section>
-  <p class="kicker">Resultados</p>
+  <p class="kicker">Normalización de descripciones</p>
+  <h2>El modelo no completa<br>especificaciones ausentes</h2>
+  <p class="lede">Se resolvió con un modelo de lenguaje de gran escala, consumido por API. Cuando la descripción es insuficiente devuelve la lista de campos faltantes, en lugar de completarlos con valores plausibles.</p>
+  <p class="foot">Alternativa descartada: motor de reglas y diccionario de abreviaturas — exige <em class="hl">mantenimiento manual permanente</em> conforme aparecen familias nuevas.</p>
+  <aside class="notes">
+    <b class="cue">0:45 · 18:50</b>
+    El módulo de normalización se resolvió con un modelo de lenguaje de gran escala en lugar de un motor de reglas y diccionarios de abreviatura: un diccionario exigiría mantenimiento manual permanente conforme aparecen materiales de familias nuevas, mientras que un modelo fundacional alcanza desempeño competitivo sin entrenamiento específico.
+    Se configuró con temperatura baja, para privilegiar la consistencia sobre la variedad, y se instruyó explícitamente para no inventar especificaciones ausentes.
+    El diseño busca que el modelo falle por omisión y no por invención, que es el único modo de falla aceptable en un proceso de gobierno de datos.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Detección de duplicados</p>
+  <h2>Similitud difusa<br>por trigramas</h2>
+  <p class="lede">Consulta <code>pg_trgm</code> sobre el maestro normalizado: descompone cada descripción en subsecuencias de tres caracteres y mide la superposición. No coincidencia exacta.</p>
+  <p class="foot">Umbral deliberadamente permisivo: el costo de un falso positivo —que el gestor descarte una sugerencia irrelevante— es <em class="hl">muy inferior</em> al de un duplicado creado y arrastrado en el catálogo.</p>
+  <aside class="notes">
+    <b class="cue">0:45 · 19:35</b>
+    La detección de duplicados se implementó como una consulta de similitud difusa ejecutada directamente sobre el maestro normalizado, con la extensión pg_trgm de PostgreSQL. Descompone cada descripción en trigramas y compara el grado de superposición entre el material propuesto y los ya existentes.
+    Esta es la respuesta directa al hallazgo del 8.3 % sin separador: por eso no se resolvió con búsqueda exacta.
+    El umbral de alerta se estableció en un valor deliberadamente permisivo: en una herramienta de asistencia, el costo de un falso positivo es sustancialmente menor que el de un falso negativo, que se materializa en un duplicado creado y en el costo recurrente de arrastrarlo.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Arquitectura tecnológica</p>
+  <div class="triad" style="font-size:52px;">PostgreSQL 16 <span>·</span> FastAPI <span>·</span> Vue 3 <span>·</span> Docker Compose</div>
+  <p class="foot" style="margin-top:46px;">Con la única excepción del servicio de modelo de lenguaje, que opera bajo pago por uso, <em class="hl">toda la infraestructura es software de código abierto</em>. Su operación es sostenible más allá del período de desarrollo, sin inversión adicional en licenciamiento.</p>
+  <aside class="notes">
+    <b class="cue">0:35 · 20:10</b>
+    La plataforma se construyó sobre PostgreSQL 16 con pg_trgm habilitada, un API en Python con FastAPI, y un frontend de página única, todo orquestado con Docker Compose.
+    Con la única excepción del servicio de modelo de lenguaje, que opera bajo pago por uso, la totalidad de la infraestructura es software de código abierto, lo que hace sostenible su operación más allá del período de desarrollo.
+    Este dato conecta con el impacto financiero que se presenta al final: el costo del proyecto es tan bajo precisamente por esto.
+  </aside>
+</section>
+<section>
+  <p class="kicker">La competencia de algoritmos</p>
+  <div class="stat solo"><div class="n">7</div><div class="l">configuraciones, en dos rondas, sobre la misma partición y las mismas métricas</div></div>
+  <p class="foot">Exactitud · F1 macro · F1 ponderado · Top-3 — <em class="hl">más el tiempo de entrenamiento, que entró como criterio de selección</em> y no como dato de color.</p>
+  <aside class="notes">
+    <b class="cue">0:50 · 21:00</b>
+    La selección del algoritmo se resolvió mediante una competencia entre siete configuraciones, todas sobre la misma partición y con las mismas métricas.
+    Primera ronda: cuatro configuraciones que combinan dos representaciones vectoriales —TF-IDF de palabras y TF-IDF de n-gramas de carácter— con regresión logística, máquina de vectores de soporte lineal y bosque aleatorio. Segunda ronda: tres familias adicionales —potenciación de gradiente sobre árboles, un clasificador de subpalabras y un transformador multilingüe con ajuste fino.
+    Se reportan cuatro métricas de desempeño más el tiempo de entrenamiento. Por qué cuatro y no solo exactitud: por el desbalance de clases. Como más de la mitad de las clases tiene diez materiales o menos, una métrica que pondere cada clase por igual —el F1 macro— es indispensable para no subestimar el error sobre las categorías minoritarias.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Resultados de la competencia</p>
   <table>
     <thead>
       <tr><th>Configuración</th><th>Exactitud</th><th>F1 macro</th><th>Top-3</th><th>Tiempo</th></tr>
     </thead>
     <tbody>
-      <tr class="win"><td>LinearSVC + carácter</td><td>0.8208</td><td>0.7072</td><td>0.9176</td><td>54 s</td></tr>
+      <tr class="win"><td>LinearSVC + carácter</td><td>0.8208</td><td>0.7072</td><td>0.9176</td><td>54.1 s</td></tr>
       <tr><td>XGBoost</td><td>0.8145</td><td>0.6821</td><td>0.9200</td><td>3 h</td></tr>
       <tr><td>Random Forest</td><td>0.8133</td><td>0.7029</td><td>0.9063</td><td>46 s</td></tr>
       <tr><td>Reg. logística palabra</td><td>0.8095</td><td>0.6689</td><td>0.9135</td><td>29 s</td></tr>
       <tr><td>Reg. logística carácter</td><td>0.8080</td><td>0.6423</td><td>0.9248</td><td>18 min</td></tr>
-      <tr><td>Transformer</td><td>0.7995</td><td>0.5654</td><td>0.8953</td><td>54 min</td></tr>
-      <tr><td>fastText</td><td>0.7780</td><td>0.6275</td><td>0.8865</td><td>43 s</td></tr>
+      <tr><td>Transformer multilingüe</td><td>0.7995</td><td>0.5654</td><td>0.8953</td><td>54 min <span style="font-size:.8em">(GPU)</span></td></tr>
+      <tr><td>fastText</td><td>0.7780</td><td>0.6275</td><td>0.8865</td><td>42.8 s</td></tr>
     </tbody>
   </table>
   <aside class="notes">
+    <b class="cue">1:00 · 22:00</b>
     Dejar la tabla en pantalla y hablar sobre ella; no leerla.
-    Señalar la primera fila, y luego la última columna.
+    Señalar la primera fila, y después la última columna. La configuración ganadora obtuvo el mejor resultado en las cuatro métricas de desempeño, de forma consistente.
+    Las dos filas que importan para el argumento: XGBoost tardó más de tres horas para quedar seis décimas de punto porcentual por debajo. El transformador tardó más de cincuenta minutos sobre GPU y no superó a la configuración lineal en ninguna métrica.
+    NO usar fastText como argumento de velocidad: sus 42.8 segundos son comparables a los 54.1 del ganador, no dramáticamente menores. Su diferencia está en el desempeño, no en el tiempo.
+    Todas las configuraciones reciben el mismo nivel de detalle; ninguna necesita explicación individual extensa.
+  </aside>
+</section>
+<section>
+  <p class="kicker">La configuración seleccionada</p>
+  <div class="metrics">
+    <div class="m"><div class="mv">0.8208</div><div class="ml">Exactitud</div></div>
+    <div class="m"><div class="mv">0.7072</div><div class="ml">F1 macro</div></div>
+    <div class="m"><div class="mv">0.8041</div><div class="ml">F1 ponderado</div></div>
+    <div class="m"><div class="mv">0.9176</div><div class="ml">Top-3</div></div>
+  </div>
+  <p class="foot" style="margin-top:44px;">SVM lineal sobre TF-IDF de n-gramas de carácter. <em class="hl">54.1 segundos en CPU</em>, frente a las 3 horas de XGBoost y los 54 minutos del transformador sobre GPU.</p>
+  <aside class="notes">
+    <b class="cue">0:50 · 22:50</b>
+    La configuración ganadora fue una máquina de vectores de soporte lineal sobre TF-IDF de n-gramas de carácter, calibrada.
+    Exactitud de 82.08 sobre 1,234 clases: el azar sería 0.08 %, así que la cifra hay que leerla contra ese fondo y no contra un problema binario. Top-3 de 91.76: en nueve de cada diez casos la clase correcta está entre las tres que se muestran al gestor.
+    El F1 macro promedia sin ponderar por volumen y por tanto castiga el desempeño sobre las clases pequeñas; el ponderado pesa por volumen. El ganador lidera ambas, lo que indica comportamiento uniforme a lo largo de la taxonomía y no solo un buen agregado.
+    Y el costo: 54.1 segundos en procesador convencional. El argumento que cierra: el sistema está pensado para reentrenarse conforme el catálogo crece; un modelo que exige horas para actualizarse es un modelo que en la práctica no se actualiza.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Cómo funciona el modelo</p>
+  <img class="diagram" src="figuras/pipeline.svg" alt="Pipeline del modelo: descripcion, normalizacion, TF-IDF, SVM calibrada, top-3">
+  <aside class="notes">
+    <b class="cue">0:40 · 23:30</b>
+    Dos etapas de modelado, con un preproceso delante y una salida ordenada detrás: la descripción entra, se normaliza, se convierte en vector, la máquina de vectores de soporte la clasifica, y salen las tres clases más probables con su confianza.
+    El detalle que importa: el vectorizador ajustado viaja dentro del artefacto, no se reconstruye. Si se reconstruyera, el vocabulario cambiaría y las dimensiones dejarían de significar lo mismo.
+    Y la función de normalización es literalmente la misma que se usó en entrenamiento, importada del mismo módulo. Consultar el modelo con texto preparado de otra forma lo degrada en silencio, sin producir ningún error visible.
+    Las dos láminas siguientes abren cada etapa: primero cómo se vectoriza, después cómo se calibra.
   </aside>
 </section>
 
-<!-- 9 ─ Ganó el más simple -->
 <section>
-  <p class="kicker">Ganó el más simple</p>
-  <div class="stats">
-    <div class="stat"><div class="n">54 s</div><div class="l">el ganador, en CPU</div></div>
-    <div class="stat"><div class="n">3 h</div><div class="l">XGBoost, para quedar abajo</div></div>
+  <p class="kicker">Vectorización por caracteres</p>
+  <div class="words sm" style="margin-bottom:22px;"><b>TORNILLO</b><b>TORNILO</b><b>TORN</b></div>
+  <p class="lede" style="font-size:24px;margin:0;max-width:none;">Para un vectorizador de palabras son tres tokens sin relación; para uno de caracteres, tres textos casi idénticos. Es la respuesta directa al límite de 40 caracteres de SAP: <em class="hl">la abreviatura inconsistente es la norma</em>.</p>
+  <img class="diagram" src="figuras/ngramas.svg" style="max-width:1160px;margin-top:26px;" alt="TORNILLO descompuesto en ventanas de tres caracteres">
+  <aside class="notes">
+    <b class="cue">1:10 · 24:40</b>
+    Esta es la decisión clave del modelo, y responde directamente al cuarto hallazgo del análisis exploratorio.
+    El catálogo se escribió durante años, por distintos gestores, contra un límite de cuarenta caracteres. La abreviatura inconsistente no es una anomalía: es la norma. Un vectorizador de palabras ve tres tokens sin relación; uno de caracteres ve tres textos casi idénticos.
+    Además captura medidas y designaciones alfanuméricas —un medio de pulgada, M12, 2X4— que un tokenizador de palabras trata como ruido, y tolera errores de digitación sin diccionario de correcciones.
+    Y el beneficio más sutil: no requiere vocabulario cerrado. Un material de una familia nueva, con una palabra que nunca apareció en entrenamiento, igual produce fragmentos conocidos. Con palabras sería un vector vacío.
+    Señalar la figura: cada palabra se rellena con espacios en los extremos y se recorren ventanas de 2 a 5 caracteres que no cruzan de una palabra a la siguiente. Aquí se ve solo el paso de tres sobre TORNILLO: TOR, ORN, RNI, NIL. Una descripción de cuarenta caracteres genera del orden de cien fragmentos, y de todo el corpus se conservan los 50,000 más frecuentes: esas son las dimensiones del vector.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Desempeño del modelo seleccionado</p>
+  <div class="stat"><div class="n">17.92<small> %</small></div><div class="l">1,418 errores sobre 7,915 materiales de prueba</div></div>
+  <p class="foot" style="margin-top:42px;">El error no se distribuye parejo: las clases con vocabulario propio y estable se resuelven casi sin error; las categorías genéricas —«repuesto», «herramienta»— concentran las tasas de acierto más bajas.<br><br>
+  Buena parte de ese error <em class="hl">no es un error de clasificación</em>, sino un problema del catálogo: pares de clases que designan el mismo concepto y difieren solo en puntuación.</p>
+  <aside class="notes">
+    <b class="cue">1:05 · 25:45</b>
+    Sobre la partición de prueba el modelo cometió 1,418 errores de 7,915 materiales, un 17.92 %. La matriz de confusión muestra que ese error no se distribuye de forma pareja: las clases con vocabulario propio y estable se resuelven casi sin error, mientras que las categorías genéricas —repuesto, herramienta— presentan las tasas de acierto más bajas.
+    Y esto tiene una implicación relevante: buena parte de ese error no es, en sentido estricto, un error de clasificación, sino la manifestación de un problema del propio catálogo, donde existen pares de clases que designan el mismo concepto y difieren únicamente en puntuación o forma de escritura.
+    El análisis de errores del modelo funciona, en ese sentido, como un instrumento adicional de diagnóstico sobre la calidad de la taxonomía que clasifica. Esto reaparece en las conclusiones como hallazgo no anticipado.
+    SI PREGUNTAN por qué no se removieron los materiales genéricos tipo ZSUM antes de entrenar: fue una decisión metodológica consciente evaluar sobre el catálogo real y no sobre una versión depurada, precisamente porque el análisis de errores revela un problema de taxonomía que una depuración previa habría ocultado.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Calibración</p>
+  <h1>Convertir la distancia<br>en probabilidad</h1>
+  <p class="lede">Una SVM no produce probabilidades, produce distancias con signo al hiperplano. La calibración las traduce en probabilidades fieles: de los casos a los que asigna 0.9, cerca del 90 % es correcto.</p>
+  <p class="foot">Sin esta etapa no existiría el umbral. Es lo que convierte un clasificador en <em class="hl">un sistema capaz de abstenerse</em>.</p>
+  <aside class="notes">
+    <b class="cue">0:40 · 26:25</b>
+    Una SVM no da probabilidades: da distancias con signo al hiperplano. Un valor de 2.4 significa que cae bien adentro del lado positivo, pero no significa 84 por ciento.
+    La calibración entrena sobre una parte de los datos, observa qué distancias produce sobre la parte que no vio, y ajusta una función que traduce distancia en probabilidad fiel.
+    Esta etapa es la que habilita todo lo que sigue: sin probabilidades no hay umbral, y sin umbral el sistema estaría obligado a responder siempre.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Exactitud y cobertura según el umbral</p>
+  <div class="split fig">
+    <div><img class="diagram" src="figuras/umbral.svg" alt="La exactitud sube y la cobertura cae al aumentar el umbral de confianza"></div>
+    <div>
+      <table>
+        <thead><tr><th>Umbral</th><th>Exactitud</th><th>Cobertura</th></tr></thead>
+        <tbody>
+          <tr><td>Sin umbral</td><td>0.8208</td><td>100.0 %</td></tr>
+          <tr><td>0.5</td><td>0.9294</td><td>73.9 %</td></tr>
+          <tr><td>0.6</td><td>0.9517</td><td>65.1 %</td></tr>
+          <tr><td>0.7</td><td>0.9678</td><td>54.1 %</td></tr>
+          <tr class="win"><td>0.8 — adoptado</td><td>0.9888</td><td>28.2 %</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
   <aside class="notes">
-    La SVM lineal sobre caracteres superó a los ensambles y al aprendizaje profundo.
-    XGBoost: más de tres horas para quedar seis décimas abajo.
-    El transformador: sesenta veces el tiempo, sobre GPU, mientras el ganador entrena en CPU. Y no lo superó.
-    El argumento que cierra: el sistema está pensado para reentrenarse conforme el catálogo crece. Un modelo que exige horas para actualizarse es un modelo que en la práctica no se actualiza.
-    Y es coherente con el problema: textos cortos, muy estructurados, vocabulario técnico acotado. No hay ambigüedad sintáctica que justifique más capacidad.
+    <b class="cue">1:10 · 27:35</b>
+    Dado que el modelo produce una probabilidad asociada a cada sugerencia, se caracterizó el compromiso entre exactitud y cobertura para distintos umbrales, sobre los 7,915 materiales de la partición de prueba.
+    Las dos curvas están en la misma escala porcentual, a propósito, porque así se ve la forma real del intercambio: la exactitud apenas se mueve —de 82 a 99, diecisiete puntos en todo el recorrido— mientras la cobertura se desploma de 100 a 28. Se gana poca exactitud y se paga mucha cobertura, y cada punto adicional cuesta cada vez más volumen automatizado. Eso es lo que hace que elegir el umbral sea una decisión de negocio y no de estadística.
+    Subir el umbral no mejora el modelo: lo hace más selectivo. El modelo es el mismo, con la misma exactitud del 82 %. Lo único que cambia es cuántos casos se aceptan sin revisar.
+    Al 0.5 el sistema resolvería tres de cada cuatro solicitudes acertando en el 92.9 %. Al 0.8 resuelve poco más de una de cada cuatro, pero acierta en el 98.9 %: de 2,235 materiales resueltos solos se equivocaría en unos 25.
+    Se adoptó 0.8. La razón está en la lámina siguiente.
   </aside>
 </section>
-
-<!-- 10 ─ El modelo ganador (vertical) -->
 <section>
-  <section>
-    <p class="kicker">El modelo ganador</p>
-    <h1>SVM lineal sobre<br>n&#8209;gramas de car&aacute;cter</h1>
-    <p class="lede">Calibrada con validaci&oacute;n cruzada &#183; 1,234 clases &#183; 54 segundos en procesador convencional</p>
-    <aside class="notes">
-      Nombrarlo completo: maquina de vectores de soporte lineal sobre TF-IDF de n-gramas de caracter, envuelta en un calibrador de probabilidades.
-      Es la configuracion mas simple de las siete, y gano en las cuatro metricas de desempeno.
-      Los tres numeros de la linea de abajo son los que sostienen la decision: calibrada porque sin probabilidades no hay umbral; 1,234 clases porque ese es el tamano real del problema; 54 segundos porque es lo que lo hace sostenible.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Las m&eacute;tricas</p>
-    <div class="metrics">
-      <div class="m"><div class="mv">0.8208</div><div class="ml">Exactitud</div></div>
-      <div class="m"><div class="mv">0.9176</div><div class="ml">Top-3</div></div>
-      <div class="m"><div class="mv">0.7072</div><div class="ml">F1 macro</div></div>
-      <div class="m"><div class="mv">0.8041</div><div class="ml">F1 ponderado</div></div>
+  <h1>Los dos tipos de error<br>tienen costos distintos</h1>
+  <div class="regimes" style="margin-top:52px;">
+    <div class="rg lo">
+      <div class="rt">Categoría incorrecta sin revisar</div>
+      <div class="rd">Cuesta para siempre: distorsiona reportes de consumo, complica la planificación de compras, se propaga. Nadie la detecta porque nadie la busca.</div>
     </div>
-    <aside class="notes">
-      Exactitud 82.08 sobre 1,234 clases. El azar seria 0.08 por ciento, asi que la cifra hay que leerla contra ese fondo, no contra un problema binario.
-      Top-3 de 91.76: en nueve de cada diez casos la clase correcta esta entre las tres que se le muestran al gestor. Ese es el numero que importa para la experiencia real, porque al gestor se le presentan tres opciones.
-      El F1 macro promedia sin ponderar por volumen, asi que castiga el desempeno sobre las clases pequenas; el ponderado pesa por volumen. La brecha entre ambos mide cuanto sufre la cola larga.
-      El ganador lidera las dos, lo que indica comportamiento uniforme a lo largo de la taxonomia y no solo un buen agregado.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">El costo</p>
-    <div class="stats">
-      <div class="stat"><div class="n">54 s</div><div class="l">entrenar, en CPU<br>31,656 ejemplos</div></div>
-      <div class="stat"><div class="n">0.09 s</div><div class="l">predecir<br>1.5 % del tiempo de m&aacute;quina</div></div>
+    <div class="rg hi">
+      <div class="rt">Sugerencia derivada a revisión</div>
+      <div class="rd">Consume la atención del gestor — que es exactamente el escenario que la herramienta atiende. Recibe <b>3 candidatos</b> ordenados por probabilidad, con <b>91.8 %</b> de exactitud sobre esos tres.</div>
     </div>
-    <aside class="notes">
-      Estas dos cifras son las que separan un experimento de una herramienta que se puede mantener.
-      54 segundos en procesador convencional significa que reentrenar es trivial: se puede hacer despues de cada carga importante al maestro. El transformador tardaba sesenta veces mas y sobre GPU.
-      0.09 segundos de inferencia significa que el modelo es invisible para el usuario. Es el 1.5 por ciento del tiempo de maquina de una solicitud; el 70 por ciento se lo lleva el modelo de lenguaje.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Qu&eacute; hace</p>
-    <h1>Texto libre <em class="hl">&rarr;</em><br>una de 1,234 clases</h1>
-    <p class="lede">No entiende el material. Aprendi&oacute; qu&eacute; patrones de caracteres aparecen en las descripciones de cada clase.</p>
-    <aside class="notes">
-      Aclarar el limite conceptual: no sabe que es un tornillo, no tiene modelo del mundo.
-      Lo que aprendio de 31,656 ejemplos historicos es una correspondencia entre patrones de texto y codigos de clase.
-      Un texto nuevo se resuelve buscando a que patron conocido se parece mas. Toda la potencia esta en como se representa ese texto, que es lo que viene ahora.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">El pipeline</p>
-    <img class="diagram" src="pipeline.svg" alt="Pipeline del modelo: descripcion, normalizacion, TF-IDF, SVM calibrada, top-3">
-    <aside class="notes">
-      Son dos etapas de modelado con un preproceso delante y una salida ordenada detras.
-      El detalle que importa: el vectorizador ajustado viaja dentro del artefacto, no se reconstruye. Si se reconstruyera, el vocabulario cambiaria y las dimensiones dejarian de significar lo mismo.
-      Y la funcion de normalizacion es literalmente la misma que se uso en entrenamiento, importada del mismo modulo. Consultar el modelo con texto preparado de otra forma lo degrada en silencio, sin producir ningun error visible.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Etapa 1 &#183; Vectorizaci&oacute;n</p>
-    <h1>Caracteres,<br>no palabras</h1>
-    <p class="lede">El texto se parte en secuencias de caracteres consecutivos, no en palabras completas.</p>
-    <aside class="notes">
-      El clasificador no recibe texto, recibe numeros. Esta etapa es la que mas define el desempeno del modelo.
-      La decision de fondo es la unidad: en lugar de contar palabras, se cuentan fragmentos de caracteres.
-      Es contraintuitivo, porque la palabra parece la unidad natural del lenguaje. En este catalogo no lo es, y la siguiente lamina explica por que.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">C&oacute;mo se parte el texto</p>
-    <img class="diagram" src="ngramas.svg" alt="TORNILLO descompuesto en ventanas de tres caracteres">
-    <aside class="notes">
-      Cada palabra se rellena con espacios en sus extremos y se recorren ventanas de 2, 3, 4 y 5 caracteres que no cruzan de una palabra a la siguiente.
-      Aqui se ve solo el paso de tres caracteres sobre TORNILLO: TOR, ORN, RNI, NIL, y asi.
-      Una descripcion de cuarenta caracteres genera del orden de cien fragmentos. De todo el corpus se conservan los 50,000 mas frecuentes, que son las dimensiones del vector.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Por qu&eacute; caracteres</p>
-    <div class="words"><b>TORNILLO</b><b>TORNILO</b><b>TORN</b></div>
-    <p class="lede">Para un vectorizador de palabras son tres tokens sin relaci&oacute;n. Para uno de caracteres son tres textos casi id&eacute;nticos.</p>
-    <aside class="notes">
-      Esta es la decision clave y responde a como esta escrito el catalogo.
-      Se escribio durante anos, por distintos gestores, contra un limite de cuarenta caracteres de SAP. La abreviatura inconsistente no es una anomalia, es la norma.
-      Ademas captura medidas y designaciones alfanumericas —un medio de pulgada, M12, 2X4— que un tokenizador de palabras trata como ruido.
-      Y tolera errores de digitacion sin diccionario de correcciones.
-      El cuarto beneficio es el mas sutil: no requiere vocabulario cerrado. Un material de una familia nueva, con una palabra que nunca aparecio en el entrenamiento, igual produce fragmentos conocidos. Con palabras seria un vector vacio.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">El peso de cada fragmento</p>
-    <h1>Lo raro<br>pesa m&aacute;s</h1>
-    <p class="lede">Un fragmento que aparece en casi todas las descripciones no distingue nada. Uno que aparece en pocas clases es el que discrimina.</p>
-    <aside class="notes">
-      No basta con saber que fragmentos contiene una descripcion; hay que saber cuanto vale cada uno. Eso es lo que hace el TF-IDF.
-      La parte TF cuenta cuantas veces aparece el fragmento, pero de forma logaritmica: que aparezca cinco veces no lo hace cinco veces mas importante. En descripciones tan cortas eso evita que una repeticion accidental domine el vector.
-      La parte IDF es la interesante: pondera por lo raro que es el fragmento en el catalogo completo. Es el mecanismo que hace que el modelo se fije en lo distintivo de cada material y no en lo que todos comparten.
-      Finalmente cada vector se escala a longitud unitaria, para que una descripcion larga y una corta se comparen por composicion y no por tamano.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Etapa 2 &#183; El clasificador</p>
-    <div class="stat solo"><div class="n">1,234</div><div class="l">fronteras, una por clase</div></div>
-    <aside class="notes">
-      Una maquina de vectores de soporte lineal busca el hiperplano que separa una clase de las demas dejando el mayor margen posible.
-      Mayor margen significa que no toma cualquier frontera que separe los ejemplos de entrenamiento, sino la que queda lo mas lejos posible de los ejemplos de ambos lados. Eso es precisamente lo que le da capacidad de generalizar a textos que no ha visto.
-      Con 1,234 clases se entrena un separador por clase, uno contra el resto: es esto un tornillo o no lo es. Ante una descripcion nueva, cada separador emite una puntuacion y gana la clase que la deja mas adentro de su lado.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Por qu&eacute; lineal basta</p>
-    <div class="stat solo"><div class="n">50,000</div><div class="l">dimensiones</div></div>
-    <aside class="notes">
-      La pregunta obvia es por que no un modelo con mas capacidad, y la respuesta esta en la geometria del espacio.
-      En espacios de muy alta dimensionalidad las clases tienden a ser linealmente separables: hay tantas direcciones disponibles que casi siempre existe un hiperplano que separa.
-      Anadir capacidad no lineal no compra separabilidad que ya se tiene, y si compra sobreajuste y costo de entrenamiento.
-      Esto es exactamente lo que la competencia mostro de forma empirica: los ensambles y el transformador no superaron a la configuracion lineal, y costaron entre veinte y doscientas veces mas.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Etapa 3 &#183; Calibraci&oacute;n</p>
-    <h1>Distancia <em class="hl">&rarr;</em> probabilidad</h1>
-    <p class="lede">Sin esta etapa no existir&iacute;a el umbral. Es lo que convierte un clasificador en un sistema capaz de abstenerse.</p>
-    <aside class="notes">
-      Una SVM no produce probabilidades: produce distancias con signo al hiperplano. Un valor de 2.4 significa que cae bien adentro del lado positivo, pero no significa 84 por ciento de probabilidad.
-      El procedimiento entrena el modelo sobre una parte de los datos, observa que distancias produce sobre la parte que no vio, y ajusta una funcion que traduce distancia en probabilidad fiel: que del conjunto de casos a los que asigna 0.9, aproximadamente el 90 por ciento sea efectivamente correcto.
-      Un detalle de implementacion: se configuro para conservar un unico estimador base en lugar de una copia por particion, lo que reduce varias veces el tamano del artefacto sin afectar la calidad de las probabilidades.
-      Y el numero de particiones se ajusta a lo que el conjunto soporte, porque una clase con el minimo de tres ejemplos llega al entrenamiento con dos. Antes que descartar esas clases —lo que dejaria materiales imposibles de predecir— se reduce el numero de particiones.
-    </aside>
-  </section>
-</section>
-
-<!-- 11 ─ Punto de operacion (vertical) -->
-<section>
-  <section>
-    <p class="kicker">Punto de operaci&oacute;n</p>
-    <h1>Cada sugerencia llega<br>con una confianza</h1>
-    <p class="lede">La probabilidad calibrada de la clase m&aacute;s votada. Es lo que permite tratar distinto lo seguro de lo dudoso.</p>
-    <aside class="notes">
-      Gracias a la calibracion, el modelo no solo dice que clase cree que es: dice cuanto lo cree.
-      Eso abre una posibilidad que una prediccion cruda no tiene: que el sistema distinga entre las sugerencias de las que esta seguro y las que no, y trate cada grupo de forma distinta.
-      En la literatura esto es clasificacion con opcion de rechazo: el modelo tiene permitido abstenerse en lugar de verse obligado a responder siempre.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Dos reg&iacute;menes</p>
-    <div class="regimes">
-      <div class="rg hi">
-        <div class="rt">Supera el umbral</div>
-        <div class="rd">El sistema resuelve solo</div>
-      </div>
-      <div class="rg lo">
-        <div class="rt">No lo supera</div>
-        <div class="rd">Se deriva al gestor con las tres candidatas</div>
-      </div>
-    </div>
-    <aside class="notes">
-      Se fija un umbral. Las predicciones que lo superan el sistema las resuelve por si solo; las que no lo superan las deriva a revision explicita del gestor.
-      Es una sola decision de diseno, pero cambia por completo el caracter de la herramienta: deja de ser un clasificador que siempre responde y pasa a ser un asistente que sabe cuando callarse.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">El compromiso</p>
-    <h1>Subir el umbral<br>no mejora el modelo</h1>
-    <p class="lede">Lo hace m&aacute;s selectivo. Menos casos pasan, pero los que pasan son m&aacute;s confiables.</p>
-    <aside class="notes">
-      Este es el punto que mas se malinterpreta. Mover el umbral no cambia el modelo en absoluto: el modelo es el mismo, con la misma exactitud del 82 por ciento.
-      Lo unico que cambia es cuantos casos se aceptan sin revisar. Al subir el umbral se recorta la parte de la distribucion donde el modelo esta dudando, y lo que queda es mas fiable.
-      La pregunta de diseno no es entonces cual umbral es el correcto, sino que combinacion de exactitud y cobertura le conviene a este proceso.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Exactitud contra cobertura</p>
-    <img class="diagram" src="umbral.svg" alt="Exactitud sube y cobertura cae al aumentar el umbral de confianza">
-    <aside class="notes">
-      Las dos curvas estan en la misma escala porcentual, a proposito, porque asi se ve la forma real del intercambio.
-      La exactitud apenas se mueve: va de 82 a 99, diecisiete puntos en todo el recorrido. La cobertura se desploma: de 100 a 28, setenta y dos puntos.
-      Dicho de otro modo: se gana poca exactitud y se paga mucha cobertura. Cada punto adicional de exactitud cuesta cada vez mas volumen automatizado.
-      Eso es lo que hace que la eleccion del umbral sea una decision de negocio y no una de estadistica.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Punto de operaci&oacute;n</p>
-    <table>
-      <thead><tr><th>Umbral</th><th>Exactitud</th><th>Cobertura</th><th>Resueltos</th></tr></thead>
-      <tbody>
-        <tr><td>Sin umbral</td><td>0.8208</td><td>100 %</td><td>7,915</td></tr>
-        <tr><td>0.5</td><td>0.9294</td><td>73.9 %</td><td>5,851</td></tr>
-        <tr><td>0.6</td><td>0.9517</td><td>65.1 %</td><td>5,151</td></tr>
-        <tr><td>0.7</td><td>0.9678</td><td>54.1 %</td><td>4,284</td></tr>
-        <tr class="win"><td>0.8</td><td>0.9888</td><td>28.2 %</td><td>2,235</td></tr>
-      </tbody>
-    </table>
-    <aside class="notes">
-      Cada fila responde a la misma pregunta con distinta tolerancia al error, medida sobre los 7,915 materiales de la particion de prueba.
-      Al umbral 0.5 el sistema resolveria tres de cada cuatro solicitudes acertando en el 92.9 por ciento. Es tentador: mucho volumen automatizado.
-      Al 0.8 resuelve poco mas de una de cada cuatro, pero acierta en el 98.9 por ciento. De 2,235 materiales resueltos solos, se equivocaria en unos 25.
-      Elegimos 0.8, y la razon esta en la lamina siguiente.
-    </aside>
-  </section>
-
-  <section>
-    <h1>Los dos errores<br>no cuestan lo mismo</h1>
-    <aside class="notes">
-      Una categoria incorrecta que entra al catalogo sin revision cuesta para siempre: distorsiona los reportes de consumo, complica la planificacion de compras por tipo de material, y se propaga a todo proceso que consulte el catalogo despues. Y nadie la detecta, porque nadie la esta buscando. Corregirla retroactivamente cuesta mas que haberla revisado.
-      Una sugerencia derivada a revision solo consume la atencion del gestor, que es exactamente el escenario que la herramienta esta disenada para atender. No es un fallo del sistema: es el sistema funcionando.
-      Como los dos errores no cuestan lo mismo, no tiene sentido tratarlos de forma simetrica. Por eso privilegiamos exactitud sobre cobertura, en un proceso cuyo proposito declarado es la calidad del dato.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">El 72 % restante no queda solo</p>
-    <div class="stats">
-      <div class="stat"><div class="n">3</div><div class="l">candidatos ordenados<br>por probabilidad</div></div>
-      <div class="stat"><div class="n">91.8 %</div><div class="l">exactitud sobre esos tres</div></div>
-    </div>
-    <aside class="notes">
-      Esta es la precision que evita que el 28 por ciento se lea como una limitacion de la herramienta.
-      Las solicitudes derivadas a revision conservan todo el valor: el gestor no vuelve al punto de partida ni enfrenta un catalogo de 1,234 clases. Recibe tres candidatas ordenadas por probabilidad, y la correcta esta entre ellas en el 91.8 por ciento de los casos.
-      Lo que cambia entre un regimen y otro no es si el modelo ayuda, sino quien firma la decision.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">Por qu&eacute; el umbral es leg&iacute;timo</p>
-    <h1>Los aciertos se agrupan<br>en confianza alta</h1>
-    <p class="lede">Los errores se dispersan hacia valores bajos. Sin esa separaci&oacute;n, cualquier umbral seleccionar&iacute;a al azar.</p>
-    <aside class="notes">
-      Un umbral solo sirve si la confianza efectivamente discrimina entre aciertos y errores. Esa es la condicion de validez, y conviene decirla porque es lo primero que deberia preguntar alguien que evalua el trabajo.
-      La distribucion observada la cumple: las predicciones correctas se concentran en la region de confianza alta y las incorrectas se dispersan hacia valores bajos.
-      Si la confianza estuviera repartida por igual entre aciertos y errores, filtrar por ella no seleccionaria nada util y la prediccion selectiva careceria de sentido. La forma de esa distribucion es lo que hace legitimo todo el planteamiento.
-    </aside>
-  </section>
-
-  <section>
-    <p class="kicker">No es una constante</p>
-    <h1>El umbral se recalibra</h1>
-    <p class="lede">Cada correcci&oacute;n del gestor sobre una solicitud que el sistema resolvi&oacute; solo queda registrada.</p>
-    <aside class="notes">
-      El umbral esta configurado, no cableado, y la plataforma registra lo necesario para auditarlo: cada vez que un gestor modifica una categoria sugerida, la correccion se almacena.
-      El contraste consiste en comparar la proporcion de correcciones sobre las solicitudes que el sistema resolvio automaticamente contra el margen de error que el umbral admite, que es un 1.1 por ciento.
-      Si las correcciones resultan mas frecuentes de lo previsto, el umbral es demasiado permisivo y conviene elevarlo, a costa de derivar mas solicitudes. Si resultan menos frecuentes, puede bajarse para automatizar mas volumen sin comprometer la calidad.
-      Y esta revision debe repetirse despues de cada reentrenamiento, porque un modelo nuevo altera la distribucion de confianzas sobre la que el umbral fue ajustado.
-    </aside>
-  </section>
-</section>
-
-<!-- 12 ─ En operación -->
-<section>
-  <p class="kicker">En operación</p>
-  <div class="stats">
-    <div class="stat"><div class="n">0.09 s</div><div class="l">inferencia — 1.5 % del<br>tiempo de máquina</div></div>
-    <div class="stat"><div class="n">88.2 %</div><div class="l">acuerdo modelo–gestor<br>sobre 153 solicitudes</div></div>
   </div>
   <aside class="notes">
-    El desglose de tiempo de máquina: la normalización con LLM se lleva 4.37 segundos, los duplicados 1.78, la clasificación 0.09.
-    El núcleo analítico del trabajo consume el 1.5 por ciento del cómputo. Una arquitectura más pesada habría desplazado ese costo sin dar mejor desempeño.
-    Sobre 153 solicitudes asistidas, el gestor conservó la categoría sugerida en el 88.2 por ciento de los casos.
-    Ese número es una validación independiente del laboratorio: mide contra decisiones reales de quien conoce el catálogo, no contra una partición de los mismos datos. Y que supere al 82.08 indica que el desempeño se sostuvo con materiales reales.
+    <b class="cue">1:15 · 28:50</b>
+    Una categoría incorrecta que entra al catálogo sin revisión cuesta para siempre: distorsiona los reportes de consumo, complica la planificación de compras y se propaga a todo proceso que consulte el catálogo después. Y nadie la detecta, porque nadie la está buscando. Corregirla retroactivamente cuesta más que haberla revisado.
+    Una sugerencia derivada a revisión solo consume la atención del gestor, que es exactamente el escenario que la herramienta está diseñada para atender. No es un fallo del sistema: es el sistema funcionando.
+    Como los dos errores no cuestan lo mismo, no tiene sentido tratarlos de forma simétrica. Por eso privilegiamos exactitud sobre cobertura, en un proceso cuyo propósito declarado es la calidad del dato.
+    Y la precisión que evita que el 28 % se lea como una limitación: el 72 % restante no queda solo. El gestor no vuelve al punto de partida ni enfrenta un catálogo de 1,234 clases; recibe tres candidatas ordenadas por probabilidad, y la correcta está entre ellas en el 91.8 % de los casos. Lo que cambia entre un régimen y otro no es si el modelo ayuda, sino quién firma la decisión.
+    Hasta aquí, lo que se construyó y cómo se comporta en laboratorio. Falta la prueba que importa: qué pasó cuando los gestores lo usaron de verdad.
   </aside>
 </section>
 
-<!-- 13 ─ Limitaciones -->
-<section>
-  <p class="kicker">Limitaciones</p>
-  <div class="triad">Léxico <span>·</span> Etiquetas <span>·</span> Corte <span>·</span> Cola larga</div>
+<!-- ═════════════════ LOS RESULTADOS ═════════════════ -->
+<section class="section-cover">
+  <h1>Los resultados</h1>
+  <p class="lede">Cinco semanas de operación real: qué cambió en el tiempo de gestión, y qué concluimos de ello.</p>
   <aside class="notes">
-    Correspondencia léxica: la convención hace que el término principal coincida a menudo con el nombre de la clase. Parte del acierto viene de ahí. Cuantificarlo exige una evaluación por ablación, que queda pendiente.
-    Etiquetas: entrenamos sobre decisiones de los propios gestores. Es la mejor referencia disponible, no una verdad de campo independiente. El techo lo pone la consistencia de esas decisiones.
-    Corte: los resultados son sobre una fotografía del catálogo a una fecha. No se puede inferir el desempeño sobre familias no representadas.
-    Cola larga: las clases con menos de tres ejemplos quedan fuera del espacio de predicción.
+    <b class="cue">0:20 · 29:10</b>
+    Lo anterior fue evaluación en laboratorio. Este bloque presenta la operación real sobre solicitudes de producción, durante cinco semanas.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Tiempo de gestión</p>
+  <div class="regimes">
+    <div class="rg lo">
+      <div class="rn">3.34 h</div>
+      <div class="rt" style="font-size:26px;">Línea base, pre-GAMMA</div>
+      <div class="rd">Mediana 2.82 h · n = 353 solicitudes<br>15 feb – 17 jun</div>
+    </div>
+    <div class="rg hi">
+      <div class="rn">1.39 h</div>
+      <div class="rt" style="font-size:26px;">Con GAMMA</div>
+      <div class="rd">Mediana 1.28 h · n = 98 solicitudes con tiempo medido, de las 153 asistidas</div>
+    </div>
+  </div>
+  <p class="foot" style="margin-top:40px;"><em class="hl">−58.4 % sobre el promedio · −54.7 % sobre la mediana.</em> Mann-Whitney, p &lt; 0.0001. Los intervalos de confianza al 95 % de ambos períodos no se traslapan.</p>
+  <aside class="notes">
+    <b class="cue">1:20 · 30:30</b>
+    El primer resultado es el efecto medido sobre el tiempo de gestión. Durante el período previo a la implementación, el tiempo efectivo promedio por solicitud fue de 3.34 horas, con mediana de 2.82, sobre 353 solicitudes observadas entre el 15 de febrero y el 17 de junio.
+    Durante la operación de la plataforma ese tiempo bajó a 1.39 horas en promedio y 1.28 de mediana. Una reducción del 58.4 % sobre el promedio y del 54.7 % sobre la mediana.
+    La diferencia se confirmó estadísticamente significativa mediante una prueba U de Mann-Whitney, con p menor a 0.0001, y los intervalos de confianza al 95 % de ambos períodos no se traslapan: la mejora no es atribuible al azar ni a un menor volumen de trabajo durante la validación.
+    OJO CON LOS DOS DENOMINADORES: 98 son las solicitudes con tiempo efectivo medido; 153 son todas las solicitudes asistidas por la plataforma. Decirlo explícitamente antes de que lo pregunten.
+    SI PREGUNTAN por las cuatro solicitudes diarias: es el promedio diario real de la línea base completa, cuatro meses de operación medida, no una simulación.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Tablero operativo — Power BI, actualización semanal</p>
+  <div class="metrics six">
+    <div class="m"><div class="mv">153</div><div class="ml">solicitudes asistidas</div></div>
+    <div class="m"><div class="mv">88.2 %</div><div class="ml">acuerdo modelo–gestor</div></div>
+    <div class="m"><div class="mv">74.5 %</div><div class="ml">completitud de clase</div></div>
+    <div class="m"><div class="mv">56.5</div><div class="ml">códigos por gestor</div></div>
+    <div class="m"><div class="mv">11.8 %</div><div class="ml">tasa de corrección</div></div>
+    <div class="m"><div class="mv">70.6 %</div><div class="ml">cobertura de tipos</div></div>
+  </div>
+  <p class="foot">Conecta directo a la capa Gold, sin capa intermedia, sobre licencia Premium ya existente. Vistas complementarias: tiempo de máquina por tipo, desempeño por gestor, duplicados por semana.</p>
+  <aside class="notes">
+    <b class="cue">1:15 · 31:45</b>
+    Además de la comparación estadística se construyó un tablero operativo en Power BI, con actualización semanal, que resume el desempeño de la herramienta y de los gestores mediante seis indicadores clave.
+    Se eligió Power BI por dos razones concretas: conecta de forma directa a las tablas de la capa Gold sin capa intermedia, y la empresa ya cuenta con licencia Premium, así que no hay costo adicional ni necesidad de capacitar a jefatura en una herramienta nueva.
+    Destaca la tasa de acuerdo entre el modelo y el gestor: 88.2 %. En la gran mayoría de los casos el gestor conservó la categoría que la plataforma sugirió. La completitud de clase —la proporción de solicitudes que terminaron con categoría asignada— se ubicó en 74.5 %.
+    CUIDADO AL COMPARAR CON EL 82.08 % DE LABORATORIO: no son la misma métrica. El acuerdo se mide contra decisiones reales de quien conoce el catálogo; la exactitud, contra una partición retenida de los mismos datos. La conclusión defendible es que el desempeño se sostuvo frente a materiales reales — NO que el modelo «superó» a su resultado de laboratorio.
+    El tablero permite a la jefatura dar seguimiento continuo más allá del período de validación de este proyecto. El archivo .pbix queda editable como entregable.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Desglose del tiempo de máquina</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">6.2<small> s</small></div><div class="l">de cómputo por solicitud</div></div>
+    <div class="stat"><div class="n">0.12<small> %</small></div><div class="l">de las 1.39 h que dura<br>una gestión asistida</div></div>
+  </div>
+  <p class="foot" style="margin-top:38px;">Normalización <b>70.5 %</b> · duplicados <b>28.7 %</b> · clasificación <b>1.5 %</b>.<br><br>
+  La mejora no viene de que la máquina calcule rápido. Viene de que el gestor recibe la descripción normalizada, los candidatos a duplicado y la categoría sugerida <em class="hl">ya resueltos</em>, en lugar de construir esa información con consultas manuales sucesivas en SAP.</p>
+  <aside class="notes">
+    <b class="cue">1:20 · 33:05</b>
+    La instrumentación cronometra cada paso por separado. La normalización con el modelo de lenguaje concentra el 70.5 % del tiempo de máquina, la búsqueda de duplicados el 28.7 %, y la clasificación apenas el 1.5 %.
+    Pero el dato que responde a la pregunta obvia es este: los 6.2 segundos de cómputo representan el 0.12 % de las 1.39 horas que dura en promedio una gestión asistida.
+    Decirlo con todas las letras: la mejora no viene de que la máquina calcule rápido. Viene de que el gestor recibe la descripción normalizada, los candidatos a duplicado y la categoría sugerida ya resueltos, en lugar de construir esa información con consultas manuales sucesivas en SAP.
+    Este es el argumento que desarma de frente la objeción «¿por qué sigue tardando 1.39 horas si la máquina responde en segundos?». Anticiparla aquí, no esperar a que la hagan.
+    Nota interna: el desglose por componente en segundos es aproximadamente 4.4 / 1.8 / 0.09. Verificar contra el tablero antes de la defensa; en el deck solo se presentan los porcentajes y el total.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Encuesta de satisfacción</p>
+  <div class="metrics">
+    <div class="m"><div class="mv">5.00</div><div class="ml">facilidad de uso<br>(gestores)</div></div>
+    <div class="m"><div class="mv">4.33</div><div class="ml">satisfacción general<br>(gestores)</div></div>
+    <div class="m"><div class="mv">4.00</div><div class="ml">reducción de tiempo<br>percibida</div></div>
+    <div class="m"><div class="mv">4.5</div><div class="ml">alineación con calidad<br>(jefatura)</div></div>
+  </div>
+  <p class="foot">Tasa de respuesta 71.4 %. Dado el tamaño reducido de la población, se interpreta como <em class="hl">el registro directo de la opinión de la mayoría de los involucrados</em>, no como una muestra estadística sobre un universo mayor.</p>
+  <aside class="notes">
+    <b class="cue">1:05 · 34:10</b>
+    Al cierre del período de prueba se aplicó una encuesta a la población que interactuó directamente con la plataforma: gestores y equipo de jefatura y coordinación, con una tasa de respuesta del 71.4 %.
+    Entre los gestores, la facilidad de uso obtuvo la calificación más alta, 5.00 sobre 5, seguida de la satisfacción general con 4.33. La reducción de tiempo percibida se ubicó en 4.00, en la misma dirección que la reducción medida en el tablero.
+    La jefatura calificó la alineación de la herramienta con los objetivos de calidad del área en 4.5 sobre 5.
+    Adelantarse a la objeción metodológica: dado el tamaño reducido de esta población, estos resultados se interpretan como el registro directo de la opinión de la mayoría de las personas involucradas, y no como una muestra estadística sobre un universo mayor.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Impacto financiero</p>
+  <div class="stats sm">
+    <div class="stat"><div class="n">Q1,641</div><div class="l">costo total del proyecto<br>hospedaje + capacitación</div></div>
+    <div class="stat"><div class="n">243×</div><div class="l">retorno sobre la mediana<br>(308× sobre el promedio)</div></div>
+    <div class="stat"><div class="n">1.2–1.5</div><div class="l">días de período<br>de recuperación</div></div>
+  </div>
+  <p class="foot" style="margin-top:38px;">La magnitud es, en buena medida, <em class="hl">un artefacto del denominador</em>: el costo refleja el gasto marginal de un proyecto de graduación, no el de un desarrollo contratado. Lo que sí es sólido bajo cualquier escenario es que la reducción de tiempo que sustenta el ahorro es significativa y no atribuible al azar.</p>
+  <aside class="notes">
+    <b class="cue">1:30 · 35:40</b>
+    En términos financieros, el retorno se calculó sobre el costo real de despliegue: Q1,641.65, que corresponde únicamente al hospedaje del servidor y a las horas de capacitación durante construcción, pruebas y puesta en producción.
+    Sobre ese costo, y proyectando el ahorro anual a partir de la reducción de tiempo medida —Q400,491 de mediana, Q507,310 de promedio—, se obtiene un retorno de 243 veces sobre la mediana y 308 sobre el promedio, con recuperación de entre 1.2 y 1.5 días.
+    LIDERAR CON 243×, la mediana, por ser más robusta frente a valores atípicos.
+    Y contextualizar la magnitud NOSOTROS, antes de que lo haga el tribunal: se trata en buena medida de un artefacto del denominador. El costo refleja el gasto marginal de un proyecto de graduación y no el de un desarrollo contratado por la vía comercial; de haberse tercerizado, la cifra sería considerablemente menor.
+    Lo que sí resulta estadísticamente sólido, bajo cualquiera de los dos escenarios, es que la reducción de tiempo que sustenta este ahorro es significativa y no atribuible al azar.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Conclusiones — 1 de 2</p>
+  <ol class="bullets num tight" style="max-width:44em;">
+    <li>El maestro de materiales quedó consolidado en un repositorio único, normalizado y trazable</li>
+    <li>El análisis confirmó defectos de calidad relevantes y reveló un hallazgo no anticipado sobre la <em class="hl">taxonomía</em></li>
+    <li>La configuración más simple de las siete resultó también la más exacta, por un margen consistente</li>
+  </ol>
+  <aside class="notes">
+    <b class="cue">1:20 · 37:00</b>
+    De estos resultados se derivan cinco conclusiones principales.
+    En primer lugar, se consolidó el maestro de materiales en un repositorio único, normalizado y trazable, que unificó los 45,397 registros previamente dispersos en trece archivos de exportación, y que hoy sustituye la consulta dispersa sobre hojas de cálculo que caracterizaba la operación previa.
+    En segundo lugar, el análisis no solo confirmó defectos de calidad de magnitud relevante, sino que aportó un hallazgo no anticipado en el planteamiento original: una fracción del error del clasificador no corresponde a fallas del modelo, sino a pares de clases que designan el mismo concepto dentro de la taxonomía. La herramienta construida para clasificar materiales resultó, adicionalmente, un instrumento de diagnóstico sobre la calidad de la propia taxonomía.
+    Y en tercer lugar, la configuración más simple de las siete evaluadas resultó también la más exacta, por un margen consistente en las cuatro métricas, y con un costo de entrenamiento considerablemente menor al de las alternativas de mayor complejidad.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Conclusiones — 2 de 2</p>
+  <ol class="bullets num tight" start="4" style="max-width:44em;">
+    <li>GAMMA integra los tres módulos analíticos en el flujo real de creación, <em class="hl">sin sustituir la decisión final del gestor</em></li>
+    <li>La herramienta redujo a menos de la mitad el tiempo de gestión, con retorno de inversión inmediato</li>
+  </ol>
+  <p class="foot" style="margin-top:44px;">El objetivo general se cumplió: GAMMA se desarrolló, se desplegó y operó sobre solicitudes reales, articulando procesamiento de lenguaje natural, similitud difusa y aprendizaje supervisado sobre el histórico del catálogo.</p>
+  <aside class="notes">
+    <b class="cue">1:00 · 38:00</b>
+    En cuarto lugar, GAMMA logró integrar los tres módulos analíticos —normalización, detección de duplicados y sugerencia de categoría— dentro del flujo real de creación de materiales, resolviendo por sí sola la mayoría de los casos dentro del umbral de confianza configurado, sin que ninguna sugerencia llegue a SAP sin la confirmación del gestor.
+    Y en quinto lugar, la herramienta redujo a menos de la mitad el tiempo efectivo de gestión, con un retorno de inversión inmediato bajo cualquiera de los escenarios considerados.
+    En síntesis: el objetivo general del proyecto se cumplió. GAMMA se desarrolló, se desplegó y operó sobre solicitudes reales, articulando efectivamente el procesamiento de lenguaje natural, la búsqueda por similitud difusa y el aprendizaje automático supervisado sobre el histórico del catálogo.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Recomendaciones para la operación</p>
+  <ul class="bullets tight" style="max-width:46em;">
+    <li>Depurar la taxonomía de clases antes de ampliar el alcance</li>
+    <li>Hacer exigible la convención de separadores en el momento de la captura</li>
+    <li>Resolver la categorización de los materiales sin clase asignada</li>
+    <li>Consolidar la operación en esta unidad antes de escalar a otras</li>
+    <li>Contrastar periódicamente el umbral de confianza con el comportamiento real</li>
+    <li>Explotar la instrumentación de calidad que el sistema ya captura</li>
+  </ul>
+  <aside class="notes">
+    <b class="cue">1:25 · 39:25</b>
+    Las recomendaciones se agrupan en dos frentes. El primero, orientado a la operación inmediata, reúne seis.
+    NARRAR AGRUPADO, no leer una por una — el slide las muestra todas por si el tribunal quiere el detalle.
+    Tres apuntan a depurar la base sobre la que opera la herramienta: depurar la taxonomía de clases, que hoy contiene pares redundantes; hacer exigible la convención de separadores en el momento mismo de la captura; y resolver la categorización de los materiales que hoy carecen de clase asignada.
+    Una cuarta es de secuencia: consolidar la operación dentro de esta unidad de negocio antes de escalar a otras, dado que las conclusiones actuales descansan todavía sobre cinco semanas de operación en un solo entorno.
+    Y las dos últimas son de aprovechamiento: contrastar periódicamente el umbral configurado con el comportamiento real de la operación, y explotar la instrumentación de calidad que el sistema ya captura, hoy disponible pero aún no incorporada al seguimiento habitual del área.
+  </aside>
+</section>
+<section>
+  <p class="kicker">Recomendaciones para la continuidad técnica</p>
+  <ul class="bullets tight" style="max-width:46em;">
+    <li>Adoptar una partición agrupada por descripción en la evaluación</li>
+    <li>Sustituir la partición única por validación cruzada</li>
+    <li>Realizar la evaluación por ablación del término principal</li>
+    <li>Cuantificar la duplicidad difusa —no solo la exacta— sobre el catálogo completo</li>
+    <li>Evaluar la incorporación del clasificador al flujo de carga masiva</li>
+  </ul>
+  <aside class="notes">
+    <b class="cue">1:25 · 40:50</b>
+    El segundo frente, orientado a la continuidad técnica, reúne cinco recomendaciones.
+    Tres buscan fortalecer el rigor metodológico de la evaluación: adoptar una partición agrupada por descripción, que corrija el sesgo optimista que hoy introduce la duplicidad del catálogo entre entrenamiento y prueba; sustituir la partición única por validación cruzada, para acompañar cada métrica de su dispersión; y realizar una evaluación por ablación del término principal, para cuantificar cuánto del desempeño depende de la coincidencia léxica directa con el nombre de la clase.
+    Las dos últimas amplían el alcance analítico: cuantificar la duplicidad difusa —no solo la exacta— sobre el catálogo completo, y evaluar la incorporación del clasificador al flujo de creación masiva, que hoy queda fuera del alcance.
+    Estas tres primeras son honestas sobre los límites del trabajo y conviene presentarlas como tales: fortalecen la defensa en lugar de debilitarla.
+  </aside>
+</section>
+<section class="cover">
+  <h1>Gracias</h1>
+  <p class="sub">Quedamos atentos a sus preguntas y observaciones.</p>
+  <p class="by">Alejandra Alvarado · Erick Marroquín · Rudy Osorio<br>
+     Maestría en Business Intelligence and Analytics — Universidad del Valle de Guatemala, 2026</p>
+  <aside class="notes">
+    <b class="cue">0:25 · 41:15</b>
+    Con esto concluye la presentación de este trabajo de graduación. Agradecemos nuevamente al tribunal examinador su atención, y quedamos atentos a sus preguntas y observaciones.
   </aside>
 </section>
 </div>
@@ -811,7 +1172,7 @@
     minScale: 0.2,
     maxScale: 2.0,
     hash: true,
-    slideNumber: 'c/t',
+    slideNumber: false,
     controls: false,
     progress: true,
     transition: 'fade',

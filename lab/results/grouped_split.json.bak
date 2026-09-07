@@ -108,9 +108,6 @@
             "n": 3134
           }
         }
-      },
-      "XGBoost + CharTFIDF": {
-        "error": "AttributeError: The following error was raised: 'XGBClassifierAdapter' object has no attribute '__sklearn_tags__'. It seems that there are no classes that implement `__sklearn_tags__` in the MRO and/or all classes in the MRO call `super().__sklearn_tags__()`. Make sure to inherit from `BaseEstimator` which implements `__sklearn_tags__` (or alternatively define `__sklearn_tags__` but we don't recommend this approach). Note that `BaseEstimator` needs to be on the right side of other Mixins in the inheritance order."
       }
     },
     "random": {

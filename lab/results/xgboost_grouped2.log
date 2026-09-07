@@ -1,0 +1,6 @@
+[09:41:40] resultados previos recuperados: 12 configuracion(es)
+[09:41:42] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[09:41:50] random  : train 31,656 test 7,915 | fuga 25.72%
+[09:41:50] grouped : train 31,656 test 7,915 | fuga 0.00%
+[09:41:50] a correr: 1 celda(s) -> ['XGBoost + CharTFIDF'] x ['grouped']
+[09:41:50] grouped  | XGBoost + CharTFIDF ...

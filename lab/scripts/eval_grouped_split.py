@@ -36,6 +36,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.model_selection import train_test_split, StratifiedGroupKFold
 from sklearn.metrics import (
@@ -326,6 +327,49 @@ def recorta_para_calibracion(tr, y, cv=CV_CALIBRACION):
     }
 
 
+class XGBClassifierAdapter(ClassifierMixin, BaseEstimator):
+    """
+    Envoltura de `XGBClassifier` con la interfaz que espera `evaluate()`.
+
+    Existe por una razon concreta: XGBoost exige etiquetas contiguas 0..k-1, y
+    bajo la particion agrupada el entrenamiento puede no ver todas las clases
+    (no se pueden repartir registros que comparten descripcion), de modo que las
+    etiquetas llegan con huecos. El adaptador las remapea a un rango contiguo
+    para entrenar y devuelve las originales al predecir, que es lo que
+    `evaluate()` necesita para expandir las probabilidades al ancho completo.
+
+    Los hiperparametros son los de la celda 11 del notebook 03.
+    """
+
+    def __init__(self, **kw):
+        self.kw = kw
+
+    # sklearn >= 1.6 consulta __sklearn_tags__ en cada paso del Pipeline; heredar
+    # de BaseEstimator lo provee. get_params/set_params van a mano porque
+    # BaseEstimator no sabe introspeccionar un __init__ con **kw.
+    def get_params(self, deep=True):
+        return dict(self.kw)
+
+    def set_params(self, **kw):
+        self.kw.update(kw)
+        return self
+
+    def fit(self, X, y):
+        from xgboost import XGBClassifier
+        self.classes_ = np.unique(y)
+        pos = {int(c): j for j, c in enumerate(self.classes_)}
+        y_local = np.fromiter((pos[int(v)] for v in y), dtype=int, count=len(y))
+        self._model = XGBClassifier(num_class=len(self.classes_), **self.kw)
+        self._model.fit(X, y_local)
+        return self
+
+    def predict_proba(self, X):
+        return self._model.predict_proba(X)
+
+    def predict(self, X):
+        return self.classes_[self._model.predict(X)]
+
+
 # --------------------------------------------------------------------------
 # Configuraciones
 # --------------------------------------------------------------------------
@@ -361,6 +405,20 @@ def build_configs():
                                       max_features=50000, sublinear_tf=True,
                                       strip_accents='unicode')),
             ('clf', LogisticRegression(max_iter=1000, C=5.0, solver='saga', n_jobs=-1)),
+        ])),
+        # El mas caro del conjunto: con 1,234 clases y `multi:softprob` levanta
+        # 500 arboles por clase. Se importa dentro del adaptador para que la
+        # ausencia de xgboost no impida correr el resto de configuraciones.
+        ('XGBoost + CharTFIDF', False, lambda: Pipeline([
+            ('tfidf', TfidfVectorizer(analyzer='char_wb', ngram_range=(2, 5),
+                                      max_features=50000, sublinear_tf=True,
+                                      strip_accents='unicode')),
+            ('clf', XGBClassifierAdapter(
+                n_estimators=500, max_depth=6, learning_rate=0.1,
+                subsample=0.8, colsample_bytree=0.8,
+                objective='multi:softprob', tree_method='hist',
+                n_jobs=-1, random_state=42, verbosity=1,
+                eval_metric='mlogloss')),
         ])),
     ]
 

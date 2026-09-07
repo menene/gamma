@@ -1,0 +1,11 @@
+.git
+.gitignore
+.DS_Store
+frontend/node_modules
+frontend/dist
+*.pdf
+*.ipynb
+lab/data
+lab/results
+api/.venv
+frontend/.env*

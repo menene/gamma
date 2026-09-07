@@ -29,10 +29,10 @@
   <circle cx="640.0" cy="200.9" r="5.5" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
   <circle cx="885.0" cy="239.5" r="5.5" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
   <circle cx="1130.0" cy="330.6" r="8" fill="#b45309" stroke="#fbfbfa" stroke-width="2"/>
-  <text x="150" y="177" text-anchor="middle" font-size="21" font-weight="700" fill="#0d8b7d">82.1 %</text>
-  <text x="1130" y="118" text-anchor="middle" font-size="21" font-weight="700" fill="#0d8b7d">98.9 %</text>
-  <text x="150" y="54" text-anchor="middle" font-size="21" font-weight="700" fill="#b45309">100.0 %</text>
-  <text x="1130" y="367" text-anchor="middle" font-size="21" font-weight="700" fill="#b45309">28.2 %</text>
+  <text x="142" y="177" text-anchor="start" font-size="21" font-weight="700" fill="#0d8b7d">82.1 %</text>
+  <text x="1138" y="118" text-anchor="end" font-size="21" font-weight="700" fill="#0d8b7d">98.9 %</text>
+  <text x="142" y="54" text-anchor="start" font-size="21" font-weight="700" fill="#b45309">100.0 %</text>
+  <text x="1138" y="367" text-anchor="end" font-size="21" font-weight="700" fill="#b45309">28.2 %</text>
   <circle cx="156" cy="544" r="6.5" fill="#0d8b7d"/>
   <text x="174" y="551" font-size="19" fill="#7a8288">Exactitud</text>
   <circle cx="346" cy="544" r="6.5" fill="#b45309"/>

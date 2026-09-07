@@ -20,8 +20,9 @@ const navLinks = [
   { label: 'Datos', to: '/datos', icon: 'fa-solid fa-database', admin: false },
   { label: 'Lab', to: '/lab', icon: 'fa-solid fa-flask', admin: true },
   { label: 'Modelo', to: '/modelo', icon: 'fa-solid fa-brain', admin: true },
-  { label: 'Presentacion', to: '/presentacion', icon: 'fa-solid fa-display', admin: false },
 ]
+
+// { label: 'Presentacion', to: '/presentacion', icon: 'fa-solid fa-display', admin: false },
 
 const links = computed(() => {
   if (!isAuthenticated.value) return []

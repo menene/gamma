@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMMA — Defensa de graduación MBIA</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --negro:#0A0A0A; --blanco:#FFFFFF; --verde:#1A6635;
+  --verde-vivo:#22C55E; --verde-claro:#D6EFE0;
+  --gris-1:#111111; --gris-2:#1C1C1C; --gris-3:#2A2A2A;
+  --gris-texto:#A0A0A0; --oro:#C9A84C; --naranja:#F59E0B; --rojo:#EF4444;
+}
+html,body{width:100%;height:100%;font-family:'Inter',sans-serif;background:var(--negro);color:var(--blanco);overflow:hidden;}
+.deck{width:100vw;height:100vh;position:relative;overflow:hidden;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .45s ease;}
+.slide.active{opacity:1;pointer-events:all;}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--verde-vivo);transition:width .4s ease;z-index:100;}
+.nav-dots{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:100;flex-wrap:wrap;max-width:70vw;justify-content:center;}
+.dot{width:5px;height:5px;border-radius:50%;background:#333;cursor:pointer;transition:background .3s,transform .3s;}
+.dot.active{background:var(--verde-vivo);transform:scale(1.5);}
+.nav-arrow{position:fixed;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--gris-texto);cursor:pointer;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;z-index:100;transition:background .2s,color .2s;}
+.nav-arrow:hover{background:var(--verde);color:#fff;}
+.nav-arrow.prev{left:18px;} .nav-arrow.next{right:18px;}
+.slide-num{position:fixed;bottom:22px;right:30px;font-size:10px;color:#3a3a3a;letter-spacing:.08em;z-index:100;}
+.part-tag{position:fixed;top:20px;left:30px;font-size:10px;color:#3a3a3a;letter-spacing:.14em;text-transform:uppercase;z-index:100;}
+.pad{padding:56px 84px;}
+.pad-sm{padding:40px 84px;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--verde-vivo);margin-bottom:14px;}
+.eyebrow-gold{color:var(--oro);}
+.h1{font-size:clamp(46px,7vw,88px);font-weight:900;line-height:1;letter-spacing:-.03em;}
+.h2{font-size:clamp(26px,3.6vw,44px);font-weight:800;line-height:1.15;letter-spacing:-.02em;}
+.h3{font-size:clamp(17px,2vw,22px);font-weight:700;}
+.body{font-size:15px;line-height:1.7;color:var(--gris-texto);max-width:680px;}
+.body-sm{font-size:12.5px;line-height:1.6;color:var(--gris-texto);}
+.accent{color:var(--verde-vivo);} .gold{color:var(--oro);}
+.divider{width:40px;height:3px;background:var(--verde-vivo);margin:18px 0;}
+.card{background:var(--gris-2);border:1px solid var(--gris-3);border-radius:14px;padding:22px 26px;}
+.card-green{background:rgba(26,102,53,.15);border:1px solid rgba(26,102,53,.35);border-radius:14px;padding:22px 26px;}
+.card-gold{background:rgba(201,168,76,.10);border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:22px 26px;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+.metric-big{font-size:clamp(34px,4.6vw,54px);font-weight:900;line-height:1;letter-spacing:-.04em;color:var(--verde-vivo);}
+.metric-big.gold{color:var(--oro);}
+.metric-label{font-size:11.5px;color:var(--gris-texto);margin-top:6px;line-height:1.4;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--verde-vivo);font-size:12px;font-weight:600;padding:4px 12px;border-radius:100px;letter-spacing:.05em;width:fit-content;}
+.badge-gold{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:var(--oro);}
+.kpi-card{background:var(--gris-2);border:1px solid var(--gris-3);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:5px;}
+.kpi-value{font-size:23px;font-weight:800;color:var(--verde-vivo);}
+.kpi-name{font-size:10.5px;color:var(--gris-texto);line-height:1.35;}
+.tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;letter-spacing:.06em;text-transform:uppercase;display:inline-block;}
+.tag-verde{background:rgba(34,197,94,.15);color:var(--verde-vivo);}
+.tag-oro{background:rgba(201,168,76,.15);color:var(--oro);}
+.tag-gris{background:var(--gris-3);color:var(--gris-texto);}
+ul.list{list-style:none;}
+ul.list li{margin-bottom:11px;padding-left:22px;position:relative;color:var(--blanco);font-size:15px;line-height:1.5;}
+ul.list li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--verde-vivo);}
+ul.list.gold li::before{background:var(--oro);}
+ol.list-num{list-style:none;counter-reset:item;}
+ol.list-num li{counter-increment:item;margin-bottom:14px;padding-left:36px;position:relative;color:var(--blanco);font-size:14.5px;line-height:1.55;}
+ol.list-num li::before{content:counter(item);position:absolute;left:0;top:-1px;width:24px;height:24px;border-radius:50%;background:var(--verde);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+table.data{width:100%;border-collapse:collapse;font-size:12.5px;}
+table.data th{text-align:left;color:var(--gris-texto);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--gris-3);}
+table.data td{padding:8px 10px;border-bottom:1px solid var(--gris-3);color:var(--blanco);}
+table.data tr.winner td{background:rgba(34,197,94,.10);font-weight:700;color:var(--verde-vivo);}
+.section-num{font-size:clamp(80px,11vw,160px);font-weight:900;color:var(--gris-2);position:absolute;right:60px;bottom:-10px;letter-spacing:-.05em;line-height:1;z-index:0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp .5s ease forwards;}
+.d1{animation-delay:.08s;opacity:0;} .d2{animation-delay:.16s;opacity:0;}
+.d3{animation-delay:.24s;opacity:0;} .d4{animation-delay:.32s;opacity:0;} .d5{animation-delay:.40s;opacity:0;}
+@media(max-width:900px){.pad,.pad-sm{padding:36px 28px;} .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="deck" id="deck">
+<div class="slide" id="s1">
+<div class="part-tag">01 · Introducción</div>
+
+<div style="position:absolute;top:0;right:0;width:340px;height:340px;background:radial-gradient(circle at top right,rgba(26,102,53,.22),transparent 70%);"></div>
+<div class="pad" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="badge fade-up">Defensa de graduación · MBIA</div>
+  <div class="h1 fade-up d1" style="margin-top:26px;">GAMMA</div>
+  <div style="font-size:16px;color:var(--gris-texto);margin-top:14px;font-weight:400;max-width:560px;line-height:1.5;" class="fade-up d2">Gobierno Automatizado del Maestro de Materiales</div>
+  <div class="divider fade-up d3"></div>
+  <p class="body fade-up d4">Plataforma de gobernanza de datos maestros mediante aprendizaje automático, desarrollada como proyecto de graduación de la Maestría en Business Intelligence and Analytics.</p>
+</div>
+<div style="position:absolute;bottom:44px;right:84px;text-align:right;">
+  <p style="font-size:11.5px;color:#444;margin-bottom:3px;">Alejandra Alvarado · Erick Marroquín · Rudy Osorio</p>
+  <p style="font-size:11.5px;color:var(--verde-vivo);font-weight:600;">Maestría en Business Intelligence and Analytics · UVG</p>
+</div>
+
+</div>
+<div class="slide" id="s2">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Contexto</div>
+  <h2 class="h2 fade-up d1">Una unidad de negocio, un catálogo, un proceso manual</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Unidad de negocio del sector energético, con operación en Centroamérica y el Caribe</li><li>Catálogo de materiales en SAP: 45,397 registros activos, distribuidos en 13 tipos</li><li>El gestor de datos maestros valida cada material antes de su creación: existencia, categoría y cumplimiento normativo (ISO 8000)</li><li>Proceso actualmente manual — aplicable, en general, a cualquier ERP</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s3">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Planteamiento del problema</div>
+  <h2 class="h2 fade-up d1">Evidencia agregada del catálogo completo</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-3 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">4.8%</div><div class="metric-label">duplicidad exacta</div></div><div><div class="metric-big">8.3%</div><div class="metric-label">sin separador estándar</div></div><div><div class="metric-big gold">3.3 h</div><div class="metric-label">promedio por solicitud</div></div></div>
+  <div class="fade-up d3" style="margin-top:28px;max-width:700px;"><ul class="list "><li>No existe ningún mecanismo automatizado de apoyo a la creación de materiales</li><li>Categorización incorrecta de materiales respecto a su naturaleza real</li></ul></div>
+  <p class="body-sm fade-up d4" style="margin-top:20px;max-width:680px;">Su caracterización detallada se profundiza más adelante, en la sección correspondiente al análisis exploratorio de datos.</p>
+</div>
+
+</div>
+<div class="slide" id="s4">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Justificación</div>
+  <h2 class="h2 fade-up d1">El costo se propaga más allá del gestor</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Incide en órdenes de compra, mantenimiento y trazabilidad de activos</li><li>Problema acumulativo: sin apoyo analítico, el catálogo suma inconsistencias cada día</li><li>Se requiere un modelo que asista en el momento de la decisión</li><li>Y un mecanismo que permita medir su efecto con evidencia cuantitativa</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s5">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Objetivo general</div>
+  <h2 class="h2 fade-up d1">Desarrollar GAMMA</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list gold "><li>Plataforma de asistencia analítica para el flujo de creación individual de materiales SAP</li><li>Mediante: procesamiento de lenguaje natural + búsqueda por similitud difusa + aprendizaje automático supervisado</li><li>Para reducir el tiempo de gestión y mejorar la calidad del maestro de materiales</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s6">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Objetivos específicos</div>
+  <h2 class="h2 fade-up d1">Seis objetivos derivados</h2>
+  <div class="divider fade-up d2"></div>
+  
+  <div class="fade-up d3" style="max-width:760px;"><ol class="list-num"><li>Implementar un pipeline de integración del maestro de materiales (arquitectura medallón)</li><li>Caracterizar los defectos de calidad acumulados en el catálogo (línea base)</li><li>Seleccionar el algoritmo de clasificación mediante evaluación comparativa de siete configuraciones</li><li>Construir una plataforma web de asistencia conversacional</li><li>Evaluar el efecto de la herramienta sobre el proceso de creación de materiales</li><li>Diseñar y ejecutar un plan de adopción cultural con gestores y jefatura</li></ol></div>
+</div>
+
+</div>
+<div class="slide" id="s7">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Alcance</div>
+  <h2 class="h2 fade-up d1">Qué sí incluye</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Flujo de creación individual de materiales en SAP</li><li>Una única unidad de negocio, con operación multi-país</li><li>Tres intervenciones: normalización · detección de duplicados · sugerencia de categoría</li><li>GAMMA es asistencia, no automatización plena — el gestor conserva el control final</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s8">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Alcance</div>
+  <h2 class="h2 fade-up d1">Qué no incluye</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list gold "><li>No existe integración en línea con SAP (ni de lectura ni de escritura)</li><li>No comprende el flujo de creación masiva de materiales</li><li>No corrige de forma automática los duplicados o materiales mal categorizados preexistentes</li><li>La extensión a otras unidades de negocio se plantea como etapa posterior</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s9">
+<div class="part-tag">01 · Introducción</div>
+
+<div class="section-num">09</div>
+<div class="pad" style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;">
+  <div class="eyebrow fade-up">Cierre de la sección</div>
+  <div class="h2 fade-up d1">Metodología</div>
+  <div class="divider fade-up d2"></div>
+  <p class="body fade-up d2" style="margin-top:16px;">A continuación, la metodología aplicada y los resultados obtenidos.</p>
+</div>
+
+</div>
+<div class="slide" id="s10">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="section-num">10</div>
+<div class="pad" style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;">
+  <div class="eyebrow fade-up">Metodología</div>
+  <div class="h2 fade-up d1">El problema</div>
+  <div class="divider fade-up d2"></div>
+  <p class="body fade-up d2" style="margin-top:16px;">Análisis exploratorio realizado sobre el catálogo completo de materiales.</p>
+</div>
+
+</div>
+<div class="slide" id="s11">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Fuentes de información</div>
+  <h2 class="h2 fade-up d1">Maestro SAP + catálogos de referencia</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Fuente primaria: maestro de materiales del módulo MM de SAP (13 archivos por tipo)</li><li>Catálogos de referencia: maestro de clases corporativo (1,538 clases) y taxonomía UNSPSC</li><li>Corte analizado: 45,400 registros</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s12">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Composición del catálogo</div>
+  <h2 class="h2 fade-up d1">13 tipos de material</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-3 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">45,400</div><div class="metric-label">materiales analizados</div></div><div><div class="metric-big">13</div><div class="metric-label">tipos de material</div></div><div><div class="metric-big gold">≈ 2/3</div><div class="metric-label">concentrados en 2 tipos</div></div></div>
+  
+  <p class="body-sm fade-up d4" style="margin-top:20px;max-width:680px;">El resto del catálogo se distribuye de forma considerablemente más dispersa entre los once tipos restantes.</p>
+</div>
+
+</div>
+<div class="slide" id="s13">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Duplicidad exacta</div>
+  <h2 class="h2 fade-up d1">2,182 registros duplicados</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-3 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">4.8%</div><div class="metric-label">del catálogo completo</div></div><div><div class="metric-big">35.2%</div><div class="metric-label">tasa relativa máxima por tipo</div></div><div><div class="metric-big gold">973</div><div class="metric-label">mayor volumen absoluto (un tipo)</div></div></div>
+  
+  
+</div>
+
+</div>
+<div class="slide" id="s14">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Materiales bloqueados</div>
+  <h2 class="h2 fade-up d1">6,748 registros bloqueados</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-3 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">14.9%</div><div class="metric-label">del catálogo completo</div></div><div><div class="metric-big">46.0%</div><div class="metric-label">tasa relativa máxima por tipo</div></div><div><div class="metric-big gold">1,597</div><div class="metric-label">mayor volumen absoluto (un tipo)</div></div></div>
+  
+  
+</div>
+
+</div>
+<div class="slide" id="s15">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Descripciones sin separador estándar</div>
+  <h2 class="h2 fade-up d1">Riesgo de duplicidad no detectable</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-2 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">8.3%</div><div class="metric-label">del catálogo completo (3,759 registros)</div></div><div><div class="metric-big gold">31.8%</div><div class="metric-label">tasa relativa máxima por tipo</div></div></div>
+  
+  <p class="body-sm fade-up d4" style="margin-top:20px;max-width:680px;">Una descripción sin separador resulta indistinguible de otra similar mediante una búsqueda exacta en SAP.</p>
+</div>
+
+</div>
+<div class="slide" id="s16">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Mapa de calidad consolidado</div>
+  <h2 class="h2 fade-up d1">Cuatro dimensiones, por tipo de material</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>% duplicados · % bloqueados · % sin separador · % sin clase asignada</li><li>Permite identificar qué tipos concentran mayor riesgo combinado</li><li>Sustenta la priorización de la intervención sobre los tipos de mayor riesgo</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s17">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Longitud de las descripciones</div>
+  <h2 class="h2 fade-up d1">Concentradas contra el límite del sistema</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-2 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">31.9</div><div class="metric-label">caracteres promedio</div></div><div><div class="metric-big gold">40</div><div class="metric-label">límite estructural (SAP)</div></div></div>
+  
+  <p class="body-sm fade-up d4" style="margin-top:20px;max-width:680px;">Causa directa de las abreviaturas inconsistentes entre gestores descritas en el marco teórico de este trabajo.</p>
+</div>
+
+</div>
+<div class="slide" id="s18">
+<div class="part-tag">02 · Metodología — el problema</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Síntesis</div>
+  <h2 class="h2 fade-up d1">Esta evidencia sustenta las decisiones metodológicas siguientes</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list gold "><li>Resolver la detección de duplicados mediante similitud difusa, no coincidencia exacta</li><li>Priorizar los tipos de mayor riesgo combinado dentro de la intervención</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s19">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="section-num">19</div>
+<div class="pad" style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;">
+  <div class="eyebrow fade-up">Metodología</div>
+  <div class="h2 fade-up d1">Qué se construyó</div>
+  <div class="divider fade-up d2"></div>
+  <p class="body fade-up d2" style="margin-top:16px;">Con base en la problemática caracterizada, qué se construyó para atenderla y qué resultados se obtuvieron.</p>
+</div>
+
+</div>
+<div class="slide" id="s20">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Arquitectura de integración</div>
+  <h2 class="h2 fade-up d1">Arquitectura medallón sobre PostgreSQL 16</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Bronce: trazabilidad íntegra de ingesta, predicciones y decisiones</li><li>Plata: datos operacionales y de referencia ya normalizados</li><li>Oro: vistas agregadas para el tablero de indicadores</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s21">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Preparación de los datos</div>
+  <h2 class="h2 fade-up d1">Conjunto de modelado final</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-3 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">39,571</div><div class="metric-label">materiales</div></div><div><div class="metric-big">1,234</div><div class="metric-label">clases</div></div><div><div class="metric-big gold">80 / 20</div><div class="metric-label">partición estratificada</div></div></div>
+  <div class="fade-up d3" style="margin-top:28px;max-width:700px;"><ul class="list "><li>Función de normalización de texto idéntica en entrenamiento e inferencia</li><li>Se descartan materiales sin categoría, y clases con menos de tres ejemplos</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s22">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Normalización de descripciones</div>
+  <h2 class="h2 fade-up d1">Modelo de lenguaje de gran escala</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Alternativa descartada: motor de reglas y diccionario de abreviaturas (mantenimiento manual permanente)</li><li>Temperatura baja: privilegia consistencia sobre variedad</li><li>Instruido para no inventar especificaciones ausentes — falla por omisión, no por invención</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s23">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Detección de duplicados</div>
+  <h2 class="h2 fade-up d1">Similitud difusa sobre PostgreSQL (pg_trgm)</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Compara por trigramas (subsecuencias de tres caracteres), no coincidencia exacta</li><li>Umbral deliberadamente permisivo</li><li>El costo de un falso positivo es menor que el de un falso negativo</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s24">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Diseño de la competencia de algoritmos</div>
+  <h2 class="h2 fade-up d1">Siete configuraciones, dos rondas</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Misma partición de datos y las mismas métricas para las siete</li><li>Métricas: exactitud, F1 macro, F1 ponderado, exactitud top-3 y tiempo de entrenamiento</li><li>La combinación de métricas responde al desbalance de clases del catálogo</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s25">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Arquitectura tecnológica</div>
+  <h2 class="h2 fade-up d1">Código abierto, con una única excepción</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>PostgreSQL 16 + pg_trgm · API en Python (FastAPI) · Frontend de página única</li><li>Orquestación mediante contenedores (Docker Compose)</li><li>Único componente de pago por uso: el servicio de modelo de lenguaje</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s26">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Resultados</div>
+  <h2 class="h2 fade-up d1" style="font-size:clamp(22px,3vw,36px);">Modelo ganador frente a las seis configuraciones restantes</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2"><table class="data"><th>Configuración</th><th>Exactitud</th><th>F1 macro</th><th>F1 pond.</th><th>Top-3</th><th>Tiempo</th><tr class="winner"><td>SVM lineal + TF-IDF carácter</td><td>0.8208</td><td>0.7072</td><td>0.8041</td><td>0.9176</td><td>54.1 s</td></tr><tr><td>Potenciación de gradiente + TF-IDF carácter</td><td>0.8145</td><td>0.6821</td><td>0.8063</td><td>0.9200</td><td>11,025.2 s</td></tr><tr><td>Bosque aleatorio + TF-IDF palabra</td><td>0.8133</td><td>0.7029</td><td>0.8014</td><td>0.9063</td><td>46.0 s</td></tr><tr><td>Regresión logística + TF-IDF palabra</td><td>0.8095</td><td>0.6689</td><td>0.7949</td><td>0.9135</td><td>28.9 s</td></tr><tr><td>Regresión logística + TF-IDF carácter</td><td>0.8080</td><td>0.6423</td><td>0.7886</td><td>0.9248</td><td>1,071.9 s</td></tr><tr><td>Transformador multilingüe (ajuste fino)</td><td>0.7995</td><td>0.5654</td><td>0.7692</td><td>0.8953</td><td>3,268.7 s</td></tr><tr><td>Clasificador de subpalabras</td><td>0.7780</td><td>0.6275</td><td>0.7648</td><td>0.8865</td><td>42.8 s</td></tr></table></div>
+  <p class="body-sm fade-up d3" style="margin-top:18px;max-width:700px;">La configuración más simple resultó también la más exacta, con el mejor resultado en las cuatro métricas y un costo de entrenamiento considerablemente menor.</p>
+</div>
+
+</div>
+<div class="slide" id="s27">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Desempeño del modelo seleccionado</div>
+  <h2 class="h2 fade-up d1">Análisis de la matriz de confusión</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-1 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">17.92%</div><div class="metric-label">de error sobre la partición de prueba (1,418 / 7,915)</div></div></div>
+  <div class="fade-up d3" style="margin-top:28px;max-width:700px;"><ul class="list "><li>Categorías con vocabulario propio y estable: se resuelven casi sin error</li><li>Categorías genéricas (p. ej. "repuesto", "herramienta"): concentran el error</li><li>Parte del error refleja pares de clases redundantes en la taxonomía, no fallas del modelo</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s28">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Exactitud y cobertura</div>
+  <h2 class="h2 fade-up d1" style="font-size:clamp(22px,3vw,36px);">Según umbral de confianza aplicado</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2"><table class="data"><th>Umbral</th><th>Exactitud</th><th>Cobertura</th><th>Materiales cubiertos</th><tr><td>Sin umbral</td><td>0.8208</td><td>100.00%</td><td>7,915</td></tr><tr><td>0.5</td><td>0.9294</td><td>73.92%</td><td>5,851</td></tr><tr><td>0.6</td><td>0.9517</td><td>65.08%</td><td>5,151</td></tr><tr><td>0.7</td><td>0.9678</td><td>54.13%</td><td>4,284</td></tr><tr><td>0.8</td><td>0.9888</td><td>28.24%</td><td>2,235</td></tr></table></div>
+  <p class="body-sm fade-up d3" style="margin-top:18px;max-width:700px;">Se privilegió deliberadamente la exactitud sobre la cobertura: el costo de una categoría incorrecta sin revisión es mayor que el de derivar el caso al gestor.</p>
+</div>
+
+</div>
+<div class="slide" id="s29">
+<div class="part-tag">03 · Metodología — qué se construyó</div>
+
+<div class="section-num">29</div>
+<div class="pad" style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;">
+  <div class="eyebrow fade-up">Cierre de la sección</div>
+  <div class="h2 fade-up d1">Resultados de la operación</div>
+  <div class="divider fade-up d2"></div>
+  <p class="body fade-up d2" style="margin-top:16px;">A continuación, los resultados observados durante la operación real de la plataforma.</p>
+</div>
+
+</div>
+<div class="slide" id="s30">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="section-num">30</div>
+<div class="pad" style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;">
+  <div class="eyebrow fade-up">Resultados, conclusiones y recomendaciones</div>
+  <div class="h2 fade-up d1">Resultados de la operación</div>
+  <div class="divider fade-up d2"></div>
+  <p class="body fade-up d2" style="margin-top:16px;">Con la metodología y los resultados de laboratorio ya expuestos, los resultados obtenidos durante la operación real de la plataforma.</p>
+</div>
+
+</div>
+<div class="slide" id="s31">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Resultados de la operación</div>
+  <h2 class="h2 fade-up d1">Tiempo de gestión</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-2 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">58.4%</div><div class="metric-label">reducción del promedio</div></div><div><div class="metric-big">54.7%</div><div class="metric-label">reducción de la mediana</div></div></div>
+  <div class="fade-up d3" style="margin-top:28px;max-width:700px;"><ul class="list "><li>Línea base: 3.34 h promedio / 2.82 h mediana por solicitud (n = 353)</li><li>Post-GAMMA: 1.39 h promedio / 1.28 h mediana por solicitud (n = 98)</li></ul></div>
+  <p class="body-sm fade-up d4" style="margin-top:20px;max-width:680px;">Diferencia estadísticamente significativa — prueba U de Mann-Whitney, p < 0.0001; los intervalos de confianza al 95% no se traslapan.</p>
+</div>
+
+</div>
+<div class="slide" id="s32">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Tablero operativo</div>
+  <h2 class="h2 fade-up d1">Seis indicadores clave — actualización semanal (Power BI)</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-3 fade-up d2" style="margin-top:8px;"><div class="kpi-card"><div class="kpi-value">56.5</div><div class="kpi-name">códigos por gestor</div></div><div class="kpi-card"><div class="kpi-value">153</div><div class="kpi-name">solicitudes asistidas</div></div><div class="kpi-card"><div class="kpi-value">11.8%</div><div class="kpi-name">tasa de corrección</div></div><div class="kpi-card"><div class="kpi-value">70.6%</div><div class="kpi-name">cobertura de tipos</div></div><div class="kpi-card"><div class="kpi-value">88.2%</div><div class="kpi-name">acuerdo modelo–gestor</div></div><div class="kpi-card"><div class="kpi-value">74.5%</div><div class="kpi-name">completitud de clase</div></div></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s33">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Encuesta de satisfacción</div>
+  <h2 class="h2 fade-up d1">Tasa de respuesta: 71.4%</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-3 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big">5.00</div><div class="metric-label">facilidad de uso (gestores)</div></div><div><div class="metric-big">4.33</div><div class="metric-label">satisfacción general (gestores)</div></div><div><div class="metric-big gold">4.5</div><div class="metric-label">alineación con calidad (jefatura)</div></div></div>
+  
+  <p class="body-sm fade-up d4" style="margin-top:20px;max-width:680px;">Población reducida: los resultados se interpretan como el registro directo de la opinión de la mayoría de las personas involucradas.</p>
+</div>
+
+</div>
+<div class="slide" id="s34">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Impacto financiero</div>
+  <h2 class="h2 fade-up d1">Retorno de inversión</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="grid-2 fade-up d2" style="margin-top:14px;max-width:960px;"><div><div class="metric-big gold">243x</div><div class="metric-label">sobre la mediana</div></div><div><div class="metric-big">308x</div><div class="metric-label">sobre el promedio</div></div></div>
+  <div class="fade-up d3" style="margin-top:28px;max-width:700px;"><ul class="list "><li>Costo total del proyecto: Q1,641.65 (hospedaje + capacitación durante construcción y pruebas)</li><li>Período de recuperación: 1.2–1.5 días</li></ul></div>
+  <p class="body-sm fade-up d4" style="margin-top:20px;max-width:680px;">La magnitud es, en buena medida, un artefacto del denominador: refleja el costo de un proyecto de graduación, no de un desarrollo comercial.</p>
+</div>
+
+</div>
+<div class="slide" id="s35">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Conclusiones</div>
+  <h2 class="h2 fade-up d1">1 de 2</h2>
+  <div class="divider fade-up d2"></div>
+  
+  <div class="fade-up d3" style="max-width:760px;"><ol class="list-num"><li>El maestro de materiales quedó consolidado en un repositorio único, normalizado y trazable</li><li>El análisis del catálogo confirmó defectos de calidad relevantes y reveló un hallazgo no anticipado sobre la taxonomía</li><li>La configuración más simple de las siete evaluadas resultó también la más exacta, por un margen consistente</li></ol></div>
+</div>
+
+</div>
+<div class="slide" id="s36">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Conclusiones</div>
+  <h2 class="h2 fade-up d1">2 de 2</h2>
+  <div class="divider fade-up d2"></div>
+  
+  <div class="fade-up d3" style="max-width:760px;"><ol class="list-num"><li>GAMMA integra los tres módulos analíticos en el flujo de creación, sin sustituir la decisión final del gestor</li><li>La herramienta redujo a menos de la mitad el tiempo de gestión, con retorno de inversión inmediato</li></ol></div>
+</div>
+
+</div>
+<div class="slide" id="s37">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Recomendaciones</div>
+  <h2 class="h2 fade-up d1">Para la operación</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list "><li>Depurar la taxonomía de clases antes de ampliar el alcance</li><li>Hacer exigible la convención de separadores en el momento de la captura</li><li>Resolver la categorización de los materiales sin clase asignada</li><li>Consolidar la operación en esta unidad antes de escalar a otras</li><li>Contrastar el umbral de confianza con el comportamiento real de la operación</li><li>Explotar la instrumentación de calidad que el sistema ya captura</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s38">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad-sm" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+  <div class="eyebrow fade-up">Recomendaciones</div>
+  <h2 class="h2 fade-up d1">Para la continuidad técnica</h2>
+  <div class="divider fade-up d2"></div>
+  <div class="fade-up d2" style="margin-top:6px;max-width:760px;"><ul class="list gold "><li>Adoptar una partición agrupada por descripción en la evaluación</li><li>Sustituir la partición única por validación cruzada</li><li>Realizar la evaluación por ablación del término principal</li><li>Cuantificar la duplicidad difusa sobre el catálogo completo</li><li>Evaluar la incorporación del clasificador al flujo de carga masiva</li></ul></div>
+  
+</div>
+
+</div>
+<div class="slide" id="s39">
+<div class="part-tag">04 · Resultados y cierre</div>
+
+<div class="pad" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;">
+  <div class="badge fade-up">Fin de la presentación</div>
+  <div class="h1 fade-up d1" style="margin-top:24px;">Gracias</div>
+  <div class="divider fade-up d2"></div>
+  <p class="body fade-up d3">Quedamos atentos a sus preguntas y observaciones.</p>
+</div>
+<div style="position:absolute;bottom:44px;right:84px;text-align:right;">
+  <p style="font-size:11.5px;color:#444;margin-bottom:3px;">Alejandra Alvarado · Erick Marroquín · Rudy Osorio</p>
+  <p style="font-size:11.5px;color:var(--verde-vivo);font-weight:600;">Maestría en Business Intelligence and Analytics · UVG</p>
+</div>
+
+</div>
+</div>
+<button class="nav-arrow prev" id="prevBtn">&#8592;</button>
+<button class="nav-arrow next" id="nextBtn">&#8594;</button>
+<div class="nav-dots" id="navDots"></div>
+<div class="slide-num" id="slideNum"></div>
+<script>
+
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+let current=0;
+const dotsEl=document.getElementById('navDots');
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.addEventListener('click',()=>goTo(i));dotsEl.appendChild(d);});
+function updateUI(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===current));
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current));
+  document.getElementById('progressBar').style.width=((current+1)/total*100)+'%';
+  document.getElementById('slideNum').textContent=(current+1)+' / '+total;
+  slides[current].querySelectorAll('.fade-up').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+}
+function goTo(n){current=Math.max(0,Math.min(n,total-1));updateUI();}
+document.getElementById('prevBtn').addEventListener('click',()=>goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();goTo(current+1);}
+  if(e.key==='ArrowLeft'){e.preventDefault();goTo(current-1);}
+});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)goTo(current+(d>0?1:-1));});
+updateUI();
+
+</script>
+</body>
+</html>

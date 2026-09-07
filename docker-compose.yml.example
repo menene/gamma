@@ -43,7 +43,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: frontend/Dockerfile
       args:
         FRONTEND_MODE: ${FRONTEND_MODE:-development}
     depends_on:
@@ -57,6 +58,13 @@ services:
       - ./frontend/index.html:/app/index.html
       - ./frontend/vite.config.ts:/app/vite.config.ts
       - ./frontend/nginx.conf:/app/nginx.conf
+      # El deck vive en docs/presentation. La imagen ya lo hornea (ver Dockerfile),
+      # de modo que un despliegue no depende de estos montajes; lo que aportan es
+      # servirlo en vivo: editarlo se refleja recargando, sin reconstruir. La
+      # primera ruta aplica en desarrollo (Vite sirve public/) y la segunda en
+      # produccion (raiz de Nginx).
+      - ./docs/presentation:/app/public/deck:ro
+      - ./docs/presentation:/usr/share/nginx/html/deck:ro
 
   planka:
     image: ghcr.io/plankanban/planka:latest

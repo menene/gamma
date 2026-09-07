@@ -1,0 +1,8 @@
+[03:36:16] resultados previos recuperados: 11 configuracion(es)
+[03:36:18] maestro cargado: 45,397 | con clase: 40,029 | conjunto de modelado: 39,571 (1234 clases)
+[03:36:26] random  : train 31,656 test 7,915 | fuga 25.72%
+[03:36:26] grouped : train 31,656 test 7,915 | fuga 0.00%
+[03:36:26] a correr: 1 celda(s) -> ['XGBoost + CharTFIDF'] x ['grouped']
+[03:36:26] grouped  | XGBoost + CharTFIDF ...
+[09:31:10] FALLO grouped/XGBoost + CharTFIDF: AttributeError: The following error was raised: 'XGBClassifierAdapter' object has no attribute '__sklearn_tags__'. It seems that there are no classes that implement `__sklearn_tags__` in the MRO and/or all classes in the MRO call `super().__sklearn_tags__()`. Make sure to inherit from `BaseEstimator` which implements `__sklearn_tags__` (or alternatively define `__sklearn_tags__` but we don't recommend this approach). Note that `BaseEstimator` needs to be on the right side of other Mixins in the inheritance order.
+[09:31:10] LISTO
