@@ -261,13 +261,13 @@ El Cuadro \ref{cuadro:competencia} presenta los resultados de las siete configur
 \toprule
 \textbf{Configuración} & \textbf{Exactitud} & \textbf{F1 macro} & \textbf{F1 pond.} & \textbf{Top-3} & \textbf{Tiempo (s)} \\
 \midrule
-LinearSVC + TF-IDF carácter   & \textbf{0.8208} & \textbf{0.7072} & \textbf{0.8041} & \textbf{0.9176} & 54.1 \\
-XGBoost + TF-IDF carácter      & 0.8145 & 0.6821 & 0.8063 & 0.9200 & 11,025.2 \\
-Random Forest + TF-IDF palabra & 0.8133 & 0.7029 & 0.8014 & 0.9063 & 46.0 \\
+LinearSVC + TF-IDF carácter      & \textbf{0.8208} & \textbf{0.7072} & \textbf{0.8041} & 0.9176 & 54.1 \\
+Random Forest + TF-IDF palabra   & 0.8133 & 0.7029 & 0.8014 & 0.9063 & 46.0 \\
 Reg. logística + TF-IDF palabra  & 0.8095 & 0.6689 & 0.7949 & 0.9135 & 28.9 \\
-Reg. logística + TF-IDF carácter & 0.8080 & 0.6423 & 0.7886 & 0.9248 & 1,071.9 \\
-Transformer (MiniLM)           & 0.7995 & 0.5654 & 0.7692 & 0.8953 & 3,268.7 \\
-fastText                       & 0.7780 & 0.6275 & 0.7648 & 0.8865 & 42.8 \\
+Reg. logística + TF-IDF carácter & 0.8080 & 0.6423 & 0.7886 & \textbf{0.9248} & 1,071.9 \\
+Transformer (MiniLM)             & 0.7995 & 0.5654 & 0.7692 & 0.8953 & 3,268.7 \\
+XGBoost + TF-IDF carácter        & 0.7949 & 0.6398 & 0.7817 & 0.8941 & 13,318.4 \\
+fastText                         & 0.7780 & 0.6275 & 0.7648 & 0.8865 & 42.8 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -534,9 +534,9 @@ El desglose por etapa hace visible dónde se concentra el tiempo de cómputo de 
 \chapter{Discusión}
 
 \section{Selección del algoritmo}
-El resultado más relevante de la competencia es que la configuración más simple resultó también la mejor, y por un margen consistente en las cuatro métricas de desempeño. La máquina de vectores de soporte lineal sobre una representación de caracteres superó tanto a los métodos de ensamble como a las arquitecturas basadas en aprendizaje profundo.
+El resultado más relevante de la competencia es que la configuración más simple resultó también la mejor. La máquina de vectores de soporte lineal sobre una representación de caracteres obtuvo la mejor marca en exactitud, F1 macro y F1 ponderado, y superó tanto a los métodos de ensamble como a las arquitecturas basadas en aprendizaje profundo. La única métrica en la que cede es la exactitud sobre las tres primeras sugerencias, donde la regresión logística sobre n-gramas de carácter alcanza 0.9248 frente a 0.9176, a cambio de veinte veces el tiempo de entrenamiento y 6.5 puntos menos de F1 macro.
 
-La diferencia en costo computacional refuerza esa conclusión. XGBoost consumió más de tres horas de entrenamiento para quedar apenas seis décimas de punto porcentual por debajo del ganador, que se entrenó en menos de un minuto; la regresión logística sobre n-gramas de carácter tardó casi veinte veces más que el ganador para un resultado también inferior; y el transformador multilingüe requirió sesenta veces el tiempo del ganador —sobre una unidad de procesamiento gráfico, mientras que el ganador se entrena sobre procesador convencional— sin lograr superarlo. En un sistema concebido para reentrenarse periódicamente conforme el catálogo crece, esa diferencia deja de ser un detalle de laboratorio: un modelo que exige horas de cómputo para actualizarse es un modelo que en la práctica no se actualiza, y ninguno de los modelos más costosos ofreció a cambio una mejora de exactitud que lo justificara.
+La diferencia en costo computacional refuerza esa conclusión. XGBoost consumió casi cuatro horas de entrenamiento para terminar sexto de las siete configuraciones, 2.6 puntos porcentuales por debajo del ganador, que se entrenó en menos de un minuto; la regresión logística sobre n-gramas de carácter tardó casi veinte veces más que el ganador para un resultado también inferior; y el transformador multilingüe requirió sesenta veces el tiempo del ganador —sobre una unidad de procesamiento gráfico, mientras que el ganador se entrena sobre procesador convencional— sin lograr superarlo. En un sistema concebido para reentrenarse periódicamente conforme el catálogo crece, esa diferencia deja de ser un detalle de laboratorio: un modelo que exige horas de cómputo para actualizarse es un modelo que en la práctica no se actualiza, y ninguno de los modelos más costosos ofreció a cambio una mejora de exactitud que lo justificara.
 
 Este hallazgo es consistente con la naturaleza del problema. Las descripciones del maestro son textos cortos, altamente estructurados y con vocabulario técnico acotado; no contienen la ambigüedad sintáctica ni las dependencias de largo alcance que justifican modelos de mayor capacidad. Un clasificador lineal sobre una representación de caracteres captura precisamente el tipo de regularidad que este texto exhibe.
 

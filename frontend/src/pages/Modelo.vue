@@ -53,13 +53,8 @@ const modelos = [
   { nombre: 'LogReg + WordTFIDF', accuracy: 0.8095, f1Macro: 0.6689, f1Weighted: 0.7949, precision: 0.8066, recall: 0.8095, top3: 0.9135, tiempo: 28.9, gpu: false },
   { nombre: 'LogReg + CharTFIDF', accuracy: 0.8080, f1Macro: 0.6423, f1Weighted: 0.7886, precision: 0.7912, recall: 0.8080, top3: 0.9248, tiempo: 1071.9, gpu: false },
   { nombre: 'Transformer (MiniLM)', accuracy: 0.7995, f1Macro: 0.5654, f1Weighted: 0.7692, precision: 0.7631, recall: 0.7995, top3: 0.8953, tiempo: 3268.7, gpu: true },
+  { nombre: 'XGBoost + CharTFIDF', accuracy: 0.7949, f1Macro: 0.6398, f1Weighted: 0.7817, precision: 0.7940, recall: 0.7949, top3: 0.8941, tiempo: 13318.4, gpu: false },
   { nombre: 'fastText', accuracy: 0.7780, f1Macro: 0.6275, f1Weighted: 0.7648, precision: 0.7743, recall: 0.7771, top3: 0.8865, tiempo: 42.8, gpu: false },
-]
-
-// Sin cifra bajo esta particion todavia. No se lista con la medicion anterior
-// porque no seria comparable con las filas de arriba.
-const pendientes = [
-  { nombre: 'XGBoost + CharTFIDF', motivo: '--' },
 ]
 
 const series = [
@@ -562,8 +557,8 @@ onUnmounted(detenerSondeo)
                   arbol nuevo corrige los errores del anterior. Usa <code>multi:softprob</code> para clasificacion multiclase
                   y produce probabilidades nativas. A pesar de ser el metodo dominante en datos tabulares, no supero al LinearSVC
                   en este problema — los vectores TF-IDF sparse de alta dimensionalidad favorecen a modelos lineales.
-                  Extremadamente lento: <strong class="text-foreground">11,025 segundos</strong> (~3 horas) por la combinacion
-                  de 500 arboles x 1,234 clases.
+                  Extremadamente lento: <strong class="text-foreground">13,318 segundos</strong> (3 h 42 min) por la combinacion
+                  de 500 arboles x 1,234 clases — 246 veces el tiempo del ganador, para quedar sexto de siete.
                 </p>
               </div>
 
@@ -696,12 +691,13 @@ onUnmounted(detenerSondeo)
                       {{ fmtTiempo(m.tiempo) }}<span v-if="m.gpu" class="text-muted-foreground"> *</span>
                     </td>
                   </tr>
-                  <tr v-for="p in pendientes" :key="p.nombre" class="border-b last:border-0 text-muted-foreground">
-                    <td class="py-2 pr-3">{{ p.nombre }}</td>
-                    <td class="text-right py-2 px-2" colspan="7">{{ p.motivo }}</td>
-                  </tr>
                 </tbody>
               </table>
+              <p class="text-xs text-muted-foreground mt-3">
+                * Entrenado en GPU. Las demas configuraciones se entrenaron en CPU, de modo que los
+                tiempos no son directamente comparables: el transformer necesito hardware acelerado
+                para tardar 54 minutos, mientras el ganador tarda 54 segundos sin el.
+              </p>
             </div>
           </div>
 
@@ -734,7 +730,7 @@ onUnmounted(detenerSondeo)
               </li>
               <li>
                 <strong class="text-foreground">Costo de entrenamiento:</strong> 54 segundos en CPU, frente a los 54 minutos
-                en GPU del transformer y las tres horas de XGBoost, ambos con resultados inferiores.
+                en GPU del transformer y las 3 h 42 min de XGBoost, ambos con resultados inferiores.
                 En un sistema que se reentrena desde la propia aplicacion, esa diferencia define si el reentrenamiento es un
                 boton o es infraestructura aparte.
               </li>

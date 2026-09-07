@@ -16,6 +16,22 @@ una configuracion a la vez sin perder lo ya medido:
 
     python eval_grouped_split.py --config LinearSVC
     python eval_grouped_split.py --config RandomForest --protocol grouped
+
+El transformer NO se define aqui
+--------------------------------
+`build_configs()` cubre seis de las siete configuraciones de la competencia. El
+transformer multilingue se entrena con `train_transformer.py`, que importa este
+modulo para tomar la misma carga y la misma particion, y despues inyecta su fila
+en el mismo JSON. Consecuencia practica: `--config transformer` no hace nada, y
+una reejecucion completa de la competencia son dos comandos:
+
+    python eval_grouped_split.py                      # las seis de aqui
+    python train_transformer.py --split grouped       # el transformer
+
+Diferencia de condiciones a tener presente: las seis configuraciones de este
+script corren en CPU; el transformer usa MPS si esta disponible. Eso no afecta
+ninguna metrica de desempeno, pero hace que su columna de tiempo no sea
+directamente comparable con las demas.
 """
 
 import os

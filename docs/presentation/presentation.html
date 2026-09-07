@@ -847,19 +847,19 @@
     </thead>
     <tbody>
       <tr class="win"><td>LinearSVC + carácter</td><td>0.8208</td><td>0.7072</td><td>0.9176</td><td>54.1 s</td></tr>
-      <tr><td>XGBoost</td><td>0.8145</td><td>0.6821</td><td>0.9200</td><td>3 h</td></tr>
       <tr><td>Random Forest</td><td>0.8133</td><td>0.7029</td><td>0.9063</td><td>46 s</td></tr>
       <tr><td>Reg. logística palabra</td><td>0.8095</td><td>0.6689</td><td>0.9135</td><td>29 s</td></tr>
       <tr><td>Reg. logística carácter</td><td>0.8080</td><td>0.6423</td><td>0.9248</td><td>18 min</td></tr>
       <tr><td>Transformer multilingüe</td><td>0.7995</td><td>0.5654</td><td>0.8953</td><td>54 min <span style="font-size:.8em">(GPU)</span></td></tr>
+      <tr><td>XGBoost</td><td>0.7949</td><td>0.6398</td><td>0.8941</td><td>3 h 42 min</td></tr>
       <tr><td>fastText</td><td>0.7780</td><td>0.6275</td><td>0.8865</td><td>42.8 s</td></tr>
     </tbody>
   </table>
   <aside class="notes">
     <b class="cue">1:00 · 22:00</b>
     Dejar la tabla en pantalla y hablar sobre ella; no leerla.
-    Señalar la primera fila, y después la última columna. La configuración ganadora obtuvo el mejor resultado en las cuatro métricas de desempeño, de forma consistente.
-    Las dos filas que importan para el argumento: XGBoost tardó más de tres horas para quedar seis décimas de punto porcentual por debajo. El transformador tardó más de cincuenta minutos sobre GPU y no superó a la configuración lineal en ninguna métrica.
+    Señalar la primera fila, y después la última columna. La configuración ganadora obtuvo el mejor resultado en exactitud, F1 macro y F1 ponderado. En Top-3 queda segunda: la regresión logística de carácter alcanza 0.9248 contra 0.9176, pero a veinte veces el tiempo de entrenamiento y con 6.5 puntos menos de F1 macro. Si preguntan por esa métrica, decirlo así, no esquivarlo.
+    Las dos filas que importan para el argumento: XGBoost tardó 3 horas y 42 minutos para terminar sexto, 2.6 puntos por debajo — 246 veces el tiempo del ganador. El transformador tardó más de cincuenta minutos sobre GPU y no superó a la configuración lineal en ninguna métrica.
     NO usar fastText como argumento de velocidad: sus 42.8 segundos son comparables a los 54.1 del ganador, no dramáticamente menores. Su diferencia está en el desempeño, no en el tiempo.
     Todas las configuraciones reciben el mismo nivel de detalle; ninguna necesita explicación individual extensa.
   </aside>
@@ -872,7 +872,7 @@
     <div class="m"><div class="mv">0.8041</div><div class="ml">F1 ponderado</div></div>
     <div class="m"><div class="mv">0.9176</div><div class="ml">Top-3</div></div>
   </div>
-  <p class="foot" style="margin-top:44px;">SVM lineal sobre TF-IDF de n-gramas de carácter. <em class="hl">54.1 segundos en CPU</em>, frente a las 3 horas de XGBoost y los 54 minutos del transformador sobre GPU.</p>
+  <p class="foot" style="margin-top:44px;">SVM lineal sobre TF-IDF de n-gramas de carácter. <em class="hl">54.1 segundos en CPU</em>, frente a las 3 h 42 min de XGBoost y los 54 minutos del transformador sobre GPU.</p>
   <aside class="notes">
     <b class="cue">0:50 · 22:50</b>
     La configuración ganadora fue una máquina de vectores de soporte lineal sobre TF-IDF de n-gramas de carácter, calibrada.
@@ -1096,7 +1096,7 @@
     De estos resultados se derivan cinco conclusiones principales.
     En primer lugar, se consolidó el maestro de materiales en un repositorio único, normalizado y trazable, que unificó los 45,397 registros previamente dispersos en trece archivos de exportación, y que hoy sustituye la consulta dispersa sobre hojas de cálculo que caracterizaba la operación previa.
     En segundo lugar, el análisis no solo confirmó defectos de calidad de magnitud relevante, sino que aportó un hallazgo no anticipado en el planteamiento original: una fracción del error del clasificador no corresponde a fallas del modelo, sino a pares de clases que designan el mismo concepto dentro de la taxonomía. La herramienta construida para clasificar materiales resultó, adicionalmente, un instrumento de diagnóstico sobre la calidad de la propia taxonomía.
-    Y en tercer lugar, la configuración más simple de las siete evaluadas resultó también la más exacta, por un margen consistente en las cuatro métricas, y con un costo de entrenamiento considerablemente menor al de las alternativas de mayor complejidad.
+    Y en tercer lugar, la configuración más simple de las siete evaluadas resultó también la más exacta, por un margen consistente, y con un costo de entrenamiento considerablemente menor al de las alternativas de mayor complejidad.
   </aside>
 </section>
 <section>

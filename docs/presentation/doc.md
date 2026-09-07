@@ -191,11 +191,11 @@ Siete configuraciones evaluadas sobre la partición de prueba de 7,915 materiale
 | Configuración | Exactitud | F1 macro | F1 pond. | Top-3 | Tiempo (s) |
 |---|---:|---:|---:|---:|---:|
 | **LinearSVC + TF-IDF carácter** | **0.8208** | **0.7072** | 0.8041 | 0.9176 | **54.1** |
-| XGBoost + TF-IDF carácter | 0.8145 | 0.6821 | 0.8063 | 0.9200 | 11,025.2 |
 | Random Forest + TF-IDF palabra | 0.8133 | 0.7029 | 0.8014 | 0.9063 | 46.0 |
 | Reg. logística + TF-IDF palabra | 0.8095 | 0.6689 | 0.7949 | 0.9135 | 28.9 |
 | Reg. logística + TF-IDF carácter | 0.8080 | 0.6423 | 0.7886 | 0.9248 | 1,071.9 |
 | Transformer (MiniLM multilingüe) | 0.7995 | 0.5654 | 0.7692 | 0.8953 | 3,268.7 |
+| XGBoost + TF-IDF carácter | 0.7949 | 0.6398 | 0.7817 | 0.8941 | 13,318.4 |
 | fastText | 0.7780 | 0.6275 | 0.7648 | 0.8865 | 42.8 |
 
 La configuración de máquina de vectores de soporte lineal sobre TF-IDF de carácter obtuvo el mejor resultado, con una **exactitud de 0.8208** y una **exactitud sobre las tres primeras sugerencias de 0.9176**, y fue la seleccionada para el despliegue.
@@ -206,7 +206,7 @@ El resultado más relevante de la competencia es que la configuración más simp
 
 La diferencia en costo computacional refuerza esa conclusión:
 
-- **XGBoost** consumió más de tres horas de entrenamiento para quedar apenas seis décimas de punto porcentual por debajo del ganador, que se entrenó en menos de un minuto.
+- **XGBoost** consumió 3 horas y 42 minutos de entrenamiento para terminar sexto de siete, 2.6 puntos porcentuales por debajo del ganador, que se entrenó en menos de un minuto.
 - **La regresión logística sobre n-gramas de carácter** tardó casi veinte veces más que el ganador, para un resultado también inferior.
 - **El transformador multilingüe** requirió sesenta veces el tiempo del ganador —sobre unidad de procesamiento gráfico, mientras que el ganador se entrena sobre procesador convencional— sin lograr superarlo.
 

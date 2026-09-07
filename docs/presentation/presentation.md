@@ -138,11 +138,11 @@ Note:
 | | Exactitud | F1 macro | Top-3 | Tiempo |
 |---|---:|---:|---:|---:|
 | **LinearSVC + carácter** | **0.8208** | **0.7072** | 0.9176 | **54 s** |
-| XGBoost | 0.8145 | 0.6821 | 0.9200 | 3 h |
 | Random Forest | 0.8133 | 0.7029 | 0.9063 | 46 s |
 | Reg. logística palabra | 0.8095 | 0.6689 | 0.9135 | 29 s |
 | Reg. logística carácter | 0.8080 | 0.6423 | 0.9248 | 18 min |
 | Transformer | 0.7995 | 0.5654 | 0.8953 | 54 min |
+| XGBoost | 0.7949 | 0.6398 | 0.8941 | 3 h 42 min |
 | fastText | 0.7780 | 0.6275 | 0.8865 | 43 s |
 
 Note:

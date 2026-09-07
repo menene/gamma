@@ -282,7 +282,7 @@ Eso **no es un modelo que perdió: es un modelo que no convergió.** Reportarlo 
 
 ### 4.10 🟢 Un hallazgo fuerte que está desaprovechado
 
-XGBoost tardó **11,025 segundos (3 horas)** en entrenar y perdió (81.45 %) contra LinearSVC, que tardó **62.9 segundos** y ganó (84.91 %). fastText logró 80.77 % en **43 segundos**.
+XGBoost tardó **13,318 segundos (3 h 42 min)** en entrenar y quedó sexto de siete (79.49 %) contra LinearSVC, que tardó **54.1 segundos** y ganó (82.08 %). fastText logró 77.80 % en **42.8 segundos**. Todas las cifras son del protocolo agrupado (fuga 0.00 %).
 
 Esta es una **excelente historia de selección de modelos en contexto real**: el modelo más simple ganó en precisión *y* fue 175× más rápido, lo que además lo hace viable de reentrenar en producción. Es exactamente el tipo de razonamiento pragmático que distingue un buen proyecto aplicado.
 
@@ -327,7 +327,7 @@ Cuadro comparativo completo, **listo para transcribir**:
 | Modelo | Accuracy | F1 Macro | F1 Weighted | Top-3 Acc | Tiempo (s) |
 |---|---|---|---|---|---|
 | **LinearSVC + CharTFIDF** ⭐ | **0.8491** | **0.7523** | **0.8380** | **0.9404** | **62.9** |
-| XGBoost + CharTFIDF | 0.8145 | 0.6821 | 0.8063 | 0.9200 | 11,025.2 |
+| XGBoost + CharTFIDF | 0.7949 | 0.6398 | 0.7817 | 0.8941 | 13,318.4 |
 | fastText | 0.8077 | 0.6897 | 0.8001 | 0.9075 | 43.0 |
 | Transformer (MiniLM) | 0.0395 | 0.0003 | 0.0050 | 0.0714 | 1,460.0 |
 | LogReg + CharTFIDF | *(en notebook 02)* | | | | |

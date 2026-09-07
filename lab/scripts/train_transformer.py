@@ -2,9 +2,20 @@
 Fine-tuning del transformer multilingue para clasificacion de categoria.
 
 Evalua `microsoft/Multilingual-MiniLM-L12-H384` como candidato de la competencia
-de modelos. Replica exactamente la carga de datos, el preprocesamiento y la
-particion de `03_modelos_candidatos_v2.ipynb` (misma semilla) para que el
-resultado sea comparable con el resto de las configuraciones.
+de modelos.
+
+La carga, el preprocesamiento y la particion NO se definen aqui: se importan de
+`eval_grouped_split.py` (ver `main`), de modo que el transformer se mide sobre
+exactamente el mismo conjunto y las mismas fronteras que las otras seis
+configuraciones. El resultado se inyecta en el mismo `grouped_split.json`.
+
+Este script es la septima configuracion de la competencia y hay que correrlo
+aparte; `eval_grouped_split.py --config transformer` no lo cubre.
+
+    python train_transformer.py --split grouped
+
+Corre en MPS cuando esta disponible, mientras que las otras seis corren en CPU.
+Las metricas son comparables; el tiempo de entrenamiento no.
 
 Notas de configuracion
 ----------------------

@@ -4,3 +4,5 @@
 [09:41:50] grouped : train 31,656 test 7,915 | fuga 0.00%
 [09:41:50] a correr: 1 celda(s) -> ['XGBoost + CharTFIDF'] x ['grouped']
 [09:41:50] grouped  | XGBoost + CharTFIDF ...
+[13:24:00] grouped  | XGBoost + CharTFIDF: acc=0.7949 f1m=0.6398 f1w=0.7817 top3=0.8941250789639924 t=13318.4s
+[13:24:00] LISTO

@@ -173,8 +173,8 @@ Se reportan cuatro métricas de desempeño más el tiempo de entrenamiento. Por 
 ### 25
 
 Dejar la tabla en pantalla y hablar sobre ella; no leerla.
-Señalar la primera fila, y después la última columna. La configuración ganadora obtuvo el mejor resultado en las cuatro métricas de desempeño, de forma consistente.
-Las dos filas que importan para el argumento: XGBoost tardó más de tres horas para quedar seis décimas de punto porcentual por debajo. El transformador tardó más de cincuenta minutos sobre GPU y no superó a la configuración lineal en ninguna métrica.
+Señalar la primera fila, y después la última columna. La configuración ganadora obtuvo el mejor resultado en exactitud, F1 macro y F1 ponderado. En Top-3 queda segunda: la regresión logística de carácter alcanza 0.9248 contra 0.9176, pero a veinte veces el tiempo de entrenamiento y con 6.5 puntos menos de F1 macro. Si preguntan por esa métrica, decirlo así, no esquivarlo.
+Las dos filas que importan para el argumento: XGBoost tardó 3 horas y 42 minutos para terminar sexto, 2.6 puntos por debajo — 246 veces el tiempo del ganador. El transformador tardó más de cincuenta minutos sobre GPU y no superó a la configuración lineal en ninguna métrica.
 NO usar fastText como argumento de velocidad: sus 42.8 segundos son comparables a los 54.1 del ganador, no dramáticamente menores. Su diferencia está en el desempeño, no en el tiempo.
 Todas las configuraciones reciben el mismo nivel de detalle; ninguna necesita explicación individual extensa.
 
@@ -281,7 +281,7 @@ Lo que sí resulta estadísticamente sólido, bajo cualquiera de los dos escenar
 De estos resultados se derivan cinco conclusiones principales.
 En primer lugar, se consolidó el maestro de materiales en un repositorio único, normalizado y trazable, que unificó los 45,397 registros previamente dispersos en trece archivos de exportación, y que hoy sustituye la consulta dispersa sobre hojas de cálculo que caracterizaba la operación previa.
 En segundo lugar, el análisis no solo confirmó defectos de calidad de magnitud relevante, sino que aportó un hallazgo no anticipado en el planteamiento original: una fracción del error del clasificador no corresponde a fallas del modelo, sino a pares de clases que designan el mismo concepto dentro de la taxonomía. La herramienta construida para clasificar materiales resultó, adicionalmente, un instrumento de diagnóstico sobre la calidad de la propia taxonomía.
-Y en tercer lugar, la configuración más simple de las siete evaluadas resultó también la más exacta, por un margen consistente en las cuatro métricas, y con un costo de entrenamiento considerablemente menor al de las alternativas de mayor complejidad.
+Y en tercer lugar, la configuración más simple de las siete evaluadas resultó también la más exacta, por un margen consistente, y con un costo de entrenamiento considerablemente menor al de las alternativas de mayor complejidad.
 
 ### 40
 
