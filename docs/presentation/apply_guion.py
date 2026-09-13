@@ -25,7 +25,7 @@ SRC = Path(__file__).with_name("guion.md")
 SLIDE_RE = re.compile(r"(?ms)^<section\b.*?^</section>")
 NOTES_RE = re.compile(r'(<aside class="notes">\s*)(.*?)(\s*</aside>)', re.S)
 CUE_RE = re.compile(r'<b class="cue">.*?</b>', re.S)
-HEAD_RE = re.compile(r"^###\s*(\d+)\s*$", re.M)
+HEAD_RE = re.compile(r"^###\s*(\d+)\b.*$", re.M)
 
 
 def bloques_del_guion(texto: str) -> list[str]:

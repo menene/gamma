@@ -7,20 +7,20 @@
   <text x="483" y="132" text-anchor="middle" font-size="46" font-weight="600" letter-spacing="1" fill="#15181b">L</text>
   <text x="549" y="132" text-anchor="middle" font-size="46" font-weight="600" letter-spacing="1" fill="#15181b">L</text>
   <text x="615" y="132" text-anchor="middle" font-size="46" font-weight="600" letter-spacing="1" fill="#15181b">O</text>
-  <line x1="120" y1="158" x2="648" y2="158" stroke="#e6e6e3" stroke-width="1.5"/>
-  <rect x="124" y="156" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
-  <text x="219" y="185" text-anchor="middle" font-size="21" font-weight="600" fill="#0f766e">TOR</text>
-  <rect x="190" y="210" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
-  <text x="285" y="239" text-anchor="middle" font-size="21" font-weight="600" fill="#0f766e">ORN</text>
-  <rect x="256" y="264" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
-  <text x="351" y="293" text-anchor="middle" font-size="21" font-weight="600" fill="#0f766e">RNI</text>
-  <rect x="322" y="318" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0f766e" stroke-width="1.5"/>
-  <text x="417" y="347" text-anchor="middle" font-size="21" font-weight="600" fill="#0f766e">NIL</text>
-  <text x="384" y="396" text-anchor="middle" font-size="24" fill="#a8afb4">. . .</text>
-  <text x="120" y="434" font-size="19" fill="#7a8288">Ventanas de 2 a 5 caracteres, sin cruzar de una palabra a la siguiente</text>
-  <line x1="854" y1="86" x2="854" y2="400" stroke="#e6e6e3" stroke-width="1.5"/>
-  <text x="900" y="150" font-size="62" font-weight="700" letter-spacing="-2.5" fill="#0f766e">~100</text>
-  <text x="900" y="184" font-size="19" fill="#7a8288">fragmentos por descripcion</text>
-  <text x="900" y="280" font-size="62" font-weight="700" letter-spacing="-2.5" fill="#0f766e">50,000</text>
-  <text x="900" y="314" font-size="19" fill="#7a8288">del vocabulario se conservan</text>
+  <line x1="120" y1="158" x2="648" y2="158" stroke="#d3d3ce" stroke-width="1.5"/>
+  <rect x="124" y="156" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0d6a62" stroke-width="1.5"/>
+  <text x="219" y="185" text-anchor="middle" font-size="21" font-weight="600" fill="#0d6a62">TOR</text>
+  <rect x="190" y="210" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0d6a62" stroke-width="1.5"/>
+  <text x="285" y="239" text-anchor="middle" font-size="21" font-weight="600" fill="#0d6a62">ORN</text>
+  <rect x="256" y="264" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0d6a62" stroke-width="1.5"/>
+  <text x="351" y="293" text-anchor="middle" font-size="21" font-weight="600" fill="#0d6a62">RNI</text>
+  <rect x="322" y="318" width="190" height="42" rx="9" fill="#e6f2f0" stroke="#0d6a62" stroke-width="1.5"/>
+  <text x="417" y="347" text-anchor="middle" font-size="21" font-weight="600" fill="#0d6a62">NIL</text>
+  <text x="384" y="396" text-anchor="middle" font-size="24" fill="#5f676c">. . .</text>
+  <text x="120" y="434" font-size="19" fill="#4a5157">Ventanas de 2 a 5 caracteres, sin cruzar de una palabra a la siguiente</text>
+  <line x1="854" y1="86" x2="854" y2="400" stroke="#d3d3ce" stroke-width="1.5"/>
+  <text x="900" y="150" font-size="62" font-weight="700" letter-spacing="-2.5" fill="#0d6a62">~100</text>
+  <text x="900" y="184" font-size="19" fill="#4a5157">fragmentos por descripcion</text>
+  <text x="900" y="280" font-size="62" font-weight="700" letter-spacing="-2.5" fill="#0d6a62">50,000</text>
+  <text x="900" y="314" font-size="19" fill="#4a5157">del vocabulario se conservan</text>
 </svg>

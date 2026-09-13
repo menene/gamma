@@ -571,7 +571,7 @@ onUnmounted(detenerSondeo)
                   Cada palabra se descompone en character n-grams (2-5) y el embedding final es la suma de sus componentes.
                   Configurado con <code>epoch=50</code>, <code>lr=0.5</code>, <code>dim=100</code>, <code>wordNgrams=2</code>
                   y loss <code>softmax</code>. Extremadamente rapido de entrenar (<strong class="text-foreground">43 segundos</strong>),
-                  lo que lo hace ideal para iteracion rapida. Rendimiento competitivo (accuracy 80.8%) pero por debajo del
+                  lo que lo hace ideal para iteracion rapida. Rendimiento competitivo (accuracy 77.8%) pero por debajo del
                   LinearSVC, probablemente porque los embeddings de 100 dimensiones comprimen demasiado la informacion que
                   el espacio sparse de 50k dimensiones preserva.
                 </p>

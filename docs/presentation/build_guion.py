@@ -23,6 +23,13 @@ SECTION_RE = re.compile(r"<!--\s*═+\s*(.*?)\s*═+\s*-->")
 SLIDE_RE = re.compile(r"(?ms)^<section\b.*?^</section>")
 NOTES_RE = re.compile(r'<aside class="notes">(.*?)</aside>', re.S)
 CUE_RE = re.compile(r'<b class="cue">(.*?)</b>', re.S)
+SIN = "SIN ASIGNAR"
+
+
+def ponente(cue: str) -> str:
+    """Primer campo de la pista, cuando no es un tiempo."""
+    primero = cue.split("·")[0].strip()
+    return SIN if not primero or re.fullmatch(r"\d+:\d\d", primero) else primero
 
 
 def lines_of(fragment: str) -> list[str]:
@@ -50,7 +57,7 @@ def main() -> None:
     ]
 
     out = [
-        "# GAMMA — guion de la defensa",
+        "# GAMMA · guion de la defensa",
         "",
         "> Este archivo y `presentation.html` estan sincronizados. Se puede editar cualquiera",
         "> de los dos; despues hay que correr el script de la direccion correspondiente:",
@@ -59,7 +66,8 @@ def main() -> None:
         "> - editaste el **guion** -> `python3 apply_guion.py`",
         "",
         "Solo lo que se dice en voz alta. Los numeros corresponden a las laminas del deck.",
-        "El reparto (quien dice cada lamina) todavia no esta asignado.",
+        "Cada lamina lleva el nombre de quien la presenta. El reparto se edita en la",
+        "pista `<b class=\"cue\">` de presentation.html, no aqui.",
         
         "",
     ]
@@ -71,9 +79,10 @@ def main() -> None:
             n += 1
             m = NOTES_RE.search(chunk)
             notes = lines_of(m.group(1)) if m else []
-            if notes and CUE_RE.search(chunk):
+            cue = CUE_RE.search(chunk)
+            if notes and cue:
                 notes = notes[1:]          # la pista de orador/tiempo no se dice en voz alta
-            out += [f"### {n:02d}", ""]
+            out += [f"### {n:02d} · {ponente(cue.group(1)) if cue else SIN}", ""]
             out += notes if notes else ["_(sin nota)_"]
             out += [""]
 
