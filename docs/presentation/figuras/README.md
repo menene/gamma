@@ -7,6 +7,7 @@ relativas a esta carpeta: `src="figuras/…"`.
 |---|---|---|
 | `fig02-duplicados-por-tipo.png` | 7 · Descripciones sin separador estándar | Tesis, Figura 2, p. 27 |
 | `fig03-mapa-calidad.png` | 8 · Mapa de calidad consolidado | Tesis, Figura 3, p. 27 |
+| `fig-matriz-confusion.png` | 29 · Desempeño del modelo seleccionado | Tesis, Figura 6, p. 42 |
 | `medallon.svg` | 19 · Las tres capas del medallón | Propio |
 | `pipeline.svg` | 27 · Cómo funciona el modelo | Propio |
 | `ngramas.svg` | 28 · Vectorización por caracteres | Propio |
