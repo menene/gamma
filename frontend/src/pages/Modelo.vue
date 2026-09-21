@@ -65,19 +65,20 @@ const series = [
 
 const fmtTiempo = (s: number) => (s >= 1000 ? `${(s / 60).toFixed(0)} min` : `${s.toFixed(1)} s`)
 
-const pipeline = `flowchart LR
+const pipeline = `flowchart TD
     A["short_text<br/>(SAP, 40 caracteres)"] --> B["Normalizacion<br/>mayusculas, sin acentos,<br/>separadores a espacio"]
     B --> C["TF-IDF<br/>n-gramas de caracter 2-5<br/>50,000 dimensiones"]
     C --> D["LinearSVC<br/>one-vs-rest<br/>1,234 hiperplanos"]
     D --> E["Calibracion de Platt<br/>margen a probabilidad"]
     E --> F["Top-3 clases<br/>+ confianza"]
-    F --> G{"Supera el<br/>umbral?"}
-    G -->|Si| H["Sugerencia automatica"]
-    G -->|No| I["Revision del gestor"]
+    F --> G{"La clase correcta<br/>esta entre las tres?"}
+    G -->|Si| H["El gestor la selecciona"]
+    G -->|No| I["El gestor la busca<br/>manualmente en el catalogo"]
+    H --> J["Material confirmado<br/>y registrado en SAP"]
+    I --> J
     style A fill:#e8f0fb,stroke:#2a78d6,color:#0b0b0b
     style F fill:#e6f6f0,stroke:#1baf7a,color:#0b0b0b
-    style H fill:#e6f6f0,stroke:#1baf7a,color:#0b0b0b
-    style I fill:#fdeee7,stroke:#eb6834,color:#0b0b0b`
+    style J fill:#e6f6f0,stroke:#1baf7a,color:#0b0b0b`
 
 const versiones = ref<Version[]>([])
 const jobs = ref<Job[]>([])
@@ -421,9 +422,9 @@ onUnmounted(detenerSondeo)
         <div class="max-w-4xl space-y-6 text-sm text-muted-foreground">
         <div class="max-w-4xl space-y-6 text-sm text-muted-foreground">
           <p>
-            El sistema predice la <strong class="text-foreground">clase de material</strong> (denominacion estandar)
-            a partir del <code>short_text</code> de SAP. El modelo fue entrenado con <strong class="text-foreground">39,571 materiales</strong>
-            distribuidos en <strong class="text-foreground">1,234 clases</strong>, extraidos de 13 archivos Excel de distintos
+            El sistema predice la clase de material (denominacion estandar)
+            a partir del <code>short_text</code> de SAP. El modelo fue entrenado con 39,571 materiales
+            distribuidos en 1,234 clases, extraidos de 13 archivos Excel de distintos
             tipos de material (ZCON, ZQUI, ZRPI, ZSUM, etc.).
           </p>
 
@@ -432,49 +433,15 @@ onUnmounted(detenerSondeo)
 
           <div>
             <h4 class="text-foreground font-medium mb-3">Pipeline</h4>
-            <MermaidDiagram :chart="pipeline" />
-            <p class="mt-3">
+            <p class="mb-4">
               El modelo no impone una categoria: devuelve las tres mas probables con su confianza.
-              Cuando la confianza supera el umbral configurado la sugerencia se acepta de forma automatica;
-              cuando no, la solicitud pasa a revision del gestor. El umbral es el parametro que traduce
-              tolerancia al error en cobertura de automatizacion.
+              El gestor recibe siempre las tres y siempre confirma, de modo que ninguna sugerencia
+              se registra sin su decision. La confianza se le muestra en pantalla como referencia
+              de que tan fiable es la sugerencia, pero no dispara ninguna accion automatica.
             </p>
+            <MermaidDiagram :chart="pipeline" class="flex justify-center" />
           </div>
 
-          <Separator />
-
-
-          <div>
-            <h4 class="text-foreground font-medium mb-3">Analisis de confianza</h4>
-            <p class="mb-3">
-              El modelo sabe cuando esta inseguro. Filtrando por umbral de confianza se puede aumentar la accuracy
-              a cambio de cubrir menos materiales automaticamente.
-            </p>
-            <div class="overflow-x-auto mb-3">
-              <table class="w-full text-xs">
-                <thead>
-                  <tr class="border-b">
-                    <th class="text-left py-2 pr-3 text-foreground">Umbral</th>
-                    <th class="text-right py-2 px-2 text-foreground">Accuracy</th>
-                    <th class="text-right py-2 px-2 text-foreground">Cobertura</th>
-                    <th class="text-right py-2 pl-2 text-foreground">Materiales</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="border-b"><td class="py-1.5 pr-3">0.50</td><td class="text-right px-2">92.94%</td><td class="text-right px-2">73.92%</td><td class="text-right pl-2">5,851</td></tr>
-                  <tr class="border-b"><td class="py-1.5 pr-3">0.60</td><td class="text-right px-2">95.17%</td><td class="text-right px-2">65.08%</td><td class="text-right pl-2">5,151</td></tr>
-                  <tr class="border-b"><td class="py-1.5 pr-3">0.70</td><td class="text-right px-2">96.78%</td><td class="text-right px-2">54.13%</td><td class="text-right pl-2">4,284</td></tr>
-                  <tr><td class="py-1.5 pr-3">0.80</td><td class="text-right px-2">98.88%</td><td class="text-right px-2">28.24%</td><td class="text-right pl-2">2,235</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <p>
-              Esto habilita un flujo de <strong class="text-foreground">auto-aprobacion</strong>: predicciones por
-              encima del umbral se aceptan automaticamente, las demas pasan a
-              <strong class="text-foreground">revision humana</strong>. El umbral es un parametro configurable en
-              <code>gold.parameters</code>.
-            </p>
-          </div>
         </div>
         </div>
       </TabsContent>
@@ -494,7 +461,7 @@ onUnmounted(detenerSondeo)
                   Regresion logistica multinomial (<code>solver='saga'</code>, <code>C=5.0</code>) sobre vectores TF-IDF
                   de character n-grams (2-5, 50k features). Modela la probabilidad de cada clase como una funcion softmax
                   sobre combinaciones lineales de los features. Produce probabilidades calibradas de forma nativa y es
-                  interpretable, pero la convergencia fue extremadamente lenta — <strong class="text-foreground">1,071 segundos</strong>
+                  interpretable, pero la convergencia fue extremadamente lenta — 1,071 segundos
                   (17 minutos) con 50k character features.
                 </p>
               </div>
@@ -504,7 +471,7 @@ onUnmounted(detenerSondeo)
                   <span class="text-foreground font-medium">2. Logistic Regression + Word TF-IDF</span>
                 </div>
                 <p class="mb-2">
-                  Misma regresion logistica pero tokenizando por <strong class="text-foreground">palabras completas</strong>
+                  Misma regresion logistica pero tokenizando por palabras completas
                   (unigramas y bigramas, 30k features). Captura terminos exactos como "CABLE ELECTRICO", pero pierde la
                   capacidad de reconocer subpalabras. Esto lo hace vulnerable a las abreviaciones y typos comunes en textos
                   SAP. Rapido de entrenar (29s) y con buenas probabilidades nativas.
@@ -524,7 +491,7 @@ onUnmounted(detenerSondeo)
                   lo que suele generalizar mejor.
                 </p>
                 <p class="mb-2">
-                  El uso de <strong class="text-foreground">character n-grams</strong> (2-5 caracteres) es clave para textos SAP:
+                  El uso de character n-grams (2-5 caracteres) es clave para textos SAP:
                   captura subpalabras ("TORNI", "ORNIL" de "TORNILLO"), es robusto a abreviaciones ("ELECTR" matchea tanto
                   "ELECTRICO" como "ELECTRONICO"), tolerante a typos, y <code>char_wb</code> respeta limites de palabra
                   evitando n-grams espurios.
@@ -557,7 +524,7 @@ onUnmounted(detenerSondeo)
                   arbol nuevo corrige los errores del anterior. Usa <code>multi:softprob</code> para clasificacion multiclase
                   y produce probabilidades nativas. A pesar de ser el metodo dominante en datos tabulares, no supero al LinearSVC
                   en este problema — los vectores TF-IDF sparse de alta dimensionalidad favorecen a modelos lineales.
-                  Extremadamente lento: <strong class="text-foreground">13,318 segundos</strong> (3 h 42 min) por la combinacion
+                  Extremadamente lento: 13,318 segundos (3 h 42 min) por la combinacion
                   de 500 arboles x 1,234 clases — 246 veces el tiempo del ganador, para quedar sexto de siete.
                 </p>
               </div>
@@ -570,7 +537,7 @@ onUnmounted(detenerSondeo)
                   Modelo de Facebook Research que aprende embeddings de subpalabras de forma nativa — no necesita TF-IDF externo.
                   Cada palabra se descompone en character n-grams (2-5) y el embedding final es la suma de sus componentes.
                   Configurado con <code>epoch=50</code>, <code>lr=0.5</code>, <code>dim=100</code>, <code>wordNgrams=2</code>
-                  y loss <code>softmax</code>. Extremadamente rapido de entrenar (<strong class="text-foreground">43 segundos</strong>),
+                  y loss <code>softmax</code>. Extremadamente rapido de entrenar (43 segundos),
                   lo que lo hace ideal para iteracion rapida. Rendimiento competitivo (accuracy 77.8%) pero por debajo del
                   LinearSVC, probablemente porque los embeddings de 100 dimensiones comprimen demasiado la informacion que
                   el espacio sparse de 50k dimensiones preserva.
@@ -589,10 +556,10 @@ onUnmounted(detenerSondeo)
                   texto de forma contextual en lugar de tratarlo como una bolsa de rasgos.
                 </p>
                 <p class="mb-2">
-                  Reevaluado bajo la particion agrupada alcanza <strong class="text-foreground">79.95% de accuracy</strong>
-                  y <strong class="text-foreground">89.53% de Top-3</strong>: por debajo de las cuatro configuraciones
+                  Reevaluado bajo la particion agrupada alcanza 79.95% de accuracy
+                  y 89.53% de Top-3: por debajo de las cuatro configuraciones
                   clasicas y con 60 veces el tiempo de entrenamiento del ganador —54 minutos sobre GPU, frente a 54 segundos
-                  en CPU—. La brecha mas grande esta en el F1 macro: <strong class="text-foreground">0.5654 contra 0.7072</strong>,
+                  en CPU—. La brecha mas grande esta en el F1 macro: 0.5654 contra 0.7072,
                   catorce puntos por debajo. Con 118M de parametros y una mediana de 9 materiales por clase, el modelo aprende
                   las categorias pobladas y se desploma en la cola larga, que es donde vive mas de la mitad de la taxonomia.
                 </p>
